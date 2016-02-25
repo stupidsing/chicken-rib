@@ -18,7 +18,9 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.PageFileImpl;
 import suite.file.impl.SerializedPageFileImpl;
+import suite.fs.KeyDataStore;
 import suite.fs.KeyDataStoreMutator;
+import suite.fs.KeyValueStore;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -188,16 +190,17 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		public Integer allocate() {
-			Integer pointer = mutator.keys(0, Integer.MAX_VALUE).first();
+			KeyValueStore<Integer, Integer> store = mutator.store();
+			Integer pointer = store.keys(0, Integer.MAX_VALUE).first();
 			if (pointer != null) {
-				mutator.remove(pointer);
+				store.remove(pointer);
 				return pointer;
 			} else
 				throw new RuntimeException("Pages exhausted");
 		}
 
 		public void discard(Integer pointer) {
-			mutator.putTerminal(pointer);
+			mutator.dataStore().putTerminal(pointer);
 		}
 
 		public List<Integer> flush() {
@@ -226,47 +229,49 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public Streamlet<Key> keys(Key start, Key end) {
-			return IbTreeImpl.this.keys(root, start, end);
+		public KeyValueStore<Key, Integer> store() {
+			return new KeyValueStore<Key, Integer>() {
+				public Streamlet<Key> keys(Key start, Key end) {
+					return IbTreeImpl.this.keys(root, start, end);
+				}
+
+				public Integer get(Key key) {
+					return get0(root, key, SlotType.TERMINAL);
+				}
+
+				public void put(Key key, Integer value) {
+					update(key, new Slot(SlotType.TERMINAL, key, value));
+				}
+
+				public void remove(Key key) {
+					allocator.discard(root);
+					root = createRootPage(delete(read(root).slots, key));
+				}
+			};
 		}
 
 		@Override
-		public Integer get(Key key) {
-			return get0(root, key, SlotType.TERMINAL);
-		}
+		public KeyDataStore<Key> dataStore() {
+			return new KeyDataStore<Key>() {
+				public Bytes getPayload(Key key) {
+					Integer pointer = get0(root, key, SlotType.DATA);
+					return pointer != null ? payloadFile.load(pointer) : null;
+				}
 
-		@Override
-		public Bytes getPayload(Key key) {
-			Integer pointer = get0(root, key, SlotType.DATA);
-			return pointer != null ? payloadFile.load(pointer) : null;
-		}
+				public boolean getTerminal(Key key) {
+					return stream(root, key, null).first() != null;
+				}
 
-		@Override
-		public boolean getTerminal(Key key) {
-			return stream(root, key, null).first() != null;
-		}
+				public void putPayload(Key key, Bytes payload) {
+					Integer pointer = allocator.allocate();
+					payloadFile.save(pointer, payload);
+					update(key, new Slot(SlotType.DATA, key, pointer));
+				}
 
-		@Override
-		public void put(Key key, Integer data) {
-			update(key, new Slot(SlotType.TERMINAL, key, data));
-		}
-
-		@Override
-		public void putPayload(Key key, Bytes payload) {
-			Integer pointer = allocator.allocate();
-			payloadFile.save(pointer, payload);
-			update(key, new Slot(SlotType.DATA, key, pointer));
-		}
-
-		@Override
-		public void putTerminal(Key key) {
-			update(key, new Slot(SlotType.TERMINAL, key, null));
-		}
-
-		@Override
-		public void remove(Key key) {
-			allocator.discard(root);
-			root = createRootPage(delete(read(root).slots, key));
+				public void putTerminal(Key key) {
+					update(key, new Slot(SlotType.TERMINAL, key, null));
+				}
+			};
 		}
 
 		private void update(Key key, Slot slot1) {
@@ -462,9 +467,10 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		if (allocationIbTree != null) {
 			IbTreeImpl<Integer>.Mutator mutator0 = allocationIbTree.create();
+			KeyDataStore<Integer> dataStore0 = mutator0.dataStore();
 			int nPages = allocationIbTree.guaranteedCapacity();
 			for (int p = 0; p < nPages; p++)
-				mutator0.putTerminal(p);
+				dataStore0.putTerminal(p);
 			stamp0 = mutator0.flush();
 		} else
 			stamp0 = Arrays.asList(0);

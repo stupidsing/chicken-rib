@@ -13,7 +13,9 @@ import chickenrib.btree.impl.IbTreeBuilder;
 import chickenrib.btree.impl.IbTreeConfiguration;
 import chickenrib.btree.impl.IbTreeImpl;
 import chickenrib.btree.impl.IbTreeStack;
+import suite.fs.KeyDataStore;
 import suite.fs.KeyDataStoreMutator;
+import suite.fs.KeyValueStore;
 import suite.os.FileUtil;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
@@ -35,13 +37,14 @@ public class IbTreeTest {
 			IbTree<Integer> ibTree = ibTreeStack.getIbTree();
 			ibTree.create().end(true);
 			KeyDataStoreMutator<Integer> mutator = ibTree.begin();
+			KeyValueStore<Integer, Integer> store = mutator.store();
 
 			for (int i = 0; i < 32; i++)
-				mutator.put(i, i);
+				store.put(i, i);
 
 			// mutator.dump(System.out);
 
-			System.out.println(To.list(mutator.keys(3, 10)));
+			System.out.println(To.list(store.keys(3, 10)));
 		}
 	}
 
@@ -55,13 +58,16 @@ public class IbTreeTest {
 			ibTree.create().end(true);
 
 			KeyDataStoreMutator<Integer> mutator = ibTree.begin();
+			KeyValueStore<Integer, Integer> store = mutator.store();
+			KeyDataStore<Integer> dataStore = mutator.dataStore();
 			int size = ibTree.guaranteedCapacity();
+
 			for (int i = 0; i < size; i++)
-				mutator.putTerminal(i);
+				dataStore.putTerminal(i);
 			for (int i = size - 1; 0 <= i; i--)
-				mutator.remove(i);
+				store.remove(i);
 			for (int i = 0; i < size; i++)
-				mutator.putTerminal(i);
+				dataStore.putTerminal(i);
 
 			assertEquals(size, dumpAndCount(mutator));
 		}
@@ -96,7 +102,7 @@ public class IbTreeTest {
 	}
 
 	private int dumpAndCount(KeyDataStoreMutator<?> mutator) {
-		Source<?> source = mutator.keys(null, null).source();
+		Source<?> source = mutator.store().keys(null, null).source();
 		Object object;
 		int count = 0;
 
@@ -137,8 +143,9 @@ public class IbTreeTest {
 
 		for (Outlet<String> subset : Outlet.from(list).chunk(25)) {
 			KeyDataStoreMutator<String> mutator0 = ibTree.begin();
+			KeyDataStore<String> dataStore0 = mutator0.dataStore();
 			for (String s : subset)
-				mutator0.putTerminal(s);
+				dataStore0.putTerminal(s);
 			mutator0.end(true);
 		}
 
@@ -148,8 +155,9 @@ public class IbTreeTest {
 
 		for (List<String> subset : Util.splitn(list, 25)) {
 			KeyDataStoreMutator<String> mutator1 = ibTree.begin();
+			KeyValueStore<String, Integer> store1 = mutator1.store();
 			for (String s : subset)
-				mutator1.remove(s);
+				store1.remove(s);
 			mutator1.end(true);
 		}
 
