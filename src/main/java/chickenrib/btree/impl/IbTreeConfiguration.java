@@ -1,24 +1,25 @@
 package chickenrib.btree.impl;
 
+import java.nio.file.Path;
 import java.util.Comparator;
 
 import suite.util.Serialize.Serializer;
 
 public class IbTreeConfiguration<Key> {
 
-	private String filenamePrefix;
+	private Path pathPrefix;
 	private int pageSize;
 	private int maxBranchFactor;
 	private Comparator<Key> comparator;
 	private Serializer<Key> serializer;
 	private long capacity;
 
-	public String getFilenamePrefix() {
-		return filenamePrefix;
+	public Path getPathPrefix() {
+		return pathPrefix;
 	}
 
-	public void setFilenamePrefix(String filenamePrefix) {
-		this.filenamePrefix = filenamePrefix;
+	public void setPathPrefix(Path pathPrefix) {
+		this.pathPrefix = pathPrefix;
 	}
 
 	public int getPageSize() {

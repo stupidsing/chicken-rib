@@ -30,31 +30,31 @@ public class FileSystemTest {
 
 	@Test
 	public void testIbTreeFileSystem() throws IOException {
-		testIbTree(FileUtil.tmp + "/ibTree-fs", this::testWriteOneFile);
+		testIbTree(FileUtil.tmp.resolve("ibTree-fs"), this::testWriteOneFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem() throws IOException {
-		testB_Tree(FileUtil.tmp + "/b_tree-fs", this::testWriteOneFile);
+		testB_Tree(FileUtil.tmp.resolve("b_tree-fs"), this::testWriteOneFile);
 	}
 
 	// Writing too many files (testWriteFiles1) would fail this test case. Do
 	// not know why.
 	@Test
 	public void testIbTreeFileSystem1() throws IOException {
-		testIbTree(FileUtil.tmp + "/ibTree-fs1", this::testWriteFiles0);
-		testIbTree(FileUtil.tmp + "/ibTree-fs1", this::testReadFile);
+		testIbTree(FileUtil.tmp.resolve("ibTree-fs1"), this::testWriteFiles0);
+		testIbTree(FileUtil.tmp.resolve("ibTree-fs1"), this::testReadFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testWriteFiles1);
-		testB_Tree(FileUtil.tmp + "/b_tree-fs1", this::testReadFile);
+		testB_Tree(FileUtil.tmp.resolve("b_tree-fs1"), this::testWriteFiles1);
+		testB_Tree(FileUtil.tmp.resolve("b_tree-fs1"), this::testReadFile);
 	}
 
-	private void testIbTree(String name, TestCase testCase) throws IOException {
+	private void testIbTree(Path path, TestCase testCase) throws IOException {
 		IbTreeConfiguration<Bytes> config = new IbTreeConfiguration<>();
-		config.setFilenamePrefix(name);
+		config.setPathPrefix(path);
 		config.setPageSize(PageFile.defaultPageSize);
 		config.setMaxBranchFactor(PageFile.defaultPageSize / 64);
 		config.setCapacity(64 * 1024);
@@ -64,8 +64,8 @@ public class FileSystemTest {
 		}
 	}
 
-	private void testB_Tree(String name, TestCase testCase) throws IOException {
-		try (FileSystem fs = new B_TreeFileSystemImpl(name, 4096)) {
+	private void testB_Tree(Path path, TestCase testCase) throws IOException {
+		try (FileSystem fs = new B_TreeFileSystemImpl(path, 4096)) {
 			testCase.test(fs);
 		}
 	}

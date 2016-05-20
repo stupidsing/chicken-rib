@@ -3,6 +3,7 @@ package chickenrib.btree;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,10 +52,9 @@ public class IbTreeTest {
 	@Test
 	public void testSingleLevel() throws IOException {
 		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTree-single", Serialize.int_);
-
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
-		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp + "/ibTree-single", config, null)) {
+		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp.resolve("ibTree-single"), config, null)) {
 			ibTree.create().end(true);
 
 			KeyDataStoreMutator<Integer> mutator = ibTree.begin();
@@ -76,17 +76,16 @@ public class IbTreeTest {
 	@Test
 	public void testMultipleLevels() throws IOException {
 		IbTreeConfiguration<String> config = createIbTreeConfiguration("ibTree-multi", Serialize.string(16));
-
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		int i = 0;
-		String f0 = FileUtil.tmp + "/ibTreeMulti" + i++;
-		String f1 = FileUtil.tmp + "/ibTreeMulti" + i++;
-		String f2 = FileUtil.tmp + "/ibTreeMulti" + i++;
+		Path p0 = FileUtil.tmp.resolve("ibTreeMulti" + i++);
+		Path p1 = FileUtil.tmp.resolve("ibTreeMulti" + i++);
+		Path p2 = FileUtil.tmp.resolve("ibTreeMulti" + i++);
 
-		try (IbTreeImpl<Integer> ibTree0 = builder.buildAllocationIbTree(f0);
-				IbTreeImpl<Integer> ibTree1 = builder.buildAllocationIbTree(f1, ibTree0);
-				IbTree<String> ibTree2 = builder.buildTree(f2, config, ibTree1)) {
+		try (IbTreeImpl<Integer> ibTree0 = builder.buildAllocationIbTree(p0);
+				IbTreeImpl<Integer> ibTree1 = builder.buildAllocationIbTree(p1, ibTree0);
+				IbTree<String> ibTree2 = builder.buildTree(p2, config, ibTree1)) {
 			test(ibTree2);
 		}
 	}
@@ -118,7 +117,7 @@ public class IbTreeTest {
 			String name, Serializer<Key> serializer) {
 		IbTreeConfiguration<Key> config = new IbTreeConfiguration<>();
 		config.setComparator(Util.<Key> comparator());
-		config.setFilenamePrefix(FileUtil.tmp + "/" + name);
+		config.setPathPrefix(FileUtil.tmp.resolve(name));
 		config.setPageSize(pageSize);
 		config.setSerializer(serializer);
 		config.setMaxBranchFactor(16);

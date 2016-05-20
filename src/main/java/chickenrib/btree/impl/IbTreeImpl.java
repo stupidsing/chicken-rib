@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,7 +46,7 @@ import suite.util.Util;
  */
 public class IbTreeImpl<Key> implements IbTree<Key> {
 
-	private String filename;
+	private Path path;
 	private int pageSize;
 	private Comparator<Key> comparator;
 	private Serializer<Key> serializer;
@@ -399,7 +400,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		private SerializedPageFile<List<Integer>> stampFile;
 
 		private Mutate() {
-			PageFileImpl stampPageFile = new PageFileImpl(filename + ".stamp", pageSize);
+			PageFileImpl stampPageFile = new PageFileImpl(path.resolveSibling(path.getFileName() + ".stamp"), pageSize);
 			stampFile = new SerializedPageFileImpl<>(stampPageFile, Serialize.list(Serialize.int_));
 		}
 
@@ -422,8 +423,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	 * Constructor for larger trees that require another tree for page
 	 * allocation management.
 	 */
-	public IbTreeImpl(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
-		this.filename = filename;
+	public IbTreeImpl(Path path, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
+		this.path = path;
 		pageSize = config.getPageSize();
 		comparator = Util.nullsFirst(config.getComparator());
 		serializer = Serialize.nullable(config.getSerializer());
@@ -434,7 +435,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		mutate = new Mutate();
 		minBranchFactor = maxBranchFactor / 2;
-		pageFile0 = new PageFileImpl(filename, pageSize);
+		pageFile0 = new PageFileImpl(path, pageSize);
 		pageFile = new SerializedPageFileImpl<>(pageFile0, createPageSerializer());
 		payloadFile = new SerializedPageFileImpl<>(pageFile0, Serialize.bytes(pageSize));
 	}

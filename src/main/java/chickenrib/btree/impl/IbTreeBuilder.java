@@ -1,5 +1,7 @@
 package chickenrib.btree.impl;
 
+import java.nio.file.Path;
+
 import suite.util.Util;
 
 public class IbTreeBuilder {
@@ -18,20 +20,20 @@ public class IbTreeBuilder {
 	 * Builds a small tree that would not span more than 1 page, i.e. no extra
 	 * "page allocation tree" is required.
 	 */
-	public IbTreeImpl<Integer> buildAllocationIbTree(String filename) {
-		return buildAllocationIbTree(filename, null);
+	public IbTreeImpl<Integer> buildAllocationIbTree(Path path) {
+		return buildAllocationIbTree(path, null);
 	}
 
 	/**
 	 * Builds an intermediate tree that is supported by a separate page
 	 * allocation tree.
 	 */
-	public IbTreeImpl<Integer> buildAllocationIbTree(String filename, IbTreeImpl<Integer> allocationIbTree) {
-		return buildTree(filename, allocationIbTreeConfig, allocationIbTree);
+	public IbTreeImpl<Integer> buildAllocationIbTree(Path path, IbTreeImpl<Integer> allocationIbTree) {
+		return buildTree(path, allocationIbTreeConfig, allocationIbTree);
 	}
 
-	public <Key> IbTreeImpl<Key> buildTree(String filename, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
-		return new IbTreeImpl<Key>(filename, config, allocationIbTree);
+	public <Key> IbTreeImpl<Key> buildTree(Path path, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
+		return new IbTreeImpl<Key>(path, config, allocationIbTree);
 	}
 
 }
