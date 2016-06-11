@@ -14,10 +14,10 @@ import chickenrib.btree.impl.IbTreeBuilder;
 import chickenrib.btree.impl.IbTreeConfiguration;
 import chickenrib.btree.impl.IbTreeImpl;
 import chickenrib.btree.impl.IbTreeStack;
+import suite.Constants;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyDataStoreMutator;
 import suite.fs.KeyValueStore;
-import suite.os.FileUtil;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 import suite.util.Serialize;
@@ -54,7 +54,7 @@ public class IbTreeTest {
 		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTree-single", Serialize.int_);
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
-		try (IbTree<Integer> ibTree = builder.buildTree(FileUtil.tmp.resolve("ibTree-single"), config, null)) {
+		try (IbTree<Integer> ibTree = builder.buildTree(Constants.tmp.resolve("ibTree-single"), config, null)) {
 			ibTree.create().end(true);
 
 			KeyDataStoreMutator<Integer> mutator = ibTree.begin();
@@ -79,9 +79,9 @@ public class IbTreeTest {
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		int i = 0;
-		Path p0 = FileUtil.tmp.resolve("ibTreeMulti" + i++);
-		Path p1 = FileUtil.tmp.resolve("ibTreeMulti" + i++);
-		Path p2 = FileUtil.tmp.resolve("ibTreeMulti" + i++);
+		Path p0 = Constants.tmp.resolve("ibTreeMulti" + i++);
+		Path p1 = Constants.tmp.resolve("ibTreeMulti" + i++);
+		Path p2 = Constants.tmp.resolve("ibTreeMulti" + i++);
 
 		try (IbTreeImpl<Integer> ibTree0 = builder.buildAllocationIbTree(p0);
 				IbTreeImpl<Integer> ibTree1 = builder.buildAllocationIbTree(p1, ibTree0);
@@ -117,7 +117,7 @@ public class IbTreeTest {
 			String name, Serializer<Key> serializer) {
 		IbTreeConfiguration<Key> config = new IbTreeConfiguration<>();
 		config.setComparator(Util.<Key> comparator());
-		config.setPathPrefix(FileUtil.tmp.resolve(name));
+		config.setPathPrefix(Constants.tmp.resolve(name));
 		config.setPageSize(pageSize);
 		config.setSerializer(serializer);
 		config.setMaxBranchFactor(16);

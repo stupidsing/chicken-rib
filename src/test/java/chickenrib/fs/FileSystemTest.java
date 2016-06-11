@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import chickenrib.btree.impl.IbTreeConfiguration;
 import chickenrib.fs.impl.IbTreeFileSystemImpl;
+import suite.Constants;
 import suite.file.PageFile;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
@@ -30,26 +31,26 @@ public class FileSystemTest {
 
 	@Test
 	public void testIbTreeFileSystem() throws IOException {
-		testIbTree(FileUtil.tmp.resolve("ibTree-fs"), this::testWriteOneFile);
+		testIbTree(Constants.tmp.resolve("ibTree-fs"), this::testWriteOneFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem() throws IOException {
-		testB_Tree(FileUtil.tmp.resolve("b_tree-fs"), this::testWriteOneFile);
+		testB_Tree(Constants.tmp.resolve("b_tree-fs"), this::testWriteOneFile);
 	}
 
 	// Writing too many files (testWriteFiles1) would fail this test case. Do
 	// not know why.
 	@Test
 	public void testIbTreeFileSystem1() throws IOException {
-		testIbTree(FileUtil.tmp.resolve("ibTree-fs1"), this::testWriteFiles0);
-		testIbTree(FileUtil.tmp.resolve("ibTree-fs1"), this::testReadFile);
+		testIbTree(Constants.tmp.resolve("ibTree-fs1"), this::testWriteFiles0);
+		testIbTree(Constants.tmp.resolve("ibTree-fs1"), this::testReadFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(FileUtil.tmp.resolve("b_tree-fs1"), this::testWriteFiles1);
-		testB_Tree(FileUtil.tmp.resolve("b_tree-fs1"), this::testReadFile);
+		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testWriteFiles1);
+		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testReadFile);
 	}
 
 	private void testIbTree(Path path, TestCase testCase) throws IOException {
@@ -101,7 +102,7 @@ public class FileSystemTest {
 
 		for (Path path : paths) {
 			String filename = path.toString().replace(File.separatorChar, '/');
-			Bytes name = Bytes.of(filename.getBytes(FileUtil.charset));
+			Bytes name = Bytes.of(filename.getBytes(Constants.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));
 		}
 	}
@@ -109,7 +110,7 @@ public class FileSystemTest {
 	private void testReadFile(FileSystem fs) throws IOException {
 		String filename = "src/test/java/chickenrib/fs/FileSystemTest.java";
 		FileSystemMutator fsm = fs.mutate();
-		Bytes name = Bytes.of(filename.getBytes(FileUtil.charset));
+		Bytes name = Bytes.of(filename.getBytes(Constants.charset));
 		Copy.stream(fsm.read(name).asInputStream(), System.out);
 	}
 
