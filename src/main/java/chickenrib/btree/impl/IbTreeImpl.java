@@ -17,8 +17,8 @@ import java.util.Set;
 import chickenrib.btree.IbTree;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
-import suite.file.impl.PageFileImpl;
-import suite.file.impl.SerializedPageFileImpl;
+import suite.file.impl.FileFactory;
+import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyDataStoreMutator;
 import suite.fs.KeyValueStore;
@@ -400,8 +400,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		private SerializedPageFile<List<Integer>> stampFile;
 
 		private Mutate() {
-			PageFileImpl stampPageFile = new PageFileImpl(path.resolveSibling(path.getFileName() + ".stamp"), pageSize);
-			stampFile = new SerializedPageFileImpl<>(stampPageFile, Serialize.list(Serialize.int_));
+			PageFile stampPageFile = FileFactory.pageFile(path.resolveSibling(path.getFileName() + ".stamp"), pageSize);
+			stampFile = SerializedFileFactory.serialized(stampPageFile, Serialize.list(Serialize.int_));
 		}
 
 		private Mutator begin() {
@@ -435,9 +435,9 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		mutate = new Mutate();
 		minBranchFactor = maxBranchFactor / 2;
-		pageFile0 = new PageFileImpl(path, pageSize);
-		pageFile = new SerializedPageFileImpl<>(pageFile0, createPageSerializer());
-		payloadFile = new SerializedPageFileImpl<>(pageFile0, Serialize.bytes(pageSize));
+		pageFile0 = FileFactory.pageFile(path, pageSize);
+		pageFile = SerializedFileFactory.serialized(pageFile0, createPageSerializer());
+		payloadFile = SerializedFileFactory.serialized(pageFile0, Serialize.bytes(pageSize));
 	}
 
 	@Override
