@@ -16,7 +16,6 @@ import suite.Constants;
 import suite.file.PageFile;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
-import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
@@ -30,13 +29,8 @@ public class FileSystemTest {
 	}
 
 	@Test
-	public void testIbTreeFileSystem() throws IOException {
-		testIbTree(Constants.tmp.resolve("ibTree-fs"), this::testWriteOneFile);
-	}
-
-	@Test
-	public void testB_TreeFileSystem() throws IOException {
-		testB_Tree(Constants.tmp.resolve("b_tree-fs"), this::testWriteOneFile);
+	public void testIbTreeFileSystem0() throws IOException {
+		testIbTree(Constants.tmp.resolve("ibTree-fs0"), this::testWriteOneFile);
 	}
 
 	// Writing too many files (testWriteFiles1) would fail this test case. Do
@@ -47,12 +41,6 @@ public class FileSystemTest {
 		testIbTree(Constants.tmp.resolve("ibTree-fs1"), this::testReadFile);
 	}
 
-	@Test
-	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testWriteFiles1);
-		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testReadFile);
-	}
-
 	private void testIbTree(Path path, TestCase testCase) throws IOException {
 		IbTreeConfiguration<Bytes> config = new IbTreeConfiguration<>();
 		config.setPathPrefix(path);
@@ -61,12 +49,6 @@ public class FileSystemTest {
 		config.setCapacity(64 * 1024);
 
 		try (FileSystem fs = new IbTreeFileSystemImpl(config)) {
-			testCase.test(fs);
-		}
-	}
-
-	private void testB_Tree(Path path, TestCase testCase) throws IOException {
-		try (FileSystem fs = new B_TreeFileSystemImpl(path, 4096)) {
 			testCase.test(fs);
 		}
 	}
@@ -88,10 +70,6 @@ public class FileSystemTest {
 
 	private void testWriteFiles0(FileSystem fs) throws IOException {
 		testWriteFile(fs, "src/test/java/chickenrib/fs/");
-	}
-
-	private void testWriteFiles1(FileSystem fs) throws IOException {
-		testWriteFile(fs, "src/test/java/");
 	}
 
 	private void testWriteFile(FileSystem fs, String pathName) throws IOException {
