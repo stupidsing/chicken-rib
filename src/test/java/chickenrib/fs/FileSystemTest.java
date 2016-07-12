@@ -67,11 +67,7 @@ public class FileSystemTest {
 	}
 
 	private void testWriteFiles(FileSystem fs) throws IOException {
-		testWriteFile(fs, "src/test/java/chickenrib/fs/");
-	}
-
-	private void testWriteFile(FileSystem fs, String pathName) throws IOException {
-		Streamlet<Path> paths = FileUtil.findPaths(Paths.get(pathName));
+		Streamlet<Path> paths = FileUtil.findPaths(Paths.get("src/test/java/chickenrib/fs/"));
 		FileSystemMutator fsm = fs.mutate();
 
 		for (Path path : paths) {
