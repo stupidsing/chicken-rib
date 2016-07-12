@@ -16,7 +16,6 @@ import suite.Constants;
 import suite.file.PageFile;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
-import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
@@ -30,27 +29,16 @@ public class FileSystemTest {
 	}
 
 	@Test
-	public void testIbTreeFileSystem() throws IOException {
-		testIbTree(Constants.tmp.resolve("ibTree-fs"), this::testWriteOneFile);
-	}
-
-	@Test
-	public void testB_TreeFileSystem() throws IOException {
-		testB_Tree(Constants.tmp.resolve("b_tree-fs"), this::testWriteOneFile);
+	public void testIbTreeFileSystem0() throws IOException {
+		testIbTree(Constants.tmp.resolve("ibTree-fs0"), this::testWriteOneFile);
 	}
 
 	// Writing too many files (testWriteFiles1) would fail this test case. Do
 	// not know why.
 	@Test
 	public void testIbTreeFileSystem1() throws IOException {
-		testIbTree(Constants.tmp.resolve("ibTree-fs1"), this::testWriteFiles0);
+		testIbTree(Constants.tmp.resolve("ibTree-fs1"), this::testWriteFiles);
 		testIbTree(Constants.tmp.resolve("ibTree-fs1"), this::testReadFile);
-	}
-
-	@Test
-	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testWriteFiles1);
-		testB_Tree(Constants.tmp.resolve("b_tree-fs1"), this::testReadFile);
 	}
 
 	private void testIbTree(Path path, TestCase testCase) throws IOException {
@@ -65,17 +53,9 @@ public class FileSystemTest {
 		}
 	}
 
-	private void testB_Tree(Path path, TestCase testCase) throws IOException {
-		try (FileSystem fs = new B_TreeFileSystemImpl(path, 4096)) {
-			testCase.test(fs);
-		}
-	}
-
 	private void testWriteOneFile(FileSystem fs) {
 		Bytes filename = To.bytes("file");
 		Bytes data = To.bytes("data");
-
-		fs.create();
 		FileSystemMutator fsm = fs.mutate();
 
 		fsm.replace(filename, data);
@@ -86,18 +66,12 @@ public class FileSystemTest {
 		assertEquals(0, fsm.list(filename, null).size());
 	}
 
-	private void testWriteFiles0(FileSystem fs) throws IOException {
+	private void testWriteFiles(FileSystem fs) throws IOException {
 		testWriteFile(fs, "src/test/java/chickenrib/fs/");
-	}
-
-	private void testWriteFiles1(FileSystem fs) throws IOException {
-		testWriteFile(fs, "src/test/java/");
 	}
 
 	private void testWriteFile(FileSystem fs, String pathName) throws IOException {
 		Streamlet<Path> paths = FileUtil.findPaths(Paths.get(pathName));
-
-		fs.create();
 		FileSystemMutator fsm = fs.mutate();
 
 		for (Path path : paths) {
