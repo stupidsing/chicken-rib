@@ -233,7 +233,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		public KeyValueStore<Key, Integer> store() {
 			return new KeyValueStore<Key, Integer>() {
 				public Streamlet<Key> keys(Key start, Key end) {
-					return IbTreeImpl.this.keys(root, start, end);
+					return IbTreeImpl.this.keys_(root, start, end);
 				}
 
 				public Integer get(Key key) {
@@ -245,8 +245,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 				}
 
 				public void remove(Key key) {
-					allocator.discard(root);
-					root = createRootPage(delete(read(root).slots, key));
+					delete(key);
 				}
 			};
 		}
@@ -254,6 +253,10 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		@Override
 		public KeyDataStore<Key> dataStore() {
 			return new KeyDataStore<Key>() {
+				public Streamlet<Key> keys(Key start, Key end) {
+					return keys_(root, start, end);
+				}
+
 				public Bytes getPayload(Key key) {
 					Integer pointer = get0(root, key, SlotType.DATA);
 					return pointer != null ? payloadFile.load(pointer) : null;
@@ -271,6 +274,14 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 				public void putTerminal(Key key) {
 					update(key, new Slot(SlotType.TERMINAL, key, null));
+				}
+
+				public void removePayload(Key key) {
+					delete(key);
+				}
+
+				public void removeTerminal(Key key) {
+					delete(key);
 				}
 			};
 		}
@@ -311,6 +322,11 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			}
 
 			return slots2;
+		}
+
+		private void delete(Key key) {
+			allocator.discard(root);
+			root = createRootPage(delete(read(root).slots, key));
 		}
 
 		private List<Slot> delete(List<Slot> slots0, Key key) {
@@ -479,7 +495,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		return new Mutator(allocator(stamp0));
 	}
 
-	private Streamlet<Key> keys(Integer pointer, Key start, Key end) {
+	private Streamlet<Key> keys_(Integer pointer, Key start, Key end) {
 		return stream(pointer, start, end).map(slot -> slot.pivot);
 	}
 
