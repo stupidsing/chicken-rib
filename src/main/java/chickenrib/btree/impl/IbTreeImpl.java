@@ -234,7 +234,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		public KeyValueStore<Key, Integer> store() {
 			return new KeyValueStore<Key, Integer>() {
 				public Streamlet<Key> keys(Key start, Key end) {
-					return IbTreeImpl.this.keys_(root, start, end);
+					return IbTreeImpl.this.keys0(root, start, end);
 				}
 
 				public Integer get(Key key) {
@@ -255,7 +255,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		public KeyDataStore<Key> dataStore() {
 			return new KeyDataStore<Key>() {
 				public Streamlet<Key> keys(Key start, Key end) {
-					return keys_(root, start, end);
+					return keys0(root, start, end);
 				}
 
 				public Bytes getPayload(Key key) {
@@ -496,7 +496,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		return new Mutator(allocator(stamp0));
 	}
 
-	private Streamlet<Key> keys_(Integer pointer, Key start, Key end) {
+	private Streamlet<Key> keys0(Integer pointer, Key start, Key end) {
 		return stream(pointer, start, end).map(slot -> slot.pivot);
 	}
 
@@ -509,10 +509,10 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private Streamlet<Slot> stream(Integer pointer, Key start, Key end) {
-		return stream_(pointer, start, end).drop(1);
+		return stream0(pointer, start, end).drop(1);
 	}
 
-	private Streamlet<Slot> stream_(Integer pointer, Key start, Key end) {
+	private Streamlet<Slot> stream0(Integer pointer, Key start, Key end) {
 		List<Slot> node = read(pointer).slots;
 		int i0 = start != null ? new FindSlot(node, start, false).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
@@ -520,7 +520,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		if (i0 < i1)
 			return Read.from(node.subList(Math.max(0, i0), i1)).concatMap(slot -> {
 				if (slot.type == SlotType.BRANCH)
-					return stream_(slot.pointer, start, end);
+					return stream0(slot.pointer, start, end);
 				else
 					return Read.from(slot);
 			});
