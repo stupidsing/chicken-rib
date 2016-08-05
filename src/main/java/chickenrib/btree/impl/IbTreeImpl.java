@@ -104,8 +104,9 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		private FindSlot(List<Slot> slots, Key key, boolean isInclusive) {
-			for (i = slots.size() - 1; 0 <= i; i--)
-				if ((c = comparator.compare((slot = slots.get(i)).pivot, key)) <= 0)
+			i = slots.size();
+			while (0 < i)
+				if ((c = comparator.compare((slot = slots.get(--i)).pivot, key)) <= 0)
 					if (isInclusive || c < 0)
 						break;
 		}
@@ -508,16 +509,20 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private Streamlet<Slot> stream(Integer pointer, Key start, Key end) {
+		return stream_(pointer, start, end).drop(1);
+	}
+
+	private Streamlet<Slot> stream_(Integer pointer, Key start, Key end) {
 		List<Slot> node = read(pointer).slots;
-		int i0 = start != null ? new FindSlot(node, start, false).i + 1 : 0;
+		int i0 = start != null ? new FindSlot(node, start, false).i : 0;
 		int i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
 
 		if (i0 < i1)
 			return Read.from(node.subList(Math.max(0, i0), i1)).concatMap(slot -> {
 				if (slot.type == SlotType.BRANCH)
-					return stream(slot.pointer, start, end);
+					return stream_(slot.pointer, start, end);
 				else
-					return slot.pivot != null ? Read.from(slot) : Read.empty();
+					return Read.from(slot);
 			});
 		else
 			return Read.empty();
