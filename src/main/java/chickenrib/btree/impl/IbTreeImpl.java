@@ -19,9 +19,9 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
+import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
-import suite.fs.KeyDataStoreMutator;
-import suite.fs.KeyValueStore;
+import suite.fs.KeyValueMutator;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -185,41 +185,41 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private class SubIbTreeAllocator implements Allocator {
-		private IbTreeImpl<Integer>.Mutator mutator;
+		private IbTreeImpl<Integer>.Store store;
 
-		private SubIbTreeAllocator(IbTreeImpl<Integer>.Mutator mutator) {
-			this.mutator = mutator;
+		private SubIbTreeAllocator(IbTreeImpl<Integer>.Store mutator) {
+			this.store = mutator;
 		}
 
 		public Integer allocate() {
-			KeyValueStore<Integer, Integer> store = mutator.store();
-			Integer pointer = store.keys(0, Integer.MAX_VALUE).first();
+			KeyValueMutator<Integer, Integer> mutator = store.mutate();
+			Integer pointer = mutator.keys(0, Integer.MAX_VALUE).first();
 			if (pointer != null) {
-				store.remove(pointer);
+				mutator.remove(pointer);
 				return pointer;
 			} else
 				throw new RuntimeException("Pages exhausted");
 		}
 
 		public void discard(Integer pointer) {
-			mutator.dataStore().putTerminal(pointer);
+			store.mutateData().putTerminal(pointer);
 		}
 
 		public List<Integer> flush() {
-			return mutator.flush();
+			return store.flush();
 		}
 	}
 
-	public class Mutator implements KeyDataStoreMutator<Key> {
+	public class Store implements KeyDataStore<Key> {
 		private Allocator allocator;
 		private Integer root;
 
-		private Mutator(Allocator allocator) {
+		private Store(Allocator allocator) {
 			this.allocator = allocator;
 			root = persist(Arrays.asList(new Slot(SlotType.TERMINAL, null, null)));
 		}
 
-		private Mutator(Allocator allocator, Integer root) {
+		private Store(Allocator allocator, Integer root) {
 			this.allocator = allocator;
 			this.root = root;
 		}
@@ -231,8 +231,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public KeyValueStore<Key, Integer> store() {
-			return new KeyValueStore<Key, Integer>() {
+		public KeyValueMutator<Key, Integer> mutate() {
+			return new KeyValueMutator<Key, Integer>() {
 				public Streamlet<Key> keys(Key start, Key end) {
 					return IbTreeImpl.this.keys0(root, start, end);
 				}
@@ -252,8 +252,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		@Override
-		public KeyDataStore<Key> dataStore() {
-			return new KeyDataStore<Key>() {
+		public KeyDataMutator<Key> mutateData() {
+			return new KeyDataMutator<Key>() {
 				public Streamlet<Key> keys(Key start, Key end) {
 					return keys0(root, start, end);
 				}
@@ -421,11 +421,11 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			stampFile = SerializedFileFactory.serialized(stampPageFile, Serialize.list(Serialize.int_));
 		}
 
-		private Mutator begin() {
-			return mutator(stampFile.load(0));
+		private Store begin() {
+			return store(stampFile.load(0));
 		}
 
-		private void commit(Mutator mutator) {
+		private void commit(Store mutator) {
 			List<Integer> stamp = mutator.flush();
 			sync();
 			stampFile.save(0, stamp);
@@ -464,7 +464,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	@Override
-	public Mutator begin() {
+	public Store begin() {
 		return mutate.begin();
 	}
 
@@ -480,20 +480,20 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	@Override
-	public Mutator create() {
+	public Store create() {
 		List<Integer> stamp0;
 
 		if (allocationIbTree != null) {
-			IbTreeImpl<Integer>.Mutator mutator0 = allocationIbTree.create();
-			KeyDataStore<Integer> dataStore0 = mutator0.dataStore();
+			IbTreeImpl<Integer>.Store store = allocationIbTree.create();
+			KeyDataMutator<Integer> mutator = store.mutateData();
 			int nPages = allocationIbTree.guaranteedCapacity();
 			for (int p = 0; p < nPages; p++)
-				dataStore0.putTerminal(p);
-			stamp0 = mutator0.flush();
+				mutator.putTerminal(p);
+			stamp0 = store.flush();
 		} else
 			stamp0 = Arrays.asList(0);
 
-		return new Mutator(allocator(stamp0));
+		return new Store(allocator(stamp0));
 	}
 
 	private Streamlet<Key> keys0(Integer pointer, Key start, Key end) {
@@ -528,14 +528,14 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			return Read.empty();
 	}
 
-	private Mutator mutator(List<Integer> stamp) {
-		return new Mutator(allocator(Util.right(stamp, 1)), stamp.get(0));
+	private Store store(List<Integer> stamp) {
+		return new Store(allocator(Util.right(stamp, 1)), stamp.get(0));
 	}
 
 	private Allocator allocator(List<Integer> stamp0) {
 		Allocator allocator;
 		if (allocationIbTree != null)
-			allocator = new SubIbTreeAllocator(allocationIbTree.mutator(stamp0));
+			allocator = new SubIbTreeAllocator(allocationIbTree.store(stamp0));
 		else
 			allocator = new SwappingAllocator(stamp0.get(0));
 		return new DelayedDiscardAllocator(allocator);

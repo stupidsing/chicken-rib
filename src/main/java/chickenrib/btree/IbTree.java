@@ -2,14 +2,14 @@ package chickenrib.btree;
 
 import java.io.Closeable;
 
-import suite.fs.KeyDataStoreMutator;
+import suite.fs.KeyDataStore;
 
 public interface IbTree<Key> extends Closeable {
 
 	/**
 	 * @return A new mutator object.
 	 */
-	public KeyDataStoreMutator<Key> begin();
+	public KeyDataStore<Key> begin();
 
 	/**
 	 * @return Calculate the maximum number of values that can be stored in this
@@ -44,6 +44,6 @@ public interface IbTree<Key> extends Closeable {
 	 */
 	public int guaranteedCapacity();
 
-	public KeyDataStoreMutator<Key> create();
+	public KeyDataStore<Key> create();
 
 }
