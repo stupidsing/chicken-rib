@@ -522,7 +522,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 				if (slot.type == SlotType.BRANCH)
 					return stream0(slot.pointer, start, end);
 				else
-					return Read.from(slot);
+					return Read.each(slot);
 			});
 		else
 			return Read.empty();
