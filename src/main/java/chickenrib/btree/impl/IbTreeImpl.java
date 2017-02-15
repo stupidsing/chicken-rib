@@ -293,7 +293,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		private void update(Key key, Fun<Slot, Slot> fun) {
 			allocator.discard(root);
-			root = createRootPage(update(read(root).slots, key, fun));
+			root = newRootPage(update(read(root).slots, key, fun));
 		}
 
 		private List<Slot> update(List<Slot> slots0, Key key, Fun<Slot, Slot> fun) {
@@ -327,7 +327,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		private void delete(Key key) {
 			allocator.discard(root);
-			root = createRootPage(delete(read(root).slots, key));
+			root = newRootPage(delete(read(root).slots, key));
 		}
 
 		private List<Slot> delete(List<Slot> slots0, Key key) {
@@ -386,7 +386,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			return Util.add(Arrays.asList(root), allocator.flush());
 		}
 
-		private Integer createRootPage(List<Slot> slots) {
+		private Integer newRootPage(List<Slot> slots) {
 			Slot slot;
 			Integer pointer;
 			if (slots.size() == 1 && (slot = slots.get(0)).type == SlotType.BRANCH)
@@ -453,7 +453,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		mutate = new Mutate();
 		minBranchFactor = maxBranchFactor / 2;
 		pageFile0 = FileFactory.pageFile(path, pageSize);
-		pageFile = SerializedFileFactory.serialized(pageFile0, createPageSerializer());
+		pageFile = SerializedFileFactory.serialized(pageFile0, newPageSerializer());
 		payloadFile = SerializedFileFactory.serialized(pageFile0, Serialize.bytes(pageSize));
 	}
 
@@ -553,7 +553,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		pageFile0.sync();
 	}
 
-	private Serializer<Page> createPageSerializer() {
+	private Serializer<Page> newPageSerializer() {
 		Serializer<List<Slot>> slotsSerializer = Serialize.list(new Serializer<Slot>() {
 			public Slot read(DataInput dataInput) throws IOException {
 				SlotType type = SlotType.values()[dataInput.readByte()];

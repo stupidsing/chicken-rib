@@ -31,7 +31,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testSimple() throws IOException {
-		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTree-stack", Serialize.int_);
+		IbTreeConfiguration<Integer> config = newIbTreeConfiguration("ibTree-stack", Serialize.int_);
 		config.setCapacity(65536);
 
 		try (IbTreeStack<Integer> ibTreeStack = new IbTreeStack<>(config)) {
@@ -51,7 +51,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testSingleLevel() throws IOException {
-		IbTreeConfiguration<Integer> config = createIbTreeConfiguration("ibTree-single", Serialize.int_);
+		IbTreeConfiguration<Integer> config = newIbTreeConfiguration("ibTree-single", Serialize.int_);
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		try (IbTree<Integer> ibTree = builder.buildTree(Constants.tmp.resolve("ibTree-single"), config, null)) {
@@ -75,7 +75,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testMultipleLevels() throws IOException {
-		IbTreeConfiguration<String> config = createIbTreeConfiguration("ibTree-multi", Serialize.string(16));
+		IbTreeConfiguration<String> config = newIbTreeConfiguration("ibTree-multi", Serialize.string(16));
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		int i = 0;
@@ -92,7 +92,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testStack() throws IOException {
-		IbTreeConfiguration<String> config = createIbTreeConfiguration("ibTree-stack", Serialize.string(16));
+		IbTreeConfiguration<String> config = newIbTreeConfiguration("ibTree-stack", Serialize.string(16));
 		config.setCapacity(65536);
 
 		try (IbTreeStack<String> ibTreeStack = new IbTreeStack<>(config)) {
@@ -100,7 +100,7 @@ public class IbTreeTest {
 		}
 	}
 
-	private <Key extends Comparable<? super Key>> IbTreeConfiguration<Key> createIbTreeConfiguration( //
+	private <Key extends Comparable<? super Key>> IbTreeConfiguration<Key> newIbTreeConfiguration( //
 			String name, Serializer<Key> serializer) {
 		IbTreeConfiguration<Key> config = new IbTreeConfiguration<>();
 		config.setComparator(Util.<Key> comparator());
