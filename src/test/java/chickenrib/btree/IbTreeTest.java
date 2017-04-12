@@ -127,7 +127,7 @@ public class IbTreeTest {
 		// we would run out of allocatable pages. Here we limit ourself to
 		// updating 25 keys each.
 
-		for (Outlet<String> subset : Outlet.from(list).chunk(25)) {
+		for (Outlet<String> subset : Outlet.of(list).chunk(25)) {
 			KeyDataStore<String> store = ibTree.begin();
 			KeyDataMutator<String> mutator = store.mutateData();
 			for (String s : subset)
