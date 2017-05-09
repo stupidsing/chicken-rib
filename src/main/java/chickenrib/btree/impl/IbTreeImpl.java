@@ -28,6 +28,7 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -310,7 +311,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			else
 				replaceSlots = Arrays.asList(fun.apply(discard(fs.slot)));
 
-			List<Slot> slots1 = Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
+			List<Slot> slots1 = To.list(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
 			List<Slot> slots2;
 
 			// Checks if need to split
@@ -355,7 +356,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			else
 				throw new RuntimeException("Node not found " + key);
 
-			return Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
+			return To.list(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
 		}
 
 		private List<Slot> merge(List<Slot> slots0, List<Slot> slots1) {
@@ -366,9 +367,9 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 				if (minBranchFactor < slots0.size()) {
 					leftSlots = Util.left(slots0, -1);
-					rightSlots = Util.add(Arrays.asList(Util.last(slots0)), slots1);
+					rightSlots = To.list(Arrays.asList(Util.last(slots0)), slots1);
 				} else if (minBranchFactor < slots1.size()) {
-					leftSlots = Util.add(slots0, Arrays.asList(Util.first(slots1)));
+					leftSlots = To.list(slots0, Arrays.asList(Util.first(slots1)));
 					rightSlots = Util.right(slots1, 1);
 				} else {
 					leftSlots = slots0;
@@ -377,13 +378,13 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 				merged = Arrays.asList(slot(leftSlots), slot(rightSlots));
 			} else
-				merged = Arrays.asList(slot(Util.add(slots0, slots1)));
+				merged = Arrays.asList(slot(To.list(slots0, slots1)));
 
 			return merged;
 		}
 
 		private List<Integer> flush() {
-			return Util.add(Arrays.asList(root), allocator.flush());
+			return To.list(Arrays.asList(root), allocator.flush());
 		}
 
 		private Integer newRootPage(List<Slot> slots) {
