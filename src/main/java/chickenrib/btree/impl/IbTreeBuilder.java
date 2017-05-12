@@ -2,7 +2,7 @@ package chickenrib.btree.impl;
 
 import java.nio.file.Path;
 
-import suite.util.Util;
+import suite.util.Object_;
 
 public class IbTreeBuilder {
 
@@ -12,7 +12,7 @@ public class IbTreeBuilder {
 		allocationIbTreeConfig = new IbTreeConfiguration<Integer>();
 		allocationIbTreeConfig.setPageSize(config.getPageSize());
 		allocationIbTreeConfig.setMaxBranchFactor(config.getMaxBranchFactor());
-		allocationIbTreeConfig.setComparator(Util.<Integer> comparator());
+		allocationIbTreeConfig.setComparator(Object_.<Integer> comparator());
 		allocationIbTreeConfig.setSerializer(IbTreeImpl.pointerSerializer);
 	}
 

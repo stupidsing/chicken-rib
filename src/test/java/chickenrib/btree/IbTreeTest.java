@@ -21,10 +21,10 @@ import suite.fs.KeyValueMutator;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
+import suite.util.Object_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 import suite.util.To;
-import suite.util.Util;
 
 public class IbTreeTest {
 
@@ -104,7 +104,7 @@ public class IbTreeTest {
 	private <Key extends Comparable<? super Key>> IbTreeConfiguration<Key> newIbTreeConfiguration( //
 			String name, Serializer<Key> serializer) {
 		IbTreeConfiguration<Key> config = new IbTreeConfiguration<>();
-		config.setComparator(Util.<Key> comparator());
+		config.setComparator(Object_.<Key> comparator());
 		config.setPathPrefix(Constants.tmp.resolve(name));
 		config.setPageSize(pageSize);
 		config.setSerializer(serializer);

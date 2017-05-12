@@ -27,10 +27,10 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.List_;
+import suite.util.Object_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 import suite.util.To;
-import suite.util.Util;
 
 /**
  * Immutable, on-disk B-tree implementation.
@@ -445,7 +445,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	public IbTreeImpl(Path path, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
 		this.path = path;
 		pageSize = config.getPageSize();
-		comparator = Util.nullsFirst(config.getComparator());
+		comparator = Object_.nullsFirst(config.getComparator());
 		serializer = Serialize.nullable(config.getSerializer());
 		maxBranchFactor = config.getMaxBranchFactor();
 		this.allocationIbTree = allocationIbTree;
