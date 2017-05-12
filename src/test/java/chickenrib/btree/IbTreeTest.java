@@ -20,6 +20,7 @@ import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
+import suite.util.List_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 import suite.util.To;
@@ -127,7 +128,7 @@ public class IbTreeTest {
 		// we would run out of allocatable pages. Here we limit ourself to
 		// updating 25 keys each.
 
-		for (Outlet<String> subset : Outlet.from(list).chunk(25)) {
+		for (Outlet<String> subset : Outlet.of(list).chunk(25)) {
 			KeyDataStore<String> store = ibTree.begin();
 			KeyDataMutator<String> mutator = store.mutateData();
 			for (String s : subset)
@@ -139,7 +140,7 @@ public class IbTreeTest {
 
 		Collections.shuffle(list);
 
-		for (List<String> subset : Util.splitn(list, 25)) {
+		for (List<String> subset : List_.splitn(list, 25)) {
 			KeyDataStore<String> store = ibTree.begin();
 			KeyValueMutator<String, Integer> mutator = store.mutate();
 			for (String s : subset)

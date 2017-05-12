@@ -26,8 +26,10 @@ import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
+import suite.util.List_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -310,15 +312,15 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			else
 				replaceSlots = Arrays.asList(fun.apply(discard(fs.slot)));
 
-			List<Slot> slots1 = Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
+			List<Slot> slots1 = To.list(List_.left(slots0, s0), replaceSlots, List_.right(slots0, s1));
 			List<Slot> slots2;
 
 			// Checks if need to split
 			if (slots1.size() < maxBranchFactor)
 				slots2 = Arrays.asList(slot(slots1));
 			else { // Splits into two if reached maximum number of nodes
-				List<Slot> leftSlots = Util.left(slots1, minBranchFactor);
-				List<Slot> rightSlots = Util.right(slots1, minBranchFactor);
+				List<Slot> leftSlots = List_.left(slots1, minBranchFactor);
+				List<Slot> rightSlots = List_.right(slots1, minBranchFactor);
 				slots2 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 			}
 
@@ -355,7 +357,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			else
 				throw new RuntimeException("Node not found " + key);
 
-			return Util.add(Util.left(slots0, s0), replaceSlots, Util.right(slots0, s1));
+			return To.list(List_.left(slots0, s0), replaceSlots, List_.right(slots0, s1));
 		}
 
 		private List<Slot> merge(List<Slot> slots0, List<Slot> slots1) {
@@ -365,11 +367,11 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 				List<Slot> leftSlots, rightSlots;
 
 				if (minBranchFactor < slots0.size()) {
-					leftSlots = Util.left(slots0, -1);
-					rightSlots = Util.add(Arrays.asList(Util.last(slots0)), slots1);
+					leftSlots = List_.left(slots0, -1);
+					rightSlots = To.list(Arrays.asList(List_.last(slots0)), slots1);
 				} else if (minBranchFactor < slots1.size()) {
-					leftSlots = Util.add(slots0, Arrays.asList(Util.first(slots1)));
-					rightSlots = Util.right(slots1, 1);
+					leftSlots = To.list(slots0, Arrays.asList(List_.first(slots1)));
+					rightSlots = List_.right(slots1, 1);
 				} else {
 					leftSlots = slots0;
 					rightSlots = slots1;
@@ -377,13 +379,13 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 				merged = Arrays.asList(slot(leftSlots), slot(rightSlots));
 			} else
-				merged = Arrays.asList(slot(Util.add(slots0, slots1)));
+				merged = Arrays.asList(slot(To.list(slots0, slots1)));
 
 			return merged;
 		}
 
 		private List<Integer> flush() {
-			return Util.add(Arrays.asList(root), allocator.flush());
+			return To.list(Arrays.asList(root), allocator.flush());
 		}
 
 		private Integer newRootPage(List<Slot> slots) {
@@ -397,7 +399,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		}
 
 		private Slot slot(List<Slot> slots) {
-			return new Slot(SlotType.BRANCH, Util.first(slots).pivot, persist(slots));
+			return new Slot(SlotType.BRANCH, List_.first(slots).pivot, persist(slots));
 		}
 
 		private Slot discard(Slot slot) {
@@ -529,7 +531,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private Store store(List<Integer> stamp) {
-		return new Store(allocator(Util.right(stamp, 1)), stamp.get(0));
+		return new Store(allocator(List_.right(stamp, 1)), stamp.get(0));
 	}
 
 	private Allocator allocator(List<Integer> stamp0) {

@@ -10,7 +10,7 @@ import java.util.ListIterator;
 import chickenrib.btree.IbTree;
 import suite.os.FileUtil;
 import suite.util.FunUtil.Source;
-import suite.util.Util;
+import suite.util.List_;
 
 public class IbTreeStack<Key> implements Closeable {
 
@@ -31,7 +31,7 @@ public class IbTreeStack<Key> implements Closeable {
 		IbTreeImpl<Integer> allocationIbTree;
 		allocationIbTrees.add(builder.buildAllocationIbTree(nextPath.source()));
 
-		while ((allocationIbTree = Util.last(allocationIbTrees)).guaranteedCapacity() < nPages)
+		while ((allocationIbTree = List_.last(allocationIbTrees)).guaranteedCapacity() < nPages)
 			allocationIbTrees.add(builder.buildAllocationIbTree(nextPath.source(), allocationIbTree));
 
 		ibTree = builder.buildTree(nextPath.source(), config, allocationIbTree);
