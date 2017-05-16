@@ -1,8 +1,6 @@
 package chickenrib.btree.impl;
 
 import java.io.Closeable;
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
@@ -23,6 +21,8 @@ import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.primitive.Bytes;
+import suite.primitive.DataInput_;
+import suite.primitive.DataOutput_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
@@ -557,14 +557,14 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 	private Serializer<Page> newPageSerializer() {
 		Serializer<List<Slot>> slotsSerializer = Serialize.list(new Serializer<Slot>() {
-			public Slot read(DataInput dataInput) throws IOException {
+			public Slot read(DataInput_ dataInput) throws IOException {
 				SlotType type = SlotType.values()[dataInput.readByte()];
 				Key pivot = serializer.read(dataInput);
 				Integer pointer = pointerSerializer.read(dataInput);
 				return new Slot(type, pivot, pointer);
 			}
 
-			public void write(DataOutput dataOutput, Slot slot) throws IOException {
+			public void write(DataOutput_ dataOutput, Slot slot) throws IOException {
 				dataOutput.writeByte(slot.type.ordinal());
 				serializer.write(dataOutput, slot.pivot);
 				pointerSerializer.write(dataOutput, slot.pointer);
@@ -572,11 +572,11 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		});
 
 		return new Serializer<Page>() {
-			public Page read(DataInput dataInput) throws IOException {
+			public Page read(DataInput_ dataInput) throws IOException {
 				return new Page(slotsSerializer.read(dataInput));
 			}
 
-			public void write(DataOutput dataOutput, Page page) throws IOException {
+			public void write(DataOutput_ dataOutput, Page page) throws IOException {
 				slotsSerializer.write(dataOutput, page.slots);
 			}
 		};

@@ -17,6 +17,7 @@ import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
+import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
 import suite.util.To;
@@ -82,7 +83,7 @@ public class FileSystemTest {
 		String filename = "src/test/java/chickenrib/fs/FileSystemTest.java";
 		FileSystemMutator fsm = fs.mutate();
 		Bytes name = Bytes.of(filename.getBytes(Constants.charset));
-		Copy.stream(fsm.read(name).asInputStream(), System.out);
+		Copy.stream(fsm.read(name).collect(As::inputStream), System.out);
 	}
 
 }
