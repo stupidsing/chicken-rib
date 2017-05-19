@@ -21,16 +21,15 @@ import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.primitive.Bytes;
-import suite.primitive.DataInput_;
-import suite.primitive.DataOutput_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.DataInput_;
+import suite.util.DataOutput_;
 import suite.util.FunUtil.Fun;
 import suite.util.List_;
 import suite.util.Object_;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
-import suite.util.To;
 
 /**
  * Immutable, on-disk B-tree implementation.
@@ -312,7 +311,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			else
 				replaceSlots = Arrays.asList(fun.apply(discard(fs.slot)));
 
-			List<Slot> slots1 = To.list(List_.left(slots0, s0), replaceSlots, List_.right(slots0, s1));
+			List<Slot> slots1 = List_.concat(List_.left(slots0, s0), replaceSlots, List_.right(slots0, s1));
 			List<Slot> slots2;
 
 			// Checks if need to split
@@ -357,7 +356,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 			else
 				throw new RuntimeException("Node not found " + key);
 
-			return To.list(List_.left(slots0, s0), replaceSlots, List_.right(slots0, s1));
+			return List_.concat(List_.left(slots0, s0), replaceSlots, List_.right(slots0, s1));
 		}
 
 		private List<Slot> merge(List<Slot> slots0, List<Slot> slots1) {
@@ -368,9 +367,9 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 				if (minBranchFactor < slots0.size()) {
 					leftSlots = List_.left(slots0, -1);
-					rightSlots = To.list(Arrays.asList(List_.last(slots0)), slots1);
+					rightSlots = List_.concat(Arrays.asList(List_.last(slots0)), slots1);
 				} else if (minBranchFactor < slots1.size()) {
-					leftSlots = To.list(slots0, Arrays.asList(List_.first(slots1)));
+					leftSlots = List_.concat(slots0, Arrays.asList(List_.first(slots1)));
 					rightSlots = List_.right(slots1, 1);
 				} else {
 					leftSlots = slots0;
@@ -379,13 +378,13 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 				merged = Arrays.asList(slot(leftSlots), slot(rightSlots));
 			} else
-				merged = Arrays.asList(slot(To.list(slots0, slots1)));
+				merged = Arrays.asList(slot(List_.concat(slots0, slots1)));
 
 			return merged;
 		}
 
 		private List<Integer> flush() {
-			return To.list(Arrays.asList(root), allocator.flush());
+			return List_.concat(Arrays.asList(root), allocator.flush());
 		}
 
 		private Integer newRootPage(List<Slot> slots) {
