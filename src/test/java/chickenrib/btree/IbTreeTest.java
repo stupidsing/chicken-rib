@@ -140,7 +140,7 @@ public class IbTreeTest {
 
 		Collections.shuffle(list);
 
-		for (List<String> subset : List_.splitn(list, 25)) {
+		for (List<String> subset : List_.chunk(list, 25)) {
 			KeyDataStore<String> store = ibTree.begin();
 			KeyValueMutator<String, Integer> mutator = store.mutate();
 			for (String s : subset)
