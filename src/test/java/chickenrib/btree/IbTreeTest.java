@@ -104,7 +104,7 @@ public class IbTreeTest {
 	private <Key extends Comparable<? super Key>> IbTreeConfiguration<Key> newIbTreeConfiguration( //
 			String name, Serializer<Key> serializer) {
 		IbTreeConfiguration<Key> config = new IbTreeConfiguration<>();
-		config.setComparator(Object_.<Key> comparator());
+		config.setComparator(Object_::compare);
 		config.setPathPrefix(Constants.tmp.resolve(name));
 		config.setPageSize(pageSize);
 		config.setSerializer(serializer);

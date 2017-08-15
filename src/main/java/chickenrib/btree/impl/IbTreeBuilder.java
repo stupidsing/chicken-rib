@@ -12,7 +12,7 @@ public class IbTreeBuilder {
 		allocationIbTreeConfig = new IbTreeConfiguration<Integer>();
 		allocationIbTreeConfig.setPageSize(config.getPageSize());
 		allocationIbTreeConfig.setMaxBranchFactor(config.getMaxBranchFactor());
-		allocationIbTreeConfig.setComparator(Object_.<Integer> comparator());
+		allocationIbTreeConfig.setComparator(Object_::compare);
 		allocationIbTreeConfig.setSerializer(IbTreeImpl.pointerSerializer);
 	}
 
