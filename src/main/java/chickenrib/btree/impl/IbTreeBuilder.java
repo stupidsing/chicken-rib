@@ -12,21 +12,21 @@ public class IbTreeBuilder {
 		allocationIbTreeConfig = new IbTreeConfiguration<Integer>();
 		allocationIbTreeConfig.setPageSize(config.getPageSize());
 		allocationIbTreeConfig.setMaxBranchFactor(config.getMaxBranchFactor());
-		allocationIbTreeConfig.setComparator(Object_.<Integer> comparator());
+		allocationIbTreeConfig.setComparator(Object_::compare);
 		allocationIbTreeConfig.setSerializer(IbTreeImpl.pointerSerializer);
 	}
 
 	/**
-	 * Builds a small tree that would not span more than 1 page, i.e. no extra
-	 * "page allocation tree" is required.
+	 * Builds a small tree that would not span more than 1 page, i.e. no extra "page
+	 * allocation tree" is required.
 	 */
 	public IbTreeImpl<Integer> buildAllocationIbTree(Path path) {
 		return buildAllocationIbTree(path, null);
 	}
 
 	/**
-	 * Builds an intermediate tree that is supported by a separate page
-	 * allocation tree.
+	 * Builds an intermediate tree that is supported by a separate page allocation
+	 * tree.
 	 */
 	public IbTreeImpl<Integer> buildAllocationIbTree(Path path, IbTreeImpl<Integer> allocationIbTree) {
 		return buildTree(path, allocationIbTreeConfig, allocationIbTree);

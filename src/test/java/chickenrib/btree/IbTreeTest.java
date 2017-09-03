@@ -28,11 +28,12 @@ import suite.util.To;
 
 public class IbTreeTest {
 
+	private Serialize serialize = Serialize.me;
 	private int pageSize = 4096;
 
 	@Test
 	public void testSimple() throws IOException {
-		IbTreeConfiguration<Integer> config = newIbTreeConfiguration("ibTree-stack", Serialize.int_);
+		IbTreeConfiguration<Integer> config = newIbTreeConfiguration("ibTree-stack", serialize.int_);
 		config.setCapacity(65536);
 
 		try (IbTreeStack<Integer> ibTreeStack = new IbTreeStack<>(config)) {
@@ -52,7 +53,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testSingleLevel() throws IOException {
-		IbTreeConfiguration<Integer> config = newIbTreeConfiguration("ibTree-single", Serialize.int_);
+		IbTreeConfiguration<Integer> config = newIbTreeConfiguration("ibTree-single", serialize.int_);
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		try (IbTree<Integer> ibTree = builder.buildTree(Constants.tmp.resolve("ibTree-single"), config, null)) {
@@ -76,7 +77,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testMultipleLevels() throws IOException {
-		IbTreeConfiguration<String> config = newIbTreeConfiguration("ibTree-multi", Serialize.string(16));
+		IbTreeConfiguration<String> config = newIbTreeConfiguration("ibTree-multi", serialize.string(16));
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		int i = 0;
@@ -93,7 +94,7 @@ public class IbTreeTest {
 
 	@Test
 	public void testStack() throws IOException {
-		IbTreeConfiguration<String> config = newIbTreeConfiguration("ibTree-stack", Serialize.string(16));
+		IbTreeConfiguration<String> config = newIbTreeConfiguration("ibTree-stack", serialize.string(16));
 		config.setCapacity(65536);
 
 		try (IbTreeStack<String> ibTreeStack = new IbTreeStack<>(config)) {
@@ -104,7 +105,7 @@ public class IbTreeTest {
 	private <Key extends Comparable<? super Key>> IbTreeConfiguration<Key> newIbTreeConfiguration( //
 			String name, Serializer<Key> serializer) {
 		IbTreeConfiguration<Key> config = new IbTreeConfiguration<>();
-		config.setComparator(Object_.<Key> comparator());
+		config.setComparator(Object_::compare);
 		config.setPathPrefix(Constants.tmp.resolve(name));
 		config.setPageSize(pageSize);
 		config.setSerializer(serializer);
@@ -140,7 +141,7 @@ public class IbTreeTest {
 
 		Collections.shuffle(list);
 
-		for (List<String> subset : List_.splitn(list, 25)) {
+		for (List<String> subset : List_.chunk(list, 25)) {
 			KeyDataStore<String> store = ibTree.begin();
 			KeyValueMutator<String, Integer> mutator = store.mutate();
 			for (String s : subset)
