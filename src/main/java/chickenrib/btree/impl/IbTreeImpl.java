@@ -47,6 +47,8 @@ import suite.util.Serialize.Serializer;
  */
 public class IbTreeImpl<Key> implements IbTree<Key> {
 
+	private static Serialize serialize = Serialize.me;
+
 	private Path path;
 	private int pageSize;
 	private Comparator<Key> comparator;
@@ -61,7 +63,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	private int maxBranchFactor; // Exclusive
 	private int minBranchFactor; // Inclusive
 
-	public static Serializer<Integer> pointerSerializer = Serialize.nullable(Serialize.int_);
+	public static Serializer<Integer> pointerSerializer = serialize.nullable(serialize.int_);
 
 	private class Page {
 		private List<Slot> slots;
@@ -419,7 +421,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 		private Mutate() {
 			PageFile stampPageFile = FileFactory.pageFile(path.resolveSibling(path.getFileName() + ".stamp"), pageSize);
-			stampFile = SerializedFileFactory.serialized(stampPageFile, Serialize.list(Serialize.int_));
+			stampFile = SerializedFileFactory.serialized(stampPageFile, serialize.list(serialize.int_));
 		}
 
 		private Store begin() {
@@ -445,7 +447,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		this.path = path;
 		pageSize = config.getPageSize();
 		comparator = Object_.nullsFirst(config.getComparator());
-		serializer = Serialize.nullable(config.getSerializer());
+		serializer = serialize.nullable(config.getSerializer());
 		maxBranchFactor = config.getMaxBranchFactor();
 		this.allocationIbTree = allocationIbTree;
 
@@ -455,7 +457,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		minBranchFactor = maxBranchFactor / 2;
 		pageFile0 = FileFactory.pageFile(path, pageSize);
 		pageFile = SerializedFileFactory.serialized(pageFile0, newPageSerializer());
-		payloadFile = SerializedFileFactory.serialized(pageFile0, Serialize.bytes(pageSize));
+		payloadFile = SerializedFileFactory.serialized(pageFile0, serialize.bytes(pageSize));
 	}
 
 	@Override
@@ -555,7 +557,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private Serializer<Page> newPageSerializer() {
-		Serializer<List<Slot>> slotsSerializer = Serialize.list(new Serializer<Slot>() {
+		Serializer<List<Slot>> slotsSerializer = serialize.list(new Serializer<Slot>() {
 			public Slot read(DataInput_ dataInput) throws IOException {
 				SlotType type = SlotType.values()[dataInput.readByte()];
 				Key pivot = serializer.read(dataInput);
