@@ -48,6 +48,7 @@ import suite.util.Serialize.Serializer;
 public class IbTreeImpl<Key> implements IbTree<Key> {
 
 	private static Serialize serialize = Serialize.me;
+
 	public static Serializer<Integer> pointerSerializer = serialize.nullable(serialize.int_);
 
 	private Path path;
