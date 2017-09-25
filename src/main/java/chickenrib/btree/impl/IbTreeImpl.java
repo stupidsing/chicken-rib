@@ -49,6 +49,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 	private static Serialize serialize = Serialize.me;
 
+	public static Serializer<Integer> pointerSerializer = serialize.nullable(serialize.int_);
+
 	private Path path;
 	private int pageSize;
 	private Comparator<Key> comparator;
@@ -62,8 +64,6 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 	private int maxBranchFactor; // Exclusive
 	private int minBranchFactor; // Inclusive
-
-	public static Serializer<Integer> pointerSerializer = serialize.nullable(serialize.int_);
 
 	private class Page {
 		private List<Slot> slots;
@@ -124,12 +124,12 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	/**
-	 * Protect discarded pages belonging to previous mutations, so that they are
-	 * not being allocated immediately. This supports immutability (i.e.
-	 * copy-on-write) and with this recovery can succeed.
+	 * Protect discarded pages belonging to previous mutations, so that they are not
+	 * being allocated immediately. This supports immutability (i.e. copy-on-write)
+	 * and with this recovery can succeed.
 	 *
-	 * On the other hand, allocated and discarded pages are reused here, since
-	 * they belong to current mutation.
+	 * On the other hand, allocated and discarded pages are reused here, since they
+	 * belong to current mutation.
 	 */
 	private class DelayedDiscardAllocator implements Allocator {
 		private Allocator allocator;
@@ -440,8 +440,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	/**
-	 * Constructor for larger trees that require another tree for page
-	 * allocation management.
+	 * Constructor for larger trees that require another tree for page allocation
+	 * management.
 	 */
 	public IbTreeImpl(Path path, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
 		this.path = path;
