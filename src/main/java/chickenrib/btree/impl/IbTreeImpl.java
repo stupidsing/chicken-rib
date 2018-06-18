@@ -23,11 +23,11 @@ import suite.fs.KeyValueMutator;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.DataInput_;
-import suite.util.DataOutput_;
 import suite.util.FunUtil.Fun;
 import suite.util.List_;
 import suite.util.Object_;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
@@ -558,27 +558,27 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 
 	private Serializer<Page> newPageSerializer() {
 		Serializer<List<Slot>> slotsSerializer = serialize.list(new Serializer<Slot>() {
-			public Slot read(DataInput_ dataInput) throws IOException {
-				SlotType type = SlotType.values()[dataInput.readByte()];
-				Key pivot = serializer.read(dataInput);
-				Integer pointer = pointerSerializer.read(dataInput);
+			public Slot read(SerInput si) throws IOException {
+				SlotType type = SlotType.values()[si.readByte()];
+				Key pivot = serializer.read(si);
+				Integer pointer = pointerSerializer.read(si);
 				return new Slot(type, pivot, pointer);
 			}
 
-			public void write(DataOutput_ dataOutput, Slot slot) throws IOException {
-				dataOutput.writeByte(slot.type.ordinal());
-				serializer.write(dataOutput, slot.pivot);
-				pointerSerializer.write(dataOutput, slot.pointer);
+			public void write(SerOutput so, Slot slot) throws IOException {
+				so.writeByte(slot.type.ordinal());
+				serializer.write(so, slot.pivot);
+				pointerSerializer.write(so, slot.pointer);
 			}
 		});
 
 		return new Serializer<Page>() {
-			public Page read(DataInput_ dataInput) throws IOException {
-				return new Page(slotsSerializer.read(dataInput));
+			public Page read(SerInput si) throws IOException {
+				return new Page(slotsSerializer.read(si));
 			}
 
-			public void write(DataOutput_ dataOutput, Page page) throws IOException {
-				slotsSerializer.write(dataOutput, page.slots);
+			public void write(SerOutput so, Page page) throws IOException {
+				slotsSerializer.write(so, page.slots);
 			}
 		};
 	}
