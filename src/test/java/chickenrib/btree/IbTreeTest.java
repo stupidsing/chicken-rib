@@ -18,6 +18,7 @@ import suite.Constants;
 import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
+import suite.node.util.Singleton;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
@@ -28,7 +29,7 @@ import suite.util.To;
 
 public class IbTreeTest {
 
-	private Serialize serialize = Serialize.me;
+	private Serialize serialize = Singleton.me.serialize;
 	private int pageSize = 4096;
 
 	@Test

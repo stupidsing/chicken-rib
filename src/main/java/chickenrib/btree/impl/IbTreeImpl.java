@@ -20,6 +20,7 @@ import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
+import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -47,7 +48,7 @@ import suite.util.Serialize.Serializer;
  */
 public class IbTreeImpl<Key> implements IbTree<Key> {
 
-	private static Serialize serialize = Serialize.me;
+	private static Serialize serialize = Singleton.me.serialize;
 
 	public static Serializer<Integer> pointerSerializer = serialize.nullable(serialize.int_);
 
