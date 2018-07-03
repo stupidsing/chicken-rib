@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import chickenrib.btree.impl.IbTreeConfiguration;
 import chickenrib.fs.impl.IbTreeFileSystemImpl;
-import suite.Constants;
+import suite.Defaults;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
 import suite.os.FileUtil;
@@ -32,15 +32,15 @@ public class FileSystemTest {
 
 	@Test
 	public void testIbTreeFileSystem0() throws IOException {
-		testIbTree(Constants.tmp.resolve("ibTree-fs0"), true, this::testWriteOneFile);
+		testIbTree(Defaults.tmp.resolve("ibTree-fs0"), true, this::testWriteOneFile);
 	}
 
 	// Writing too many files (testWriteFiles1) would fail this test case. Do
 	// not know why.
 	@Test
 	public void testIbTreeFileSystem1() throws IOException {
-		testIbTree(Constants.tmp.resolve("ibTree-fs1"), true, this::testWriteFiles);
-		testIbTree(Constants.tmp.resolve("ibTree-fs1"), false, this::testReadFile);
+		testIbTree(Defaults.tmp.resolve("ibTree-fs1"), true, this::testWriteFiles);
+		testIbTree(Defaults.tmp.resolve("ibTree-fs1"), false, this::testReadFile);
 	}
 
 	private void testIbTree(Path path, boolean isNew, TestCase testCase) throws IOException {
@@ -74,7 +74,7 @@ public class FileSystemTest {
 
 		for (Path path : paths) {
 			String filename = path.toString().replace(File.separatorChar, '/');
-			Bytes name = Bytes.of(filename.getBytes(Constants.charset));
+			Bytes name = Bytes.of(filename.getBytes(Defaults.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));
 		}
 	}
@@ -82,7 +82,7 @@ public class FileSystemTest {
 	private void testReadFile(FileSystem fs) throws IOException {
 		String filename = "src/test/java/chickenrib/fs/FileSystemTest.java";
 		FileSystemMutator fsm = fs.mutate();
-		Bytes name = Bytes.of(filename.getBytes(Constants.charset));
+		Bytes name = Bytes.of(filename.getBytes(Defaults.charset));
 		Copy.stream(fsm.read(name).collect(As::inputStream), System.out);
 	}
 

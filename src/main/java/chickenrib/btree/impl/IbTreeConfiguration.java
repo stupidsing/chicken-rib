@@ -3,7 +3,7 @@ package chickenrib.btree.impl;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-import suite.util.Serialize.Serializer;
+import suite.serialize.Serialize.Serializer;
 
 public class IbTreeConfiguration<Key> {
 

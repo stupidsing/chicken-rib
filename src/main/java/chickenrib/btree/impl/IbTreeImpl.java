@@ -22,15 +22,15 @@ import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
+import suite.serialize.SerInput;
+import suite.serialize.SerOutput;
+import suite.serialize.Serialize;
+import suite.serialize.Serialize.Serializer;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.List_;
 import suite.util.Object_;
-import suite.util.SerInput;
-import suite.util.SerOutput;
-import suite.util.Serialize;
-import suite.util.Serialize.Serializer;
 
 /**
  * Immutable, on-disk B-tree implementation.
@@ -125,12 +125,12 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	/**
-	 * Protect discarded pages belonging to previous mutations, so that they are not
-	 * being allocated immediately. This supports immutability (i.e. copy-on-write)
-	 * and with this recovery can succeed.
+	 * Protect discarded pages belonging to previous mutations, so that they are
+	 * not being allocated immediately. This supports immutability (i.e.
+	 * copy-on-write) and with this recovery can succeed.
 	 *
-	 * On the other hand, allocated and discarded pages are reused here, since they
-	 * belong to current mutation.
+	 * On the other hand, allocated and discarded pages are reused here, since
+	 * they belong to current mutation.
 	 */
 	private class DelayedDiscardAllocator implements Allocator {
 		private Allocator allocator;
@@ -441,8 +441,8 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	/**
-	 * Constructor for larger trees that require another tree for page allocation
-	 * management.
+	 * Constructor for larger trees that require another tree for page
+	 * allocation management.
 	 */
 	public IbTreeImpl(Path path, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
 		this.path = path;

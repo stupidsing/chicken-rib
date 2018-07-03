@@ -14,17 +14,17 @@ import chickenrib.btree.impl.IbTreeBuilder;
 import chickenrib.btree.impl.IbTreeConfiguration;
 import chickenrib.btree.impl.IbTreeImpl;
 import chickenrib.btree.impl.IbTreeStack;
-import suite.Constants;
+import suite.Defaults;
 import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.node.util.Singleton;
+import suite.serialize.Serialize;
+import suite.serialize.Serialize.Serializer;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
 import suite.util.Object_;
-import suite.util.Serialize;
-import suite.util.Serialize.Serializer;
 import suite.util.To;
 
 public class IbTreeTest {
@@ -57,7 +57,7 @@ public class IbTreeTest {
 		IbTreeConfiguration<Integer> config = newIbTreeConfiguration("ibTree-single", serialize.int_);
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
-		try (IbTree<Integer> ibTree = builder.buildTree(Constants.tmp.resolve("ibTree-single"), config, null)) {
+		try (IbTree<Integer> ibTree = builder.buildTree(Defaults.tmp.resolve("ibTree-single"), config, null)) {
 			ibTree.create().end(true);
 
 			KeyDataStore<Integer> store = ibTree.begin();
@@ -82,9 +82,9 @@ public class IbTreeTest {
 		IbTreeBuilder builder = new IbTreeBuilder(config);
 
 		int i = 0;
-		Path p0 = Constants.tmp.resolve("ibTreeMulti" + i++);
-		Path p1 = Constants.tmp.resolve("ibTreeMulti" + i++);
-		Path p2 = Constants.tmp.resolve("ibTreeMulti" + i++);
+		Path p0 = Defaults.tmp.resolve("ibTreeMulti" + i++);
+		Path p1 = Defaults.tmp.resolve("ibTreeMulti" + i++);
+		Path p2 = Defaults.tmp.resolve("ibTreeMulti" + i++);
 
 		try (IbTreeImpl<Integer> ibTree0 = builder.buildAllocationIbTree(p0);
 				IbTreeImpl<Integer> ibTree1 = builder.buildAllocationIbTree(p1, ibTree0);
@@ -107,7 +107,7 @@ public class IbTreeTest {
 			String name, Serializer<Key> serializer) {
 		IbTreeConfiguration<Key> config = new IbTreeConfiguration<>();
 		config.setComparator(Object_::compare);
-		config.setPathPrefix(Constants.tmp.resolve(name));
+		config.setPathPrefix(Defaults.tmp.resolve(name));
 		config.setPageSize(pageSize);
 		config.setSerializer(serializer);
 		config.setMaxBranchFactor(16);
