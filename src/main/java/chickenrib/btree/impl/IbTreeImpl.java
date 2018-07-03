@@ -21,16 +21,16 @@ import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.node.util.Singleton;
+import suite.object.Object_;
 import suite.primitive.Bytes;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
 import suite.util.List_;
-import suite.util.Object_;
 
 /**
  * Immutable, on-disk B-tree implementation.

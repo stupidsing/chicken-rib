@@ -14,17 +14,17 @@ import chickenrib.btree.impl.IbTreeBuilder;
 import chickenrib.btree.impl.IbTreeConfiguration;
 import chickenrib.btree.impl.IbTreeImpl;
 import chickenrib.btree.impl.IbTreeStack;
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.node.util.Singleton;
+import suite.object.Object_;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
-import suite.util.FunUtil.Source;
 import suite.util.List_;
-import suite.util.Object_;
 import suite.util.To;
 
 public class IbTreeTest {

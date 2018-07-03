@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import chickenrib.btree.impl.IbTreeConfiguration;
 import chickenrib.fs.impl.IbTreeFileSystemImpl;
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
 import suite.os.FileUtil;

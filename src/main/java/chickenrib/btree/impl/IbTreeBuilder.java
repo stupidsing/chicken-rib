@@ -2,7 +2,7 @@ package chickenrib.btree.impl;
 
 import java.nio.file.Path;
 
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class IbTreeBuilder {
 

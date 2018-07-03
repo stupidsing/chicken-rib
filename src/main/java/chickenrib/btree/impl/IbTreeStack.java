@@ -9,7 +9,7 @@ import java.util.ListIterator;
 
 import chickenrib.btree.IbTree;
 import suite.os.FileUtil;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 
 public class IbTreeStack<Key> implements Closeable {
