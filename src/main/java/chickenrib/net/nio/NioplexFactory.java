@@ -60,7 +60,7 @@ public interface NioplexFactory {
 					.toBytes();
 
 			if (!isConnected)
-				condition.waitThen(() -> isConnected);
+				condition.waitTill(() -> isConnected);
 
 			sendPacket(packet);
 		}

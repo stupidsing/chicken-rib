@@ -29,7 +29,7 @@ public class RequestResponseMatcher {
 		var holder = Mutable.<Bytes> nil();
 		var condition = new Condition();
 
-		return condition.waitThen(() -> {
+		return condition.waitTill(() -> {
 			return holder.value() != null;
 		}, () -> {
 			requests.put(token, Pair.of(holder, condition));
