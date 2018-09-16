@@ -1,12 +1,16 @@
 package chickenrib.net.cluster;
 
+import java.io.IOException;
 import java.util.Set;
 
-import suite.net.Service;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Signal;
 
-public interface Cluster extends Service {
+public interface Cluster {
+
+	public void start() throws IOException;
+
+	public void stop() throws IOException;
 
 	public Object requestForResponse(String peer, Object request);
 

@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import chickenrib.net.nio.NioplexFactory.Nioplex;
-import suite.net.Service;
 
-public interface NioDispatcher<C extends Nioplex> extends Service {
+public interface NioDispatcher<C extends Nioplex> {
+
+	public void start();
+
+	public void stop();
 
 	/**
 	 * Establishes connection to other host actively.
