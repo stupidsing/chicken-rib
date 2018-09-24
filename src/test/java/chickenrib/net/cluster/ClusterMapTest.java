@@ -29,7 +29,7 @@ public class ClusterMapTest {
 	public void testClusterMap() throws IOException {
 		var nNodes = 3;
 
-		var peers = Ints_.range(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
+		var peers = Ints_.for_(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
 
 		var clusters = Read //
 				.from2(peers) //
@@ -40,7 +40,7 @@ public class ClusterMapTest {
 		for (var cluster : clusters.values())
 			cluster.start();
 
-		var peerNames = new ArrayList<String>(peers.keySet());
+		var peerNames = new ArrayList<>(peers.keySet());
 		var clMap = Read.from2(peers).keys().map2(name -> name, name -> new ClusterMapImpl<>(clusters.get(name))).toMap();
 
 		Thread_.sleepQuietly(5 * 1000);
