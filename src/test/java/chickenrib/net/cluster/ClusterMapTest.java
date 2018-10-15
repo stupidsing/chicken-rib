@@ -1,6 +1,7 @@
 package chickenrib.net.cluster;
 
 import static org.junit.Assert.assertEquals;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
@@ -14,7 +15,6 @@ import org.junit.Test;
 
 import chickenrib.net.cluster.impl.ClusterImpl;
 import chickenrib.net.cluster.impl.ClusterMapImpl;
-import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Thread_;
@@ -29,7 +29,7 @@ public class ClusterMapTest {
 	public void testClusterMap() throws IOException {
 		var nNodes = 3;
 
-		var peers = Ints_.for_(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
+		var peers = forInt(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
 
 		var clusters = Read //
 				.from2(peers) //
