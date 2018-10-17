@@ -29,12 +29,12 @@ public class IbTreeStack<Key> implements Closeable {
 		Source<Path> nextPath = () -> FileUtil.ext(pathPrefix, Integer.toString(i[0]++));
 
 		IbTreeImpl<Integer> allocationIbTree;
-		allocationIbTrees.add(builder.buildAllocationIbTree(nextPath.source()));
+		allocationIbTrees.add(builder.buildAllocationIbTree(nextPath.g()));
 
 		while ((allocationIbTree = List_.last(allocationIbTrees)).guaranteedCapacity() < nPages)
-			allocationIbTrees.add(builder.buildAllocationIbTree(nextPath.source(), allocationIbTree));
+			allocationIbTrees.add(builder.buildAllocationIbTree(nextPath.g(), allocationIbTree));
 
-		ibTree = builder.buildTree(nextPath.source(), config, allocationIbTree);
+		ibTree = builder.buildTree(nextPath.g(), config, allocationIbTree);
 	}
 
 	@Override

@@ -158,7 +158,7 @@ public class IbTreeTest {
 		Object object;
 		int count = 0;
 
-		while ((object = source.source()) != null) {
+		while ((object = source.g()) != null) {
 			System.out.println(object.toString());
 			count++;
 		}

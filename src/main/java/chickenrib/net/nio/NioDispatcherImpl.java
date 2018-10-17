@@ -45,7 +45,7 @@ public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 	 */
 	@Override
 	public C connect(InetSocketAddress address) throws IOException {
-		var cl = channelSource.source();
+		var cl = channelSource.g();
 		reconnect(cl, address);
 		return cl;
 	}
@@ -130,7 +130,7 @@ public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 		var ops = key.readyOps();
 
 		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
-			var channel = channelSource.source();
+			var channel = channelSource.g();
 			var sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
 			sc.register(selector, SelectionKey.OP_READ, channel);

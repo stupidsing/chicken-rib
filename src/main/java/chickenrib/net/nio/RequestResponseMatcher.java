@@ -33,7 +33,7 @@ public class RequestResponseMatcher {
 			return holder.value() != null;
 		}, () -> {
 			requests.put(token, Pair.of(holder, condition));
-			sink.sink(token);
+			sink.f(token);
 		}, () -> {
 			requests.remove(token);
 			return holder.value();

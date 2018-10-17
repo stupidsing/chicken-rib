@@ -146,7 +146,7 @@ public interface NioplexFactory {
 		np.onReceive.wire(new Sink<>() {
 			private Bytes received = Bytes.empty;
 
-			public void sink(Bytes message) {
+			public void f(Bytes message) {
 				received = received.append(message);
 				var size = received.size();
 
