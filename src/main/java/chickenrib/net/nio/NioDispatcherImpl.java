@@ -15,7 +15,7 @@ import chickenrib.net.nio.NioplexFactory.Nioplex;
 import suite.cfg.Defaults;
 import suite.net.ThreadService;
 import suite.object.Object_;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
@@ -112,7 +112,7 @@ public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 					try {
 						processSelectedKey(key);
 					} catch (Exception ex) {
-						LogUtil.error(ex);
+						Log_.error(ex);
 					}
 				}
 			}
