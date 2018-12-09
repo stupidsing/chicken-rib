@@ -8,14 +8,6 @@ import suite.primitive.adt.set.IntSet;
 public class Puzzle2018_12 {
 
 	@Test
-	public void test0() {
-		var set = new IntSet();
-		set.add(1);
-		set.add(2);
-		System.out.println(set.add(3));
-	}
-
-	@Test
 	public void test() {
 		var g = new int[7][7];
 		var max = 48;
@@ -208,8 +200,11 @@ public class Puzzle2018_12 {
 
 			if (score < minScore[0]) {
 				for (var x = 0; x < size; x++) {
-					for (var y = 0; y < size; y++)
-						System.out.print(g[x][y] + ",");
+					for (var y = 0; y < size; y++) {
+						var s = "   " + g[x][y] + ",";
+						var length = s.length();
+						System.out.print(s.substring(length - 4, length));
+					}
 					System.out.println();
 				}
 
