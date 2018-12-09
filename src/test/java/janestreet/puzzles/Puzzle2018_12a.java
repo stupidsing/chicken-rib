@@ -7,6 +7,8 @@ import org.junit.Test;
 import suite.primitive.adt.set.IntSet;
 
 /*
+random a tile order, find the minimal score
+
   6, 12,  3,  5,  4,  1,  7,
   1,  6,  4,  3, 20,  7,  2,
   2, 10, 21,  7, 14,  6,  3,
@@ -17,7 +19,7 @@ import suite.primitive.adt.set.IntSet;
 SCORE = 175
  */
 // https://www.janestreet.com/puzzles/block-party-2/
-public class Puzzle2018_12 {
+public class Puzzle2018_12a {
 
 	@Test
 	public void test() {
