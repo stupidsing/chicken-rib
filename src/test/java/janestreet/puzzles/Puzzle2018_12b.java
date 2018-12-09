@@ -12,14 +12,14 @@ import suite.streamlet.FunUtil.Sink;
 /*
 for all tile order, find the first score
 
- 20, 21,  3,  5, 15,  2,  6,
-  4,  5,  7,  8,  3, 12,  2,
- 18,  3,  2,  4, 20, 10,  5,
-  3,  6, 14,  2,  5,  4, 15,
-  6,  2,  4,  7, 24,  5,  3,
-  2, 20,  5,  3,  4,  6, 12,
-  5, 10,  6,  1,  2,  3,  4,
-SCORE = 231
+  3,  6,  5,  4,  2, 21,  7,
+ 12,  4, 30,  2,  8,  3,  6,
+  4, 20,  7, 14,  5,  2,  3,
+  2,  5,  4,  3, 30,  6, 20,
+  7, 14,  2, 12,  3,  5,  4,
+ 10,  3,  6,  5,  4, 12,  2,
+  5,  2,  3, 15,  1,  4,  8,
+SCORE = 238
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12b {
@@ -28,28 +28,29 @@ public class Puzzle2018_12b {
 	public void test() {
 		var nr = 8;
 		var size = 7;
-		var hallmark = 231;
+		var hallmark = 238;
 
 		var tiles0 = new byte[][] { //
-				{ 6, 3, 6, 4, 5, 3, 6, 2, }, //
-				{ 2, 2, 2, 3, 1, 3, }, //
-				{ 4, 1, 3, 0, 4, 0, }, //
-				{ 4, 6, 4, 5, 3, 6, }, //
-				{ 3, 4, 3, 5, 2, 4, }, //
-				{ 2, 6, 1, 6, 2, 5, }, //
-				{ 1, 2, 0, 2, 0, 1, }, //
-				{ 0, 3, 1, 4, 0, 4, }, //
-				{ 0, 5, 0, 6, 1, 5, }, //
-				{ 6, 5, 6, 6, 5, 6, }, //
-				{ 1, 0, 1, 1, 0, 0, }, //
-				{ 4, 2, 5, 2, 5, 1, }, //
-				{ 5, 5, 5, 4, 4, 4, }, //
-				{ 5, 0, 6, 0, 6, 1, }, //
-				{ 3, 1, 2, 1, 2, 0, }, //
-				{ 3, 3, 4, 3, 3, 2, }, //
+				{ 2, 5, 2, 6, 1, 6, }, //
+				{ 5, 6, 6, 5, 6, 6, }, //
+				{ 0, 4, 0, 3, 1, 4, }, //
+				{ 5, 1, 4, 2, 5, 2, }, //
+				{ 6, 4, 5, 3, 6, 2, 6, 3, }, //
+				{ 6, 1, 6, 0, 5, 0, }, //
+				{ 0, 2, 0, 1, 1, 2, }, //
+				{ 0, 6, 1, 5, 0, 5, }, //
+				{ 4, 5, 4, 6, 3, 6, }, //
+				{ 2, 0, 3, 1, 2, 1, }, //
+				{ 3, 5, 2, 4, 3, 4, }, //
+				{ 1, 3, 2, 2, 2, 3, }, //
+				{ 3, 3, 3, 2, 4, 3, }, //
+				{ 0, 0, 1, 1, 1, 0, }, //
+				{ 3, 0, 4, 0, 4, 1, }, //
+				{ 4, 4, 5, 4, 5, 5, }, //
 		};
-		var tiles = new byte[16][];
-		var g = new short[7][7];
+		var tiles = new byte[tiles0.length][];
+		var g = new short[size][size];
+		var p = new byte[size + 2][size + 2];
 
 		var filler = new Object() {
 			private int score;
@@ -68,6 +69,8 @@ public class Puzzle2018_12b {
 				var sc = findExcludeSet(x2, y2);
 				var minScore = hallmark;
 				short a1 = -1, b1 = -1;
+				var c1 = -1;
+
 				for (short a = 2; a < max; a++)
 					if (!sa.contains(a)) {
 						var bx = (minScore - score) / a;
@@ -75,20 +78,16 @@ public class Puzzle2018_12b {
 							if (!sb.contains(b) && a != b) {
 								var c = a * b;
 								var score1 = score + c;
-								if (!sc.contains(c) && score1 < minScore && a != c && b != c && score1 < minScore) {
-									g[x0][y0] = a;
-									g[x1][y1] = b;
-									g[x2][y2] = (short) c;
+								if (!sc.contains(c) && a != c && b != c && score1 < minScore) {
 									minScore = score1;
 									a1 = a;
 									b1 = b;
-									g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
+									c1 = c;
 								}
 							}
 					}
 
 				if (minScore < hallmark) {
-					var c1 = a1 * b1;
 					g[x0][y0] = a1;
 					g[x1][y1] = b1;
 					g[x2][y2] = (short) c1;
@@ -107,6 +106,8 @@ public class Puzzle2018_12b {
 				var sd = findExcludeSet(x3, y3);
 				var minScore = hallmark;
 				short a1 = -1, b1 = -1, c1 = -1;
+				var d1 = -1;
+
 				for (short a = 1; a < max; a++)
 					if (!sa.contains(a))
 						for (short b = 1; b < max; b++)
@@ -117,21 +118,16 @@ public class Puzzle2018_12b {
 										var d = a * b * c;
 										var score1 = score + d;
 										if (!sd.contains(d) && a != d && b != d && c != d && score1 < minScore) {
-											g[x0][y0] = a;
-											g[x1][y1] = b;
-											g[x2][y2] = c;
-											g[x3][y3] = (short) d;
 											minScore = score1;
 											a1 = a;
 											b1 = b;
 											c1 = c;
-											g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+											d1 = d;
 										}
 									}
 							}
 
 				if (minScore < hallmark) {
-					var d1 = a1 * b1 * c1;
 					g[x0][y0] = a1;
 					g[x1][y1] = b1;
 					g[x2][y2] = c1;
@@ -145,7 +141,6 @@ public class Puzzle2018_12b {
 
 			private IntSet findExcludeSet(int x, int y) {
 				var s = new IntSet();
-
 				for (short i = 0; i < size; i++) {
 					s.add(g[i][y]);
 					s.add(g[x][i]);
@@ -159,12 +154,14 @@ public class Puzzle2018_12b {
 		Runnable tryOnce = () -> {
 			if (filler.score < minScore[0]) {
 				System.out.println("TILES");
+
 				for (var tile : tiles) {
 					System.out.print("{ ");
 					for (var v : tile)
 						System.out.print(v + ", ");
 					System.out.println("}, //");
 				}
+
 				System.out.println("TILES");
 
 				for (short x = 0; x < size; x++) {
@@ -185,20 +182,24 @@ public class Puzzle2018_12b {
 				var tile1 = new byte[tile0.length];
 				for (var i = 0; i < tile0.length; i += 2) {
 					var j = 0;
-					tile1[j + 0] = tile0[i + 0];
-					tile1[j + 1] = tile0[i + 1];
-					j += 2;
-					while (j <= i) {
-						tile1[j + 0] = tile0[j - 2];
-						tile1[j + 1] = tile0[j - 1];
-						j += 2;
-					}
-					while (j < tile1.length) {
+					while (j < i) {
 						tile1[j + 0] = tile0[j + 0];
 						tile1[j + 1] = tile0[j + 1];
 						j += 2;
 					}
-					sink.f(tile1);
+					while (j < tile1.length - 2) {
+						tile1[j + 0] = tile0[j + 2];
+						tile1[j + 1] = tile0[j + 3];
+						j += 2;
+					}
+					var xp = 1 + (tile1[j + 0] = tile0[i + 0]);
+					var yp = 1 + (tile1[j + 1] = tile0[i + 1]);
+					j += 2;
+					if (p[xp - 1][yp] == 0 && p[xp + 1][yp] == 0 && p[xp][yp - 1] == 0 && p[xp][yp + 1] == 0) {
+						p[xp][yp] = 1;
+						sink.f(tile1);
+						p[xp][yp] = 0;
+					}
 				}
 			}
 		};
