@@ -11,6 +11,7 @@ public class Puzzle2018_12 {
 
 	@Test
 	public void test() {
+		var random = new Random();
 		var g = new short[7][7];
 		var max = 48;
 		var size = 7;
@@ -36,8 +37,8 @@ public class Puzzle2018_12 {
 
 		for (var tile : tiles)
 			for (var i = 0; i < 9; i++) {
-				var i0 = new Random().nextInt(tile.length / 2) * 2;
-				var i1 = new Random().nextInt(tile.length / 2) * 2;
+				var i0 = random.nextInt(tile.length / 2) * 2;
+				var i1 = random.nextInt(tile.length / 2) * 2;
 				var old0 = tile[i0 + 0];
 				var old1 = tile[i0 + 1];
 				tile[i0 + 0] = tile[i1 + 0];
@@ -47,8 +48,8 @@ public class Puzzle2018_12 {
 			}
 
 		for (var i = 0; i < 99; i++) {
-			var i0 = new Random().nextInt(tiles.length);
-			var i1 = new Random().nextInt(tiles.length);
+			var i0 = random.nextInt(tiles.length);
+			var i1 = random.nextInt(tiles.length);
 			var old = tiles[i0];
 			tiles[i0] = tiles[i1];
 			tiles[i1] = old;
@@ -64,10 +65,14 @@ public class Puzzle2018_12 {
 		System.out.println("TILES");
 
 		var object = new Object() {
+			private int score;
+
 			private void fill(Runnable r) {
 				new Object() {
 					private void f(int i) {
-						if (i < tiles.length) {
+						if (208 <= score)
+							;
+						else if (i < tiles.length) {
 							var tile = tiles[i];
 							if (tile.length == 6)
 								fill3(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], () -> f(i + 1));
@@ -185,14 +190,20 @@ public class Puzzle2018_12 {
 			private void fillIn(int a, int b, int x, int y, Runnable r) {
 				if (a <= b && b % a == 0) {
 					g[x][y] = (short) (b / a);
+					score += b;
 					r.run();
+					score -= b;
 				}
 				if (b <= a && a % b == 0) {
 					g[x][y] = (short) (a / b);
+					score += a;
 					r.run();
+					score -= a;
 				}
 				g[x][y] = (short) (a * b);
+				score += g[x][y];
 				r.run();
+				score -= g[x][y];
 				g[x][y] = 0;
 			}
 
@@ -202,18 +213,27 @@ public class Puzzle2018_12 {
 				var ab = a * b;
 				if (bc <= a && a % bc == 0) {
 					g[x][y] = (short) (a / bc);
+					score += a;
 					r.run();
+					score -= a;
 				}
 				if (ca <= b && b % ca == 0) {
 					g[x][y] = (short) (b / ca);
+					score += b;
 					r.run();
+					score -= b;
 				}
 				if (ab <= c && c % ab == 0) {
 					g[x][y] = (short) (c / ab);
+					score += c;
 					r.run();
+					score -= c;
 				}
-				g[x][y] = (short) (a * bc);
+				var product = a * bc;
+				g[x][y] = (short) product;
+				score += product;
 				r.run();
+				score -= product;
 				g[x][y] = 0;
 			}
 		};
@@ -221,16 +241,7 @@ public class Puzzle2018_12 {
 		var minScore = new int[] { Integer.MAX_VALUE, };
 
 		object.fill(() -> {
-			var score = 0;
-
-			for (var tile : tiles) {
-				var tileScore = 0;
-				for (short i = 0; i < tile.length; i += 2)
-					tileScore = Math.max(tileScore, g[tile[i]][tile[i + 1]]);
-				score += tileScore;
-			}
-
-			if (score < minScore[0]) {
+			if (object.score < minScore[0]) {
 				for (short x = 0; x < size; x++) {
 					for (short y = 0; y < size; y++) {
 						var s = "   " + g[x][y] + ",";
@@ -240,7 +251,7 @@ public class Puzzle2018_12 {
 					System.out.println();
 				}
 
-				System.out.println("SCORE = " + (minScore[0] = score));
+				System.out.println("SCORE = " + (minScore[0] = object.score));
 			}
 		});
 	}
