@@ -227,7 +227,7 @@ public class Puzzle2018_12b {
 					tile1[j + 0] = tile0[i + 0];
 					tile1[j + 1] = tile0[i + 1];
 					j += 2;
-					while (j < i) {
+					while (j <= i) {
 						tile1[j + 0] = tile0[j - 2];
 						tile1[j + 1] = tile0[j - 1];
 						j += 2;
