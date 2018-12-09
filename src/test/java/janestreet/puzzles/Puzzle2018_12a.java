@@ -8,15 +8,6 @@ import suite.primitive.adt.set.IntSet;
 
 /*
 random a tile order, find the minimal score
-
- 20, 21,  3,  5, 15,  2,  6,
-  4,  5,  7,  8,  3, 12,  2,
- 18,  3,  2,  4, 20, 10,  5,
-  3,  6, 14,  2,  5,  4, 15,
-  6,  2,  4,  7, 24,  5,  3,
-  2, 20,  5,  3,  4,  6, 12,
-  5, 10,  6,  1,  2,  3,  4,
-SCORE = 231
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12a {
