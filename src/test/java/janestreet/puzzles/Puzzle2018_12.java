@@ -48,8 +48,8 @@ public class Puzzle2018_12 {
 			}
 
 		for (var i = 0; i < 99; i++) {
-			var i0 = random.nextInt(tiles.length);
-			var i1 = random.nextInt(tiles.length);
+			var i0 = random.nextInt(tiles.length - 1) + 1;
+			var i1 = random.nextInt(tiles.length - 1) + 1;
 			var old = tiles[i0];
 			tiles[i0] = tiles[i1];
 			tiles[i1] = old;
