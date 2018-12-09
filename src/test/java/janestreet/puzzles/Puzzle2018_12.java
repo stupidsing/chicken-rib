@@ -1,5 +1,7 @@
 package janestreet.puzzles;
 
+import java.util.Random;
+
 import org.junit.Test;
 
 import suite.primitive.adt.set.IntSet;
@@ -30,6 +32,14 @@ public class Puzzle2018_12 {
 				{ 4, 4, 5, 4, 5, 5, }, //
 				{ 5, 0, 6, 0, 6, 1, }, //
 				{ 5, 6, 6, 5, 6, 6, }, };
+
+		for (var i = 0; i < 99; i++) {
+			var i0 = new Random().nextInt(tiles.length - 1) + 1;
+			var i1 = new Random().nextInt(tiles.length - 1) + 1;
+			var old = tiles[i0];
+			tiles[i0] = tiles[i1];
+			tiles[i1] = old;
+		}
 
 		var object = new Object() {
 			private void fill(Runnable r) {
