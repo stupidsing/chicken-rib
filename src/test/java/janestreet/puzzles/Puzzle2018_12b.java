@@ -3,7 +3,6 @@ package janestreet.puzzles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Random;
 
 import org.junit.Test;
 
@@ -50,8 +49,6 @@ public class Puzzle2018_12b {
 				{ 4, 2, 5, 1, 5, 2, }, //
 		};
 		var tiles = new byte[16][];
-
-		var random = new Random();
 		var g = new short[7][7];
 
 		var trialObject = new Object() {
