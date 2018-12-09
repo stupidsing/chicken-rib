@@ -17,29 +17,51 @@ public class Puzzle2018_12 {
 
 		var tiles = new byte[][] { //
 				{ 5, 3, 6, 2, 6, 3, 6, 4, }, //
-				{ 0, 1, 0, 2, 1, 2, }, //
-				{ 0, 0, 1, 0, 1, 1, }, //
-				{ 0, 3, 0, 4, 1, 4, }, //
-				{ 0, 5, 0, 6, 1, 5, }, //
-				{ 1, 3, 2, 2, 2, 3, }, //
 				{ 1, 6, 2, 5, 2, 6, }, //
+				{ 0, 1, 0, 2, 1, 2, }, //
 				{ 2, 0, 2, 1, 3, 1, }, //
-				{ 2, 4, 3, 4, 3, 5, }, //
-				{ 3, 0, 4, 0, 4, 1, }, //
-				{ 3, 2, 3, 3, 4, 3, }, //
-				{ 3, 6, 4, 5, 4, 6, }, //
 				{ 4, 2, 5, 1, 5, 2, }, //
 				{ 4, 4, 5, 4, 5, 5, }, //
+				{ 0, 0, 1, 0, 1, 1, }, //
+				{ 5, 6, 6, 5, 6, 6, }, //
+				{ 1, 3, 2, 2, 2, 3, }, //
+				{ 2, 4, 3, 4, 3, 5, }, //
 				{ 5, 0, 6, 0, 6, 1, }, //
-				{ 5, 6, 6, 5, 6, 6, }, };
+				{ 0, 3, 0, 4, 1, 4, }, //
+				{ 3, 2, 3, 3, 4, 3, }, //
+				{ 3, 6, 4, 5, 4, 6, }, //
+				{ 0, 5, 0, 6, 1, 5, }, //
+				{ 3, 0, 4, 0, 4, 1, }, //
+		};
+
+		for (var tile : tiles)
+			for (var i = 0; i < 9; i++) {
+				var i0 = new Random().nextInt(tile.length / 2) * 2;
+				var i1 = new Random().nextInt(tile.length / 2) * 2;
+				var old0 = tile[i0 + 0];
+				var old1 = tile[i0 + 1];
+				tile[i0 + 0] = tile[i1 + 0];
+				tile[i0 + 1] = tile[i1 + 1];
+				tile[i1 + 0] = old0;
+				tile[i1 + 1] = old1;
+			}
 
 		for (var i = 0; i < 99; i++) {
-			var i0 = new Random().nextInt(tiles.length - 1) + 1;
-			var i1 = new Random().nextInt(tiles.length - 1) + 1;
+			var i0 = new Random().nextInt(tiles.length);
+			var i1 = new Random().nextInt(tiles.length);
 			var old = tiles[i0];
 			tiles[i0] = tiles[i1];
 			tiles[i1] = old;
 		}
+
+		System.out.println("TILES");
+		for (var tile : tiles) {
+			System.out.print("{ ");
+			for (var v : tile)
+				System.out.print(v + ", ");
+			System.out.println("}, //");
+		}
+		System.out.println("TILES");
 
 		var object = new Object() {
 			private void fill(Runnable r) {
