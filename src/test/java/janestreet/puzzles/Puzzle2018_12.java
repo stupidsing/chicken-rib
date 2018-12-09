@@ -11,10 +11,9 @@ public class Puzzle2018_12 {
 
 	@Test
 	public void test() {
-		var random = new Random();
-		var g = new short[7][7];
-		var max = 48;
+		var nr = 8;
 		var size = 7;
+		var hallmark = 194;
 
 		var tiles = new byte[][] { //
 				{ 6, 2, 6, 3, 6, 4, 5, 3, }, //
@@ -34,6 +33,9 @@ public class Puzzle2018_12 {
 				{ 0, 6, 0, 5, 1, 5, }, //
 				{ 4, 1, 4, 0, 3, 0, }, //
 		};
+
+		var random = new Random();
+		var g = new short[7][7];
 
 		for (var tile : tiles)
 			for (var i = 0; i < 9; i++) {
@@ -70,7 +72,7 @@ public class Puzzle2018_12 {
 			private void fill(Runnable r) {
 				new Object() {
 					private void f(int i) {
-						if (194 <= score)
+						if (hallmark <= score)
 							;
 						else if (i < tiles.length) {
 							var tile = tiles[i];
@@ -85,6 +87,7 @@ public class Puzzle2018_12 {
 			}
 
 			private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
+				var max = Math.min(nr, hallmark - score - 1);
 				var s0 = new IntSet();
 				var s1 = new IntSet();
 				var s2 = new IntSet();
@@ -118,6 +121,7 @@ public class Puzzle2018_12 {
 			}
 
 			private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
+				var max = Math.min(nr, hallmark - score - 1);
 				var s0 = new IntSet();
 				var s1 = new IntSet();
 				var s2 = new IntSet();
