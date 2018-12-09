@@ -9,11 +9,11 @@ public class Puzzle2018_12 {
 
 	@Test
 	public void test() {
-		var g = new int[7][7];
+		var g = new short[7][7];
 		var max = 48;
 		var size = 7;
 
-		var tiles = new int[][] { //
+		var tiles = new byte[][] { //
 				{ 5, 3, 6, 2, 6, 3, 6, 4, }, //
 				{ 0, 1, 0, 2, 1, 2, }, //
 				{ 0, 0, 1, 0, 1, 1, }, //
@@ -52,22 +52,22 @@ public class Puzzle2018_12 {
 				var s1 = new IntSet();
 				var s2 = new IntSet();
 
-				for (var x = 0; x < size; x++) {
+				for (short x = 0; x < size; x++) {
 					s0.add(g[x][y0]);
 					s1.add(g[x][y1]);
 					s2.add(g[x][y2]);
 				}
 
-				for (var y = 0; y < size; y++) {
+				for (short y = 0; y < size; y++) {
 					s0.add(g[x0][y]);
 					s1.add(g[x1][y]);
 					s2.add(g[x2][y]);
 				}
 
-				for (var a = 1; a < max; a++)
+				for (short a = 1; a < max; a++)
 					if (!s0.contains(a)) {
 						g[x0][y0] = a;
-						for (var b = 1; b < max; b++)
+						for (short b = 1; b < max; b++)
 							if (!s1.contains(b)) {
 								g[x1][y1] = b;
 								fillIn(a, b, x2, y2, () -> {
@@ -86,27 +86,27 @@ public class Puzzle2018_12 {
 				var s2 = new IntSet();
 				var s3 = new IntSet();
 
-				for (var x = 0; x < size; x++) {
+				for (short x = 0; x < size; x++) {
 					s0.add(g[x][y0]);
 					s1.add(g[x][y1]);
 					s2.add(g[x][y2]);
 					s3.add(g[x][y3]);
 				}
 
-				for (var y = 0; y < size; y++) {
+				for (short y = 0; y < size; y++) {
 					s0.add(g[x0][y]);
 					s1.add(g[x1][y]);
 					s2.add(g[x2][y]);
 					s3.add(g[x3][y]);
 				}
 
-				for (var a = 1; a < max; a++)
+				for (short a = 1; a < max; a++)
 					if (!s0.contains(a)) {
 						g[x0][y0] = a;
-						for (var b = 1; b < max; b++)
+						for (short b = 1; b < max; b++)
 							if (!s1.contains(b)) {
 								g[x1][y1] = b;
-								for (var c = 1; c < max; c++)
+								for (short c = 1; c < max; c++)
 									if (!s2.contains(c)) {
 										g[x2][y2] = c;
 										fillIn(a, b, c, x3, y3, () -> {
@@ -152,14 +152,14 @@ public class Puzzle2018_12 {
 
 			private void fillIn(int a, int b, int x, int y, Runnable r) {
 				if (a <= b && b % a == 0) {
-					g[x][y] = b / a;
+					g[x][y] = (short) (b / a);
 					r.run();
 				}
 				if (b <= a && a % b == 0) {
-					g[x][y] = a / b;
+					g[x][y] = (short) (a / b);
 					r.run();
 				}
-				g[x][y] = a * b;
+				g[x][y] = (short) (a * b);
 				r.run();
 				g[x][y] = 0;
 			}
@@ -169,18 +169,18 @@ public class Puzzle2018_12 {
 				var ca = c * a;
 				var ab = a * b;
 				if (bc <= a && a % bc == 0) {
-					g[x][y] = a / bc;
+					g[x][y] = (short) (a / bc);
 					r.run();
 				}
 				if (ca <= b && b % ca == 0) {
-					g[x][y] = b / ca;
+					g[x][y] = (short) (b / ca);
 					r.run();
 				}
 				if (ab <= c && c % ab == 0) {
-					g[x][y] = c / ab;
+					g[x][y] = (short) (c / ab);
 					r.run();
 				}
-				g[x][y] = a * bc;
+				g[x][y] = (short) (a * bc);
 				r.run();
 				g[x][y] = 0;
 			}
@@ -193,14 +193,14 @@ public class Puzzle2018_12 {
 
 			for (var tile : tiles) {
 				var tileScore = 0;
-				for (var i = 0; i < tile.length; i += 2)
+				for (short i = 0; i < tile.length; i += 2)
 					tileScore = Math.max(tileScore, g[tile[i]][tile[i + 1]]);
 				score += tileScore;
 			}
 
 			if (score < minScore[0]) {
-				for (var x = 0; x < size; x++) {
-					for (var y = 0; y < size; y++) {
+				for (short x = 0; x < size; x++) {
+					for (short y = 0; y < size; y++) {
 						var s = "   " + g[x][y] + ",";
 						var length = s.length();
 						System.out.print(s.substring(length - 4, length));
