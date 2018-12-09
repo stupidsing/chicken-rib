@@ -12,14 +12,14 @@ import suite.streamlet.FunUtil.Sink;
 /*
 for all tile order, find the first score
 
-  6, 12,  3,  5,  4,  1,  7,
-  1,  6,  4,  3, 20,  7,  2,
-  2, 10, 21,  7, 14,  6,  3,
-  3,  5,  6,  1,  7,  2,  4,
-  5, 15,  7,  6,  2,  4,  1,
-  4,  7,  1,  2,  6,  3,  5,
- 12,  3,  2,  4,  1,  5, 25,
-SCORE = 175
+ 20, 21,  3,  5, 15,  2,  6,
+  4,  5,  7,  8,  3, 12,  2,
+ 18,  3,  2,  4, 20, 10,  5,
+  3,  6, 14,  2,  5,  4, 15,
+  6,  2,  4,  7, 24,  5,  3,
+  2, 20,  5,  3,  4,  6, 12,
+  5, 10,  6,  1,  2,  3,  4,
+SCORE = 231
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12b {
@@ -28,199 +28,160 @@ public class Puzzle2018_12b {
 	public void test() {
 		var nr = 8;
 		var size = 7;
-		var hallmark = 999;
+		var hallmark = 231;
 
 		var tiles0 = new byte[][] { //
-				{ 6, 4, 6, 2, 5, 3, 6, 3, }, //
-				{ 5, 5, 4, 4, 5, 4, }, //
+				{ 6, 3, 6, 4, 5, 3, 6, 2, }, //
+				{ 2, 2, 2, 3, 1, 3, }, //
+				{ 4, 1, 3, 0, 4, 0, }, //
 				{ 4, 6, 4, 5, 3, 6, }, //
 				{ 3, 4, 3, 5, 2, 4, }, //
-				{ 3, 0, 4, 0, 4, 1, }, //
-				{ 5, 0, 6, 1, 6, 0, }, //
-				{ 1, 3, 2, 3, 2, 2, }, //
-				{ 0, 3, 0, 4, 1, 4, }, //
-				{ 6, 5, 5, 6, 6, 6, }, //
-				{ 1, 6, 2, 5, 2, 6, }, //
-				{ 3, 1, 2, 0, 2, 1, }, //
-				{ 3, 2, 3, 3, 4, 3, }, //
-				{ 0, 6, 1, 5, 0, 5, }, //
-				{ 0, 0, 1, 1, 1, 0, }, //
+				{ 2, 6, 1, 6, 2, 5, }, //
 				{ 1, 2, 0, 2, 0, 1, }, //
-				{ 4, 2, 5, 1, 5, 2, }, //
+				{ 0, 3, 1, 4, 0, 4, }, //
+				{ 0, 5, 0, 6, 1, 5, }, //
+				{ 6, 5, 6, 6, 5, 6, }, //
+				{ 1, 0, 1, 1, 0, 0, }, //
+				{ 4, 2, 5, 2, 5, 1, }, //
+				{ 5, 5, 5, 4, 4, 4, }, //
+				{ 5, 0, 6, 0, 6, 1, }, //
+				{ 3, 1, 2, 1, 2, 0, }, //
+				{ 3, 3, 4, 3, 3, 2, }, //
 		};
 		var tiles = new byte[16][];
 		var g = new short[7][7];
 
-		var trialObject = new Object() {
+		var filler = new Object() {
 			private int score;
 
-			private void fill(Runnable r) {
-				new Object() {
-					private void f(int i) {
-						if (hallmark <= score)
-							;
-						else if (i < tiles.length) {
-							var tile = tiles[i];
-							if (tile.length == 6)
-								fill3(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], () -> f(i + 1));
-							else
-								fill4(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], () -> f(i + 1));
-						} else
-							r.run();
-					}
-				}.f(0);
+			private void fill(byte[] tile, Runnable r) {
+				if (tile.length == 6)
+					fill3(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], r);
+				else
+					fill4(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], r);
 			}
 
 			private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
 				var max = Math.min(nr, hallmark - score - 1);
-				var a0 = findMin(x0, y0, max);
-				var b0 = findMin(x1, y1, max);
+				var sa = findExcludeSet(x0, y0);
+				var sb = findExcludeSet(x1, y1);
+				var sc = findExcludeSet(x2, y2);
 				var minScore = hallmark;
 				short a1 = -1, b1 = -1;
-				for (var a = a0; a < max; a++)
-					for (var b = b0; b < max; b++) {
-						var product = a * b;
-						var score1 = score + product;
-						if (score1 < minScore) {
-							g[x0][y0] = a;
-							g[x1][y1] = b;
-							g[x2][y2] = (short) product;
-							if (validateRowCols()) {
-								minScore = score1;
-								a1 = a;
-								b1 = b;
+				for (short a = 2; a < max; a++)
+					if (!sa.contains(a)) {
+						var bx = (minScore - score) / a;
+						for (short b = 2; b < bx; b++)
+							if (!sb.contains(b) && a != b) {
+								var c = a * b;
+								var score1 = score + c;
+								if (!sc.contains(c) && score1 < minScore && a != c && b != c && score1 < minScore) {
+									g[x0][y0] = a;
+									g[x1][y1] = b;
+									g[x2][y2] = (short) c;
+									minScore = score1;
+									a1 = a;
+									b1 = b;
+									g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
+								}
 							}
-							g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
-						}
 					}
 
 				if (minScore < hallmark) {
-					var product = a1 * b1;
+					var c1 = a1 * b1;
 					g[x0][y0] = a1;
 					g[x1][y1] = b1;
-					g[x2][y2] = (short) product;
-					score += product;
+					g[x2][y2] = (short) c1;
+					score += c1;
 					r.run();
-					score -= product;
+					score -= c1;
 					g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 				}
 			}
 
 			private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
 				var max = Math.min(nr, hallmark - score - 1);
-				var a0 = findMin(x0, y0, max);
-				var b0 = findMin(x1, y1, max);
-				var c0 = findMin(x2, y2, max);
+				var sa = findExcludeSet(x0, y0);
+				var sb = findExcludeSet(x1, y1);
+				var sc = findExcludeSet(x2, y2);
+				var sd = findExcludeSet(x3, y3);
 				var minScore = hallmark;
 				short a1 = -1, b1 = -1, c1 = -1;
-				for (var a = a0; a < max; a++)
-					for (var b = b0; b < max; b++)
-						for (var c = c0; c < max; c++) {
-							var product = a * b * c;
-							var score1 = score + product;
-							if (score1 < minScore) {
-								g[x0][y0] = a;
-								g[x1][y1] = b;
-								g[x2][y2] = c;
-								g[x3][y3] = (short) product;
-								if (validateRowCols()) {
-									minScore = score1;
-									a1 = a;
-									b1 = b;
-									c1 = c;
-								}
-								g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+				for (short a = 1; a < max; a++)
+					if (!sa.contains(a))
+						for (short b = 1; b < max; b++)
+							if (!sb.contains(b) && a != b) {
+								var cx = (minScore - score) / a * b;
+								for (short c = 1; c < cx; c++)
+									if (!sc.contains(c) && a != c && b != c) {
+										var d = a * b * c;
+										var score1 = score + d;
+										if (!sd.contains(d) && a != d && b != d && c != d && score1 < minScore) {
+											g[x0][y0] = a;
+											g[x1][y1] = b;
+											g[x2][y2] = c;
+											g[x3][y3] = (short) d;
+											minScore = score1;
+											a1 = a;
+											b1 = b;
+											c1 = c;
+											g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+										}
+									}
 							}
-						}
 
 				if (minScore < hallmark) {
-					var product = a1 * b1 * c1;
+					var d1 = a1 * b1 * c1;
 					g[x0][y0] = a1;
 					g[x1][y1] = b1;
 					g[x2][y2] = c1;
-					g[x3][y3] = (short) product;
-					score += product;
+					g[x3][y3] = (short) d1;
+					score += d1;
 					r.run();
-					score -= product;
+					score -= d1;
 					g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 				}
 			}
 
-			private short findMin(int x, int y, int max) {
+			private IntSet findExcludeSet(int x, int y) {
 				var s = new IntSet();
 
 				for (short i = 0; i < size; i++) {
 					s.add(g[i][y]);
 					s.add(g[x][i]);
 				}
-
-				for (short v = 1; v < max; v++)
-					if (!s.contains(v))
-						return v;
-
-				return Short.MAX_VALUE;
-			}
-
-			private boolean validateRowCols() {
-				var b = true;
-				for (int x = 0; x < size; x++)
-					b &= validateRow(x);
-				for (int y = 0; y < size; y++)
-					b &= validateCol(y);
-				return b;
-			}
-
-			private boolean validateRow(int x) {
-				var set = new IntSet();
-				var b = true;
-				for (int y = 0; y < size; y++) {
-					var v = g[x][y];
-					b &= v == 0 || set.add(v);
-				}
-				return b;
-			}
-
-			private boolean validateCol(int y) {
-				var set = new IntSet();
-				var b = true;
-				for (int x = 0; x < size; x++) {
-					var v = g[x][y];
-					b &= v == 0 || set.add(v);
-				}
-				return b;
+				return s;
 			}
 		};
 
 		var minScore = new int[] { Integer.MAX_VALUE, };
 
 		Runnable tryOnce = () -> {
-			trialObject.fill(() -> {
-				if (trialObject.score < minScore[0]) {
-					System.out.println("TILES");
-					for (var tile : tiles) {
-						System.out.print("{ ");
-						for (var v : tile)
-							System.out.print(v + ", ");
-						System.out.println("}, //");
-					}
-					System.out.println("TILES");
-
-					for (short x = 0; x < size; x++) {
-						for (short y = 0; y < size; y++) {
-							var s = "   " + g[x][y] + ",";
-							var length = s.length();
-							System.out.print(s.substring(length - 4, length));
-						}
-						System.out.println();
-					}
-
-					System.out.println("SCORE = " + (minScore[0] = trialObject.score));
+			if (filler.score < minScore[0]) {
+				System.out.println("TILES");
+				for (var tile : tiles) {
+					System.out.print("{ ");
+					for (var v : tile)
+						System.out.print(v + ", ");
+					System.out.println("}, //");
 				}
-			});
+				System.out.println("TILES");
+
+				for (short x = 0; x < size; x++) {
+					for (short y = 0; y < size; y++) {
+						var s = "   " + g[x][y] + ",";
+						var length = s.length();
+						System.out.print(s.substring(length - 4, length));
+					}
+					System.out.println();
+				}
+
+				System.out.println("SCORE = " + (minScore[0] = filler.score));
+			}
 		};
 
 		var permuteTile = new Object() {
-			private void permuteTile(byte[] tile0, Sink<byte[]> sink) {
+			private void p(byte[] tile0, Sink<byte[]> sink) {
 				var tile1 = new byte[tile0.length];
 				for (var i = 0; i < tile0.length; i += 2) {
 					var j = 0;
@@ -244,21 +205,23 @@ public class Puzzle2018_12b {
 
 		var tilesSet = new HashSet<>(Arrays.asList(tiles0));
 
-		new Object() {
-			private void permuteTiles(int t) {
+		var permuteTiles = new Object() {
+			private void p(int t) {
 				if (t < tiles0.length)
 					for (var tile : new ArrayList<>(tilesSet)) {
 						tilesSet.remove(tile);
-						permuteTile.permuteTile(tile, tile_ -> {
+						permuteTile.p(tile, tile_ -> {
 							tiles[t] = tile_;
-							permuteTiles(t + 1);
+							filler.fill(tile_, () -> p(t + 1));
 						});
 						tilesSet.add(tile);
 					}
 				else
 					tryOnce.run();
 			}
-		}.permuteTiles(0);
+		};
+
+		permuteTiles.p(0);
 	}
 
 }

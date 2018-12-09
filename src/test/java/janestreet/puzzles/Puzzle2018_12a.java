@@ -9,14 +9,14 @@ import suite.primitive.adt.set.IntSet;
 /*
 random a tile order, find the minimal score
 
-  6, 12,  3,  5,  4,  1,  7,
-  1,  6,  4,  3, 20,  7,  2,
-  2, 10, 21,  7, 14,  6,  3,
-  3,  5,  6,  1,  7,  2,  4,
-  5, 15,  7,  6,  2,  4,  1,
-  4,  7,  1,  2,  6,  3,  5,
- 12,  3,  2,  4,  1,  5, 25,
-SCORE = 175
+ 20, 21,  3,  5, 15,  2,  6,
+  4,  5,  7,  8,  3, 12,  2,
+ 18,  3,  2,  4, 20, 10,  5,
+  3,  6, 14,  2,  5,  4, 15,
+  6,  2,  4,  7, 24,  5,  3,
+  2, 20,  5,  3,  4,  6, 12,
+  5, 10,  6,  1,  2,  3,  4,
+SCORE = 231
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12a {
@@ -25,25 +25,25 @@ public class Puzzle2018_12a {
 	public void test() {
 		var nr = 8;
 		var size = 7;
-		var hallmark = 175;
+		var hallmark = 999;
 
 		var tiles = new byte[][] { //
-				{ 6, 4, 6, 2, 5, 3, 6, 3, }, //
-				{ 5, 5, 4, 4, 5, 4, }, //
+				{ 6, 3, 6, 4, 5, 3, 6, 2, }, //
+				{ 2, 2, 2, 3, 1, 3, }, //
+				{ 4, 1, 3, 0, 4, 0, }, //
 				{ 4, 6, 4, 5, 3, 6, }, //
 				{ 3, 4, 3, 5, 2, 4, }, //
-				{ 3, 0, 4, 0, 4, 1, }, //
-				{ 5, 0, 6, 1, 6, 0, }, //
-				{ 1, 3, 2, 3, 2, 2, }, //
-				{ 0, 3, 0, 4, 1, 4, }, //
-				{ 6, 5, 5, 6, 6, 6, }, //
-				{ 1, 6, 2, 5, 2, 6, }, //
-				{ 3, 1, 2, 0, 2, 1, }, //
-				{ 3, 2, 3, 3, 4, 3, }, //
-				{ 0, 6, 1, 5, 0, 5, }, //
-				{ 0, 0, 1, 1, 1, 0, }, //
+				{ 2, 6, 1, 6, 2, 5, }, //
 				{ 1, 2, 0, 2, 0, 1, }, //
-				{ 4, 2, 5, 1, 5, 2, }, //
+				{ 0, 3, 1, 4, 0, 4, }, //
+				{ 0, 5, 0, 6, 1, 5, }, //
+				{ 6, 5, 6, 6, 5, 6, }, //
+				{ 1, 0, 1, 1, 0, 0, }, //
+				{ 4, 2, 5, 2, 5, 1, }, //
+				{ 5, 5, 5, 4, 4, 4, }, //
+				{ 5, 0, 6, 0, 6, 1, }, //
+				{ 3, 1, 2, 1, 2, 0, }, //
+				{ 3, 3, 4, 3, 3, 2, }, //
 		};
 
 		var random = new Random();
@@ -120,7 +120,7 @@ public class Puzzle2018_12a {
 					if (!s0.contains(a)) {
 						g[x0][y0] = a;
 						for (short b = 1; b < max; b++)
-							if (!s1.contains(b)) {
+							if (!s1.contains(b) && a != b) {
 								g[x1][y1] = b;
 								fillIn(a, b, x2, y2, () -> {
 									if (validateRowCols())
@@ -157,10 +157,10 @@ public class Puzzle2018_12a {
 					if (!s0.contains(a)) {
 						g[x0][y0] = a;
 						for (short b = 1; b < max; b++)
-							if (!s1.contains(b)) {
+							if (!s1.contains(b) && a != b) {
 								g[x1][y1] = b;
 								for (short c = 1; c < max; c++)
-									if (!s2.contains(c)) {
+									if (!s2.contains(c) && a != c && b != c) {
 										g[x2][y2] = c;
 										fillIn(a, b, c, x3, y3, () -> {
 											if (validateRowCols())
@@ -205,20 +205,26 @@ public class Puzzle2018_12a {
 
 			private void fillIn(int a, int b, int x, int y, Runnable r) {
 				if (a <= b && b % a == 0) {
-					g[x][y] = (short) (b / a);
+					var c = b / a;
+					g[x][y] = (short) c;
 					score += b;
-					r.run();
+					if (a != c && b != c)
+						r.run();
 					score -= b;
 				}
 				if (b <= a && a % b == 0) {
-					g[x][y] = (short) (a / b);
+					var c = a / b;
+					g[x][y] = (short) c;
 					score += a;
-					r.run();
+					if (a != c && b != c)
+						r.run();
 					score -= a;
 				}
-				g[x][y] = (short) (a * b);
+				var c = a * b;
+				g[x][y] = (short) c;
 				score += g[x][y];
-				r.run();
+				if (a != c && b != c)
+					r.run();
 				score -= g[x][y];
 				g[x][y] = 0;
 			}
@@ -228,27 +234,34 @@ public class Puzzle2018_12a {
 				var ca = c * a;
 				var ab = a * b;
 				if (bc <= a && a % bc == 0) {
-					g[x][y] = (short) (a / bc);
+					var d = a / bc;
+					g[x][y] = (short) d;
 					score += a;
-					r.run();
+					if (a != d && b != d && c != d)
+						r.run();
 					score -= a;
 				}
 				if (ca <= b && b % ca == 0) {
-					g[x][y] = (short) (b / ca);
+					var d = b / ca;
+					g[x][y] = (short) d;
 					score += b;
-					r.run();
+					if (a != d && b != d && c != d)
+						r.run();
 					score -= b;
 				}
 				if (ab <= c && c % ab == 0) {
-					g[x][y] = (short) (c / ab);
+					var d = c / ab;
+					g[x][y] = (short) d;
 					score += c;
-					r.run();
+					if (a != d && b != d && c != d)
+						r.run();
 					score -= c;
 				}
 				var product = a * bc;
 				g[x][y] = (short) product;
 				score += product;
-				r.run();
+				if (a != product && b != product && c != product)
+					r.run();
 				score -= product;
 				g[x][y] = 0;
 			}
