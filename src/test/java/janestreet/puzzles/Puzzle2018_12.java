@@ -12,14 +12,14 @@ import suite.streamlet.FunUtil.Sink;
 /*
 for all tile order, find the first score
 
-  3,  6,  5,  4,  2, 21,  7,
- 12,  4, 30,  2,  8,  3,  6,
-  4, 20,  7, 14,  5,  2,  3,
-  2,  5,  4,  3, 30,  6, 20,
-  7, 14,  2, 12,  3,  5,  4,
- 10,  3,  6,  5,  4, 12,  2,
-  5,  2,  3, 15,  1,  4,  8,
-SCORE = 238
+  3, 24,  6,  4,  2, 15,  5,
+ 15,  5,  4,  2,  8,  3,  6,
+  4, 12,  7, 14,  5,  2,  3,
+  2,  3, 15,  5, 30,  6,  4,
+  8,  4,  2,  3,  6,  5, 20,
+  5,  6,  3,  1,  4, 24,  2,
+ 10,  2,  5, 15,  3,  4,  8,
+SCORE = 215
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12 {
@@ -69,21 +69,22 @@ public class Puzzle2018_12 {
 				var sa = findExcludeSet(x0, y0);
 				var sb = findExcludeSet(x1, y1);
 				var sc = findExcludeSet(x2, y2);
+				int score1;
 
-				var ax = Math.min(nr, hallmark - score0 - 1);
+				var ax = Math.min(nr, (hallmark - score0) / 2);
 				for (short a = 2; a < ax; a++)
 					if (!sa.contains(a)) {
 						var bx = Math.min(nr, (hallmark - score0) / a);
 						for (short b = 2; b < bx; b++)
 							if (!sb.contains(b) && a != b) {
-								var c = a * b;
-								var score1 = score0 + c;
-								if (!sc.contains(c) && a != c && b != c && score1 < score) {
-									score = score1;
-									g[x0][y0] = a;
-									g[x1][y1] = b;
-									g[x2][y2] = (short) c;
-								}
+								var c = (short) (a * b);
+								if (!sc.contains(c) && a != c && b != c)
+									if ((score1 = score0 + c) < score) {
+										g[x0][y0] = a;
+										g[x1][y1] = b;
+										g[x2][y2] = c;
+										score = score1;
+									}
 							}
 					}
 
@@ -101,25 +102,27 @@ public class Puzzle2018_12 {
 				var sb = findExcludeSet(x1, y1);
 				var sc = findExcludeSet(x2, y2);
 				var sd = findExcludeSet(x3, y3);
+				int score1;
 
-				var ax = Math.min(nr, hallmark - score0 - 1);
+				var ax = Math.min(nr, hallmark - score0);
 				for (short a = 1; a < ax; a++)
 					if (!sa.contains(a)) {
 						var bx = Math.min(nr, (hallmark - score0) / a);
 						for (short b = 1; b < bx; b++)
 							if (!sb.contains(b) && a != b) {
-								var cx = Math.min(nr, (hallmark - score0) / a * b);
+								var ab = a * b;
+								var cx = Math.min(nr, (hallmark - score0) / ab);
 								for (short c = 1; c < cx; c++)
 									if (!sc.contains(c) && a != c && b != c) {
-										var d = a * b * c;
-										var score1 = score0 + d;
-										if (!sd.contains(d) && a != d && b != d && c != d && score1 < score) {
-											score = score1;
-											g[x0][y0] = a;
-											g[x1][y1] = b;
-											g[x2][y2] = c;
-											g[x3][y3] = (short) d;
-										}
+										var d = (short) (ab * c);
+										if (!sd.contains(d) && a != d && b != d && c != d)
+											if ((score1 = score0 + d) < score) {
+												g[x0][y0] = a;
+												g[x1][y1] = b;
+												g[x2][y2] = c;
+												g[x3][y3] = d;
+												score = score1;
+											}
 									}
 							}
 					}
@@ -173,21 +176,27 @@ public class Puzzle2018_12 {
 			private void p(byte[] tile0, Sink<byte[]> sink) {
 				var tile1 = new byte[tile0.length];
 				for (var i = 0; i < tile0.length; i += 2) {
-					var j = 0;
-					while (j < i) {
-						tile1[j + 0] = tile0[j + 0];
-						tile1[j + 1] = tile0[j + 1];
-						j += 2;
-					}
-					while (j < tile1.length - 2) {
-						tile1[j + 0] = tile0[j + 2];
-						tile1[j + 1] = tile0[j + 3];
-						j += 2;
-					}
-					var xp = 1 + (tile1[j + 0] = tile0[i + 0]);
-					var yp = 1 + (tile1[j + 1] = tile0[i + 1]);
-					j += 2;
+					var xs = tile0[i + 0];
+					var ys = tile0[i + 1];
+					var xp = (byte) (1 + xs);
+					var yp = (byte) (1 + ys);
+
 					if (p[xp - 1][yp] == 0 && p[xp + 1][yp] == 0 && p[xp][yp - 1] == 0 && p[xp][yp + 1] == 0) {
+						var j = 0;
+						while (j < i) {
+							tile1[j + 0] = tile0[j + 0];
+							tile1[j + 1] = tile0[j + 1];
+							j += 2;
+						}
+						while (j < tile1.length - 2) {
+							tile1[j + 0] = tile0[j + 2];
+							tile1[j + 1] = tile0[j + 3];
+							j += 2;
+						}
+						tile1[j + 0] = xs;
+						tile1[j + 1] = ys;
+						j += 2;
+
 						p[xp][yp] = 1;
 						sink.f(tile1);
 						p[xp][yp] = 0;
