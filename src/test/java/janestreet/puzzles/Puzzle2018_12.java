@@ -1,9 +1,5 @@
 package janestreet.puzzles;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-
 import org.junit.Test;
 
 import suite.primitive.adt.set.IntSet;
@@ -26,26 +22,26 @@ public class Puzzle2018_12 {
 
 	@Test
 	public void test() {
-		var nr = 8;
+		var nr = 9;
 		var size = 7;
-		var hallmark = 999;
+		var hallmark = 300;
 
 		var tiles0 = new byte[][] { //
 				{ 2, 5, 2, 6, 1, 6, }, //
 				{ 5, 6, 6, 5, 6, 6, }, //
 				{ 0, 4, 0, 3, 1, 4, }, //
-				{ 5, 1, 4, 2, 5, 2, }, //
+				{ 4, 2, 5, 2, 5, 1, }, //
 				{ 6, 4, 5, 3, 6, 2, 6, 3, }, //
-				{ 6, 1, 6, 0, 5, 0, }, //
-				{ 0, 2, 0, 1, 1, 2, }, //
+				{ 6, 1, 5, 0, 6, 0, }, //
+				{ 0, 2, 1, 2, 0, 1, }, //
 				{ 0, 6, 1, 5, 0, 5, }, //
-				{ 4, 5, 4, 6, 3, 6, }, //
+				{ 4, 5, 3, 6, 4, 6, }, //
 				{ 2, 0, 3, 1, 2, 1, }, //
 				{ 3, 5, 2, 4, 3, 4, }, //
 				{ 1, 3, 2, 2, 2, 3, }, //
-				{ 3, 3, 3, 2, 4, 3, }, //
+				{ 3, 3, 4, 3, 3, 2, }, //
 				{ 0, 0, 1, 1, 1, 0, }, //
-				{ 3, 0, 4, 0, 4, 1, }, //
+				{ 3, 0, 4, 1, 4, 0, }, //
 				{ 4, 4, 5, 4, 5, 5, }, //
 		};
 
@@ -78,13 +74,14 @@ public class Puzzle2018_12 {
 						for (short b = 2; b < bx; b++)
 							if (!sb.contains(b) && a != b) {
 								var c = (short) (a * b);
-								if (!sc.contains(c) && a != c && b != c)
+								if (!sc.contains(c) && a != c && b != c) {
 									if ((score1 = score0 + c) < score) {
 										g[x0][y0] = a;
 										g[x1][y1] = b;
 										g[x2][y2] = c;
 										score = score1;
 									}
+								}
 							}
 					}
 
@@ -115,7 +112,7 @@ public class Puzzle2018_12 {
 								for (short c = 1; c < cx; c++)
 									if (!sc.contains(c) && a != c && b != c) {
 										var d = (short) (ab * c);
-										if (!sd.contains(d) && a != d && b != d && c != d)
+										if (!sd.contains(d) && a != d && b != d && c != d) {
 											if ((score1 = score0 + d) < score) {
 												g[x0][y0] = a;
 												g[x1][y1] = b;
@@ -123,6 +120,7 @@ public class Puzzle2018_12 {
 												g[x3][y3] = d;
 												score = score1;
 											}
+										}
 									}
 							}
 					}
@@ -175,7 +173,7 @@ public class Puzzle2018_12 {
 		var permuteTile = new Object() {
 			private void p(byte[] tile0, Sink<byte[]> sink) {
 				var tile1 = new byte[tile0.length];
-				for (var i = 0; i < tile0.length; i += 2) {
+				for (var i = tile0.length - 2; 0 <= i; i -= 2) {
 					var xs = tile0[i + 0];
 					var ys = tile0[i + 1];
 					var xp = (byte) (1 + xs);
@@ -205,18 +203,22 @@ public class Puzzle2018_12 {
 			}
 		};
 
-		var tilesSet = new HashSet<>(Arrays.asList(tiles0));
-
 		var permuteTiles = new Object() {
 			private void p(int t) {
 				if (t < tiles0.length)
-					for (var tile : new ArrayList<>(tilesSet)) {
-						tilesSet.remove(tile);
-						permuteTile.p(tile, tile_ -> filler.fill(tiles1[t] = tile_, () -> p(t + 1)));
-						tilesSet.add(tile);
+					for (var i = t; i < tiles0.length; i++) {
+						swap(i, t);
+						permuteTile.p(tiles0[t], tile_ -> filler.fill(tiles1[t] = tile_, () -> p(t + 1)));
+						swap(i, t);
 					}
 				else
 					tryOnce.run();
+			}
+
+			private void swap(int x, int y) {
+				var t = tiles0[x];
+				tiles0[x] = tiles0[y];
+				tiles0[y] = t;
 			}
 		};
 
