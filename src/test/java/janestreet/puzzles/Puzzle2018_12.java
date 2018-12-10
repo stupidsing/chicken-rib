@@ -22,13 +22,13 @@ for all tile order, find the first score
 SCORE = 238
  */
 // https://www.janestreet.com/puzzles/block-party-2/
-public class Puzzle2018_12b {
+public class Puzzle2018_12 {
 
 	@Test
 	public void test() {
 		var nr = 8;
 		var size = 7;
-		var hallmark = 238;
+		var hallmark = 999;
 
 		var tiles0 = new byte[][] { //
 				{ 2, 5, 2, 6, 1, 6, }, //
@@ -48,7 +48,8 @@ public class Puzzle2018_12b {
 				{ 3, 0, 4, 0, 4, 1, }, //
 				{ 4, 4, 5, 4, 5, 5, }, //
 		};
-		var tiles = new byte[tiles0.length][];
+
+		var tiles1 = new byte[tiles0.length][];
 		var g = new short[size][size];
 		var p = new byte[size + 2][size + 2];
 
@@ -63,80 +64,71 @@ public class Puzzle2018_12b {
 			}
 
 			private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
-				var max = Math.min(nr, hallmark - score - 1);
+				var score0 = score;
+				score = hallmark;
 				var sa = findExcludeSet(x0, y0);
 				var sb = findExcludeSet(x1, y1);
 				var sc = findExcludeSet(x2, y2);
-				var minScore = hallmark;
-				short a1 = -1, b1 = -1;
-				var c1 = -1;
 
-				for (short a = 2; a < max; a++)
+				var ax = Math.min(nr, hallmark - score0 - 1);
+				for (short a = 2; a < ax; a++)
 					if (!sa.contains(a)) {
-						var bx = (minScore - score) / a;
+						var bx = Math.min(nr, (hallmark - score0) / a);
 						for (short b = 2; b < bx; b++)
 							if (!sb.contains(b) && a != b) {
 								var c = a * b;
-								var score1 = score + c;
-								if (!sc.contains(c) && a != c && b != c && score1 < minScore) {
-									minScore = score1;
-									a1 = a;
-									b1 = b;
-									c1 = c;
+								var score1 = score0 + c;
+								if (!sc.contains(c) && a != c && b != c && score1 < score) {
+									score = score1;
+									g[x0][y0] = a;
+									g[x1][y1] = b;
+									g[x2][y2] = (short) c;
 								}
 							}
 					}
 
-				if (minScore < hallmark) {
-					g[x0][y0] = a1;
-					g[x1][y1] = b1;
-					g[x2][y2] = (short) c1;
-					score += c1;
+				if (score < hallmark)
 					r.run();
-					score -= c1;
-					g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
-				}
+
+				g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
+				score = score0;
 			}
 
 			private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
-				var max = Math.min(nr, hallmark - score - 1);
+				var score0 = score;
+				var score = hallmark;
 				var sa = findExcludeSet(x0, y0);
 				var sb = findExcludeSet(x1, y1);
 				var sc = findExcludeSet(x2, y2);
 				var sd = findExcludeSet(x3, y3);
-				var minScore = hallmark;
-				short a1 = -1, b1 = -1, c1 = -1;
-				var d1 = -1;
 
-				for (short a = 1; a < max; a++)
-					if (!sa.contains(a))
-						for (short b = 1; b < max; b++)
+				var ax = Math.min(nr, hallmark - score0 - 1);
+				for (short a = 1; a < ax; a++)
+					if (!sa.contains(a)) {
+						var bx = Math.min(nr, (hallmark - score0) / a);
+						for (short b = 1; b < bx; b++)
 							if (!sb.contains(b) && a != b) {
-								var cx = (minScore - score) / a * b;
+								var cx = Math.min(nr, (hallmark - score0) / a * b);
 								for (short c = 1; c < cx; c++)
 									if (!sc.contains(c) && a != c && b != c) {
 										var d = a * b * c;
-										var score1 = score + d;
-										if (!sd.contains(d) && a != d && b != d && c != d && score1 < minScore) {
-											minScore = score1;
-											a1 = a;
-											b1 = b;
-											c1 = c;
-											d1 = d;
+										var score1 = score0 + d;
+										if (!sd.contains(d) && a != d && b != d && c != d && score1 < score) {
+											score = score1;
+											g[x0][y0] = a;
+											g[x1][y1] = b;
+											g[x2][y2] = c;
+											g[x3][y3] = (short) d;
 										}
 									}
 							}
+					}
 
-				if (minScore < hallmark) {
-					g[x0][y0] = a1;
-					g[x1][y1] = b1;
-					g[x2][y2] = c1;
-					g[x3][y3] = (short) d1;
-					score += d1;
+				if (score < hallmark)
 					r.run();
-					score -= d1;
-					g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
-				}
+
+				g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+				score = score0;
 			}
 
 			private IntSet findExcludeSet(int x, int y) {
@@ -155,7 +147,7 @@ public class Puzzle2018_12b {
 			if (filler.score < minScore[0]) {
 				System.out.println("TILES");
 
-				for (var tile : tiles) {
+				for (var tile : tiles1) {
 					System.out.print("{ ");
 					for (var v : tile)
 						System.out.print(v + ", ");
@@ -211,10 +203,7 @@ public class Puzzle2018_12b {
 				if (t < tiles0.length)
 					for (var tile : new ArrayList<>(tilesSet)) {
 						tilesSet.remove(tile);
-						permuteTile.p(tile, tile_ -> {
-							tiles[t] = tile_;
-							filler.fill(tile_, () -> p(t + 1));
-						});
+						permuteTile.p(tile, tile_ -> filler.fill(tiles1[t] = tile_, () -> p(t + 1)));
 						tilesSet.add(tile);
 					}
 				else
