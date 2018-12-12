@@ -15,7 +15,7 @@ for all tile order, find the first score
   8,  4,  2,  3,  6,  5, 20,
   5,  6,  3,  1,  4, 24,  2,
  10,  2,  5, 15,  3,  4,  8,
-SCORE = 215
+SCORE = 230
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12 {
@@ -24,7 +24,7 @@ public class Puzzle2018_12 {
 	public void test() {
 		var nr = 9;
 		var size = 7;
-		var hallmark = 300;
+		var hallmark = 240;
 
 		var tiles0 = new byte[][] { //
 				{ 2, 5, 2, 6, 1, 6, }, //
@@ -61,16 +61,15 @@ public class Puzzle2018_12 {
 
 			private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
 				var score0 = score;
-				score = hallmark;
+				var score1 = score = hallmark;
 				var sa = findExcludeSet(x0, y0);
 				var sb = findExcludeSet(x1, y1);
 				var sc = findExcludeSet(x2, y2);
-				int score1;
 
-				var ax = Math.min(nr, (hallmark - score0) / 2);
+				var ax = Math.min(nr, (score1 - score0) / 2);
 				for (short a = 2; a < ax; a++)
 					if (!sa.contains(a)) {
-						var bx = Math.min(nr, (hallmark - score0) / a);
+						var bx = Math.min(nr, (score1 - score0) / a);
 						for (short b = 2; b < bx; b++)
 							if (!sb.contains(b) && a != b) {
 								var c = (short) (a * b);
@@ -94,21 +93,20 @@ public class Puzzle2018_12 {
 
 			private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
 				var score0 = score;
-				var score = hallmark;
+				var score1 = score = hallmark;
 				var sa = findExcludeSet(x0, y0);
 				var sb = findExcludeSet(x1, y1);
 				var sc = findExcludeSet(x2, y2);
 				var sd = findExcludeSet(x3, y3);
-				int score1;
 
-				var ax = Math.min(nr, hallmark - score0);
+				var ax = Math.min(nr, score1 - score0);
 				for (short a = 1; a < ax; a++)
 					if (!sa.contains(a)) {
-						var bx = Math.min(nr, (hallmark - score0) / a);
+						var bx = Math.min(nr, (score1 - score0) / a);
 						for (short b = 1; b < bx; b++)
 							if (!sb.contains(b) && a != b) {
 								var ab = a * b;
-								var cx = Math.min(nr, (hallmark - score0) / ab);
+								var cx = Math.min(nr, (score1 - score0) / ab);
 								for (short c = 1; c < cx; c++)
 									if (!sc.contains(c) && a != c && b != c) {
 										var d = (short) (ab * c);
