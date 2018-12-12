@@ -26,7 +26,7 @@ public class Puzzle2018_12 {
 		var size = 7;
 		var hallmark = 240;
 
-		var tiles0 = new byte[][] { //
+		var tiles = new byte[][] { //
 				{ 2, 5, 2, 6, 1, 6, }, //
 				{ 5, 6, 6, 5, 6, 6, }, //
 				{ 0, 4, 0, 3, 1, 4, }, //
@@ -45,7 +45,6 @@ public class Puzzle2018_12 {
 				{ 4, 4, 5, 4, 5, 5, }, //
 		};
 
-		var tiles1 = new byte[tiles0.length][];
 		var g = new short[size][size];
 		var p = new byte[size + 2][size + 2];
 
@@ -60,16 +59,17 @@ public class Puzzle2018_12 {
 			}
 
 			private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
-				var score0 = score;
-				var score1 = score = hallmark;
 				var sa = findExcludeSet(x0, y0);
 				var sb = findExcludeSet(x1, y1);
 				var sc = findExcludeSet(x2, y2);
+				var score0 = score;
+				int score1;
+				score = hallmark;
 
-				var ax = Math.min(nr, (score1 - score0) / 2);
+				var ax = Math.min(nr, (score - score0) / 2);
 				for (short a = 2; a < ax; a++)
 					if (!sa.contains(a)) {
-						var bx = Math.min(nr, (score1 - score0) / a);
+						var bx = Math.min(nr, (score - score0) / a);
 						for (short b = 2; b < bx; b++)
 							if (!sb.contains(b) && a != b) {
 								var c = (short) (a * b);
@@ -92,21 +92,22 @@ public class Puzzle2018_12 {
 			}
 
 			private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
-				var score0 = score;
-				var score1 = score = hallmark;
 				var sa = findExcludeSet(x0, y0);
 				var sb = findExcludeSet(x1, y1);
 				var sc = findExcludeSet(x2, y2);
 				var sd = findExcludeSet(x3, y3);
+				var score0 = score;
+				int score1;
+				score = hallmark;
 
-				var ax = Math.min(nr, score1 - score0);
+				var ax = Math.min(nr, score - score0);
 				for (short a = 1; a < ax; a++)
 					if (!sa.contains(a)) {
-						var bx = Math.min(nr, (score1 - score0) / a);
+						var bx = Math.min(nr, (score - score0) / a);
 						for (short b = 1; b < bx; b++)
 							if (!sb.contains(b) && a != b) {
 								var ab = a * b;
-								var cx = Math.min(nr, (score1 - score0) / ab);
+								var cx = Math.min(nr, (score - score0) / ab);
 								for (short c = 1; c < cx; c++)
 									if (!sc.contains(c) && a != c && b != c) {
 										var d = (short) (ab * c);
@@ -146,7 +147,7 @@ public class Puzzle2018_12 {
 			if (filler.score < minScore[0]) {
 				System.out.println("TILES");
 
-				for (var tile : tiles1) {
+				for (var tile : tiles) {
 					System.out.print("{ ");
 					for (var v : tile)
 						System.out.print(v + ", ");
@@ -169,44 +170,36 @@ public class Puzzle2018_12 {
 		};
 
 		var permuteTile = new Object() {
-			private void p(byte[] tile0, Sink<byte[]> sink) {
-				var tile1 = new byte[tile0.length];
-				for (var i = tile0.length - 2; 0 <= i; i -= 2) {
-					var xs = tile0[i + 0];
-					var ys = tile0[i + 1];
-					var xp = (byte) (1 + xs);
-					var yp = (byte) (1 + ys);
-
+			private void p(byte[] tile, Sink<byte[]> sink) {
+				for (var i = tile.length - 2; 0 <= i; i -= 2) {
+					var xp = (byte) (1 + tile[i + 0]);
+					var yp = (byte) (1 + tile[i + 1]);
 					if (p[xp - 1][yp] == 0 && p[xp + 1][yp] == 0 && p[xp][yp - 1] == 0 && p[xp][yp + 1] == 0) {
-						var j = 0;
-						while (j < i) {
-							tile1[j + 0] = tile0[j + 0];
-							tile1[j + 1] = tile0[j + 1];
-							j += 2;
-						}
-						while (j < tile1.length - 2) {
-							tile1[j + 0] = tile0[j + 2];
-							tile1[j + 1] = tile0[j + 3];
-							j += 2;
-						}
-						tile1[j + 0] = xs;
-						tile1[j + 1] = ys;
-						j += 2;
-
+						swap(tile, i, tile.length - 2);
 						p[xp][yp] = 1;
-						sink.f(tile1);
+						sink.f(tile);
 						p[xp][yp] = 0;
+						swap(tile, i, tile.length - 2);
 					}
 				}
+			}
+
+			private void swap(byte[] tile, int i, int j) {
+				var old0 = tile[i + 0];
+				var old1 = tile[i + 1];
+				tile[i + 0] = tile[j + 0];
+				tile[i + 1] = tile[j + 1];
+				tile[j + 0] = old0;
+				tile[j + 1] = old1;
 			}
 		};
 
 		var permuteTiles = new Object() {
 			private void p(int t) {
-				if (t < tiles0.length)
-					for (var i = t; i < tiles0.length; i++) {
+				if (t < tiles.length)
+					for (var i = t; i < tiles.length; i++) {
 						swap(i, t);
-						permuteTile.p(tiles0[t], tile_ -> filler.fill(tiles1[t] = tile_, () -> p(t + 1)));
+						permuteTile.p(tiles[t], tile_ -> filler.fill(tile_, () -> p(t + 1)));
 						swap(i, t);
 					}
 				else
@@ -214,9 +207,9 @@ public class Puzzle2018_12 {
 			}
 
 			private void swap(int x, int y) {
-				var t = tiles0[x];
-				tiles0[x] = tiles0[y];
-				tiles0[y] = t;
+				var t = tiles[x];
+				tiles[x] = tiles[y];
+				tiles[y] = t;
 			}
 		};
 
