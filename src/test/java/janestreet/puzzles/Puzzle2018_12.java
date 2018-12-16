@@ -63,32 +63,31 @@ public class Puzzle2018_12 {
 				var sb = findExcludeSet(x1, y1);
 				var sc = findExcludeSet(x2, y2);
 				var score0 = score;
-				int score1;
-				score = hallmark;
+				var inc = hallmark - score;
 
-				var ax = Math.min(nr, (score - score0) / 2);
-				for (short a = 2; a < ax; a++)
-					if (!sa.contains(a)) {
-						var bx = Math.min(nr, (score - score0) / a);
-						for (short b = 2; b < bx; b++)
-							if (!sb.contains(b) && a != b) {
-								var c = (short) (a * b);
-								if (!sc.contains(c) && a != c && b != c) {
-									if ((score1 = score0 + c) < score) {
-										g[x0][y0] = a;
-										g[x1][y1] = b;
-										g[x2][y2] = c;
-										score = score1;
-									}
-								}
+				var ax = Math.min(nr, inc / 2);
+				for (var a = (short) 2; a < ax; a++) {
+					var bx = !sa.contains(a) ? Math.min(nr, inc / a) : 0;
+					for (var b = (short) 2; b < bx; b++) {
+						var c = !sb.contains(b) && a != b ? (short) (a * b) : a;
+						if (!sc.contains(c) && a != c && b != c) {
+							if (c < inc) {
+								g[x0][y0] = a;
+								g[x1][y1] = b;
+								g[x2][y2] = c;
+								inc = c;
 							}
+						}
 					}
+				}
 
-				if (score < hallmark)
+				if (inc < hallmark - score0) {
+					score = score0 + inc;
 					r.run();
+					score = score0;
+				}
 
 				g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
-				score = score0;
 			}
 
 			private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
@@ -97,38 +96,36 @@ public class Puzzle2018_12 {
 				var sc = findExcludeSet(x2, y2);
 				var sd = findExcludeSet(x3, y3);
 				var score0 = score;
-				int score1;
-				score = hallmark;
+				var inc = hallmark - score;
 
-				var ax = Math.min(nr, score - score0);
-				for (short a = 1; a < ax; a++)
-					if (!sa.contains(a)) {
-						var bx = Math.min(nr, (score - score0) / a);
-						for (short b = 1; b < bx; b++)
-							if (!sb.contains(b) && a != b) {
-								var ab = a * b;
-								var cx = Math.min(nr, (score - score0) / ab);
-								for (short c = 1; c < cx; c++)
-									if (!sc.contains(c) && a != c && b != c) {
-										var d = (short) (ab * c);
-										if (!sd.contains(d) && a != d && b != d && c != d) {
-											if ((score1 = score0 + d) < score) {
-												g[x0][y0] = a;
-												g[x1][y1] = b;
-												g[x2][y2] = c;
-												g[x3][y3] = d;
-												score = score1;
-											}
-										}
-									}
+				var ax = Math.min(nr, inc);
+				for (var a = (short) 1; a < ax; a++) {
+					var bx = !sa.contains(a) ? Math.min(nr, inc / a) : 0;
+					for (var b = (short) 1; b < bx; b++) {
+						var ab = a * b;
+						var cx = !sb.contains(b) && a != b ? Math.min(nr, inc / ab) : 0;
+						for (var c = (short) 1; c < cx; c++) {
+							var d = !sc.contains(c) && a != c && b != c ? (short) (ab * c) : a;
+							if (!sd.contains(d) && a != d && b != d && c != d) {
+								if (d < inc) {
+									g[x0][y0] = a;
+									g[x1][y1] = b;
+									g[x2][y2] = c;
+									g[x3][y3] = d;
+									inc = d;
+								}
 							}
+						}
 					}
+				}
 
-				if (score < hallmark)
+				if (inc < hallmark - score0) {
+					score = score0 + inc;
 					r.run();
+					score = score0;
+				}
 
 				g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
-				score = score0;
 			}
 
 			private IntSet findExcludeSet(int x, int y) {
