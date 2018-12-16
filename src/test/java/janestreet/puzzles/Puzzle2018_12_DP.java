@@ -75,13 +75,12 @@ public class Puzzle2018_12_DP {
 			var map1 = new IntObjMap<List<Board>>();
 
 			for (var e : map.streamlet()) {
-				var v0 = e.t0;
-				int v1;
+				int v;
 
 				for (var i = 0; i < tiles.length; i++)
-					if (Integer.bitCount(v1 = v0 | (1 << i)) == n + 1) {
+					if (Integer.bitCount(v = e.t0 | 1 << i) == n + 1) {
 						var tile = tiles[i];
-						var list = map1.computeIfAbsent(v1, v_ -> new ArrayList<>());
+						var list = map1.computeIfAbsent(v, v_ -> new ArrayList<>());
 						var minScore = IntMutable.of(!list.isEmpty() ? list.get(0).score : Integer.MAX_VALUE);
 
 						for (var board : e.t1) {
@@ -92,15 +91,12 @@ public class Puzzle2018_12_DP {
 								private int score = board.score;
 
 								private void fill(byte[] tile, Runnable r) {
-									if (tile.length == 6)
-										if (p[tile[4]][tile[5]] == 0)
+									int tl = tile.length;
+									if (p[tile[tl - 2]][tile[tl - 1]] == 0)
+										if (tl == 6)
 											fill3(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], r);
 										else
-											;
-									else if (p[tile[6]][tile[7]] == 0)
-										fill4(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], r);
-									else
-										;
+											fill4(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], r);
 								}
 
 								private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {

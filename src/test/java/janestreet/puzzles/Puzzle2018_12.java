@@ -24,7 +24,7 @@ public class Puzzle2018_12 {
 	public void test() {
 		var nr = 9;
 		var size = 7;
-		var hallmark = 240;
+		var hallmark = 230;
 
 		var tiles = new byte[][] { //
 				{ 2, 5, 2, 6, 1, 6, }, //
