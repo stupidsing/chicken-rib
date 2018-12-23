@@ -1,9 +1,9 @@
 package janestreet.puzzles;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -31,14 +31,39 @@ SCORE = 230
 public class Puzzle2018_12_DP {
 
 	private class Board {
-		private short[][] g;
-		private byte[][] p;
-		private int score;
+		private final byte[][] g;
+		private final byte[][] p;
+		private final int score, hashCode;
 
-		private Board(short[][] g, byte[][] p, int score) {
+		private Board(byte[][] g, byte[][] p, int score) {
 			this.g = g;
 			this.p = p;
 			this.score = score;
+
+			int h = 7;
+			for (var r : g)
+				for (var b : r)
+					h = h * 31 + b;
+
+			hashCode = h;
+		}
+
+		public int hashCode() {
+			return hashCode;
+		}
+
+		public boolean equals(Object object) {
+			if (object.getClass() == Board.class) {
+				Board board = (Board) object;
+				var b = true;
+
+				for (var x = 0; x < g.length; x++)
+					for (var y = 0; y < g[x].length; y++)
+						b &= g[x][y] == board.g[x][y];
+
+				return b;
+			} else
+				return false;
 		}
 	}
 
@@ -67,13 +92,13 @@ public class Puzzle2018_12_DP {
 				{ 4, 4, 5, 4, 5, 5, }, //
 		};
 
-		var board0 = new Board(new short[size][size], new byte[size + 2][size + 2], 0);
-		var map = new IntObjMap<List<Board>>();
-		map.put(0, List.of(board0));
+		var board0 = new Board(new byte[size][size], new byte[size + 2][size + 2], 0);
+		var map = new IntObjMap<Set<Board>>();
+		map.put(0, Set.of(board0));
 
-		for (var n = 0; n < 4; n++) {
-			// for (var n = 0; n < tiles.length; n++) {
-			var map1 = new IntObjMap<List<Board>>();
+		// for (var n = 0; n < 9; n++) {
+		for (var n = 0; n < tiles.length; n++) {
+			var map1 = new IntObjMap<Set<Board>>();
 
 			for (var e : map.streamlet()) {
 				int v;
@@ -81,23 +106,23 @@ public class Puzzle2018_12_DP {
 				for (var i = 0; i < tiles.length; i++)
 					if (Integer.bitCount(v = e.t0 | 1 << i) == n + 1) {
 						var tile = tiles[i];
-						var list = map1.computeIfAbsent(v, v_ -> new ArrayList<>());
-						var minScore = IntMutable.of(!list.isEmpty() ? list.get(0).score : Integer.MAX_VALUE);
+						var set = map1.computeIfAbsent(v, v_ -> new HashSet<>());
+						var minScore = IntMutable.of(!set.isEmpty() ? set.iterator().next().score : Integer.MAX_VALUE);
 
 						for (var board : e.t1) {
 							var g = board.g;
 							var p = board.p;
 
+							IntInt_Bool vp = (xs, ys) -> {
+								var xp = 1 + xs;
+								var yp = 1 + ys;
+								return p[xp - 1][yp] + p[xp + 1][yp] + p[xp][yp - 1] + p[xp][yp + 1] == 0;
+							};
+
 							var filler = new Object() {
 								private int score = board.score;
 
 								private void fill(byte[] tile, Runnable r) {
-									IntInt_Bool vp = (xs, ys) -> {
-										var xp = 1 + xs;
-										var yp = 1 + ys;
-										return p[xp - 1][yp] + p[xp + 1][yp] + p[xp][yp - 1] + p[xp][yp + 1] == 0;
-									};
-
 									int xs, ys;
 
 									if (tile.length == 6) {
@@ -120,17 +145,17 @@ public class Puzzle2018_12_DP {
 								}
 
 								private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
-									var sa = findExcludeSet(x0, y0);
-									var sb = findExcludeSet(x1, y1);
+									var bmka = findExcludeBitmask(x0, y0);
+									var bmkb = findExcludeBitmask(x1, y1);
 									var sc = findExcludeSet(x2, y2);
 									var score0 = score;
-									var inc = hallmark - score;
+									var inc = Math.min(Byte.MAX_VALUE, hallmark - score);
 
 									var ax = Math.min(nr, inc / 2);
-									for (var a = (short) 2; a < ax; a++) {
-										var bx = !sa.contains(a) ? Math.min(nr, inc / a) : 0;
-										for (var b = (short) 2; b < bx; b++) {
-											var c = !sb.contains(b) && a != b ? (short) (a * b) : a;
+									for (var a = (byte) 2; a < ax; a++) {
+										var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
+										for (var b = (byte) 2; b < bx; b++) {
+											var c = (bmkb & 1 << b) == 0 && a != b ? (byte) (a * b) : a;
 											if (!sc.contains(c) && a != c && b != c) {
 												if (c < inc) {
 													g[x0][y0] = a;
@@ -142,33 +167,32 @@ public class Puzzle2018_12_DP {
 										}
 									}
 
-									if (inc < hallmark - score0) {
+									if (g[x0][y0] != 0) {
 										score = score0 + inc;
-										p[x2][y2] = 1;
+										p[x2 + 1][y2 + 1] = 1;
 										r.run();
-										p[x2][y2] = 0;
+										p[x2 + 1][y2 + 1] = 0;
 										score = score0;
+										g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 									}
-
-									g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 								}
 
 								private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
-									var sa = findExcludeSet(x0, y0);
-									var sb = findExcludeSet(x1, y1);
-									var sc = findExcludeSet(x2, y2);
+									var bmka = findExcludeBitmask(x0, y0);
+									var bmkb = findExcludeBitmask(x1, y1);
+									var bmkc = findExcludeBitmask(x2, y2);
 									var sd = findExcludeSet(x3, y3);
 									var score0 = score;
-									var inc = hallmark - score;
+									var inc = Math.min(Byte.MAX_VALUE, hallmark - score);
+									var ab = Integer.MAX_VALUE;
 
 									var ax = Math.min(nr, inc);
-									for (var a = (short) 1; a < ax; a++) {
-										var bx = !sa.contains(a) ? Math.min(nr, inc / a) : 0;
-										for (var b = (short) 1; b < bx; b++) {
-											var ab = a * b;
-											var cx = !sb.contains(b) && a != b ? Math.min(nr, inc / ab) : 0;
-											for (var c = (short) 1; c < cx; c++) {
-												var d = !sc.contains(c) && a != c && b != c ? (short) (ab * c) : a;
+									for (var a = (byte) 1; a < ax; a++) {
+										var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
+										for (var b = (byte) 1; b < bx; b++) {
+											var cx = (bmkb & 1 << b) == 0 && a != b ? Math.min(nr, inc / (ab = a * b)) : 0;
+											for (var c = (byte) 1; c < cx; c++) {
+												var d = (bmkc & 1 << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
 												if (!sd.contains(d) && a != d && b != d && c != d) {
 													if (d < inc) {
 														g[x0][y0] = a;
@@ -182,20 +206,31 @@ public class Puzzle2018_12_DP {
 										}
 									}
 
-									if (inc < hallmark - score0) {
+									if (g[x0][y0] != 0) {
 										score = score0 + inc;
-										p[x3][y3] = 1;
+										p[x3 + 1][y3 + 1] = 1;
 										r.run();
-										p[x3][y3] = 0;
+										p[x3 + 1][y3 + 1] = 0;
 										score = score0;
+										g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 									}
+								}
 
-									g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+								private int findExcludeBitmask(int x, int y) {
+									var bmk = 0;
+									int v;
+									for (byte i = 0; i < size; i++) {
+										if (0 <= (v = g[i][y]) && v < nr)
+											bmk |= 1 << v;
+										if (0 <= (v = g[x][i]) && v < nr)
+											bmk |= 1 << v;
+									}
+									return bmk;
 								}
 
 								private IntSet findExcludeSet(int x, int y) {
 									var s = new IntSet();
-									for (short i = 0; i < size; i++) {
+									for (byte i = 0; i < size; i++) {
 										s.add(g[i][y]);
 										s.add(g[x][i]);
 									}
@@ -208,13 +243,13 @@ public class Puzzle2018_12_DP {
 
 								if (score < minScore.value()) {
 									minScore.update(score);
-									list.clear();
+									set.clear();
 								}
 
 								if (score <= minScore.value()) {
-									var g1 = To.array(g.length, short[].class, j -> Arrays.copyOf(g[j], g[j].length));
+									var g1 = To.array(g.length, byte[].class, j -> Arrays.copyOf(g[j], g[j].length));
 									var p1 = To.array(p.length, byte[].class, j -> Arrays.copyOf(p[j], p[j].length));
-									list.add(new Board(g1, p1, score));
+									set.add(new Board(g1, p1, score));
 								}
 							});
 						}
@@ -222,7 +257,7 @@ public class Puzzle2018_12_DP {
 			}
 
 			map = map1;
-			System.out.println("SIZE = " + map.size());
+			System.out.println("SIZE[" + n + "] = " + map.size());
 		}
 
 		var min = map.streamlet().values().concatMap(Read::from).min(Comparator.comparingInt(board -> board.score));

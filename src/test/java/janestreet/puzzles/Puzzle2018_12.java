@@ -45,7 +45,7 @@ public class Puzzle2018_12 {
 				{ 4, 4, 5, 4, 5, 5, }, //
 		};
 
-		var g = new short[size][size];
+		var g = new byte[size][size];
 		var p = new byte[size + 2][size + 2];
 
 		var filler = new Object() {
@@ -59,17 +59,17 @@ public class Puzzle2018_12 {
 			}
 
 			private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
-				var sa = findExcludeSet(x0, y0);
-				var sb = findExcludeSet(x1, y1);
+				var bmka = findExcludeBitmask(x0, y0);
+				var bmkb = findExcludeBitmask(x1, y1);
 				var sc = findExcludeSet(x2, y2);
 				var score0 = score;
-				var inc = hallmark - score;
+				var inc = Math.min(Byte.MAX_VALUE, hallmark - score);
 
 				var ax = Math.min(nr, inc / 2);
-				for (var a = (short) 2; a < ax; a++) {
-					var bx = !sa.contains(a) ? Math.min(nr, inc / a) : 0;
-					for (var b = (short) 2; b < bx; b++) {
-						var c = !sb.contains(b) && a != b ? (short) (a * b) : a;
+				for (var a = (byte) 2; a < ax; a++) {
+					var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
+					for (var b = (byte) 2; b < bx; b++) {
+						var c = (bmkb & 1 << b) == 0 && a != b ? (byte) (a * b) : a;
 						if (!sc.contains(c) && a != c && b != c) {
 							if (c < inc) {
 								g[x0][y0] = a;
@@ -81,31 +81,32 @@ public class Puzzle2018_12 {
 					}
 				}
 
-				if (inc < hallmark - score0) {
+				if (g[x0][y0] != 0) {
 					score = score0 + inc;
+					p[x2 + 1][y2 + 1] = 1;
 					r.run();
+					p[x2 + 1][y2 + 1] = 0;
 					score = score0;
+					g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 				}
-
-				g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 			}
 
 			private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
-				var sa = findExcludeSet(x0, y0);
-				var sb = findExcludeSet(x1, y1);
-				var sc = findExcludeSet(x2, y2);
+				var bmka = findExcludeBitmask(x0, y0);
+				var bmkb = findExcludeBitmask(x1, y1);
+				var bmkc = findExcludeBitmask(x2, y2);
 				var sd = findExcludeSet(x3, y3);
 				var score0 = score;
-				var inc = hallmark - score;
+				var inc = Math.min(Byte.MAX_VALUE, hallmark - score);
+				var ab = Integer.MAX_VALUE;
 
 				var ax = Math.min(nr, inc);
-				for (var a = (short) 1; a < ax; a++) {
-					var bx = !sa.contains(a) ? Math.min(nr, inc / a) : 0;
-					for (var b = (short) 1; b < bx; b++) {
-						var ab = a * b;
-						var cx = !sb.contains(b) && a != b ? Math.min(nr, inc / ab) : 0;
-						for (var c = (short) 1; c < cx; c++) {
-							var d = !sc.contains(c) && a != c && b != c ? (short) (ab * c) : a;
+				for (var a = (byte) 1; a < ax; a++) {
+					var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
+					for (var b = (byte) 1; b < bx; b++) {
+						var cx = (bmkb & 1 << b) == 0 && a != b ? Math.min(nr, inc / (ab = a * b)) : 0;
+						for (var c = (byte) 1; c < cx; c++) {
+							var d = (bmkc & 1 << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
 							if (!sd.contains(d) && a != d && b != d && c != d) {
 								if (d < inc) {
 									g[x0][y0] = a;
@@ -119,18 +120,31 @@ public class Puzzle2018_12 {
 					}
 				}
 
-				if (inc < hallmark - score0) {
+				if (g[x0][y0] != 0) {
 					score = score0 + inc;
+					p[x3 + 1][y3 + 1] = 1;
 					r.run();
+					p[x3 + 1][y3 + 1] = 0;
 					score = score0;
+					g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 				}
+			}
 
-				g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+			private int findExcludeBitmask(int x, int y) {
+				var bmk = 0;
+				int v;
+				for (byte i = 0; i < size; i++) {
+					if (0 <= (v = g[i][y]) && v < nr)
+						bmk |= 1 << v;
+					if (0 <= (v = g[x][i]) && v < nr)
+						bmk |= 1 << v;
+				}
+				return bmk;
 			}
 
 			private IntSet findExcludeSet(int x, int y) {
 				var s = new IntSet();
-				for (short i = 0; i < size; i++) {
+				for (byte i = 0; i < size; i++) {
 					s.add(g[i][y]);
 					s.add(g[x][i]);
 				}
@@ -153,8 +167,8 @@ public class Puzzle2018_12 {
 
 				System.out.println("TILES");
 
-				for (short x = 0; x < size; x++) {
-					for (short y = 0; y < size; y++) {
+				for (byte x = 0; x < size; x++) {
+					for (byte y = 0; y < size; y++) {
 						var s = "   " + g[x][y] + ",";
 						var length = s.length();
 						System.out.print(s.substring(length - 4, length));
