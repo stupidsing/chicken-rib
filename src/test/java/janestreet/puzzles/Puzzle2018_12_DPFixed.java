@@ -15,7 +15,10 @@ import suite.streamlet.Read;
 import suite.util.To;
 
 /*
-for all tile order, find the first score
+fixes the product cells,
+use DP to build up each tiles one-by-one,
+assume greedy approach would work (that every smallest feasible new tile would lead to a final global minimum),
+and find it
 
    , * ,   ,   , * ,   ,   ,
  * ,   ,   ,   ,   , * ,   ,
