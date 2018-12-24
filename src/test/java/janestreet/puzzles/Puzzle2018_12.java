@@ -89,8 +89,9 @@ public class Puzzle2018_12 {
 					var bx = (bmka & 1l << a) == 0 ? Math.min(nr, inc / a) : 0;
 					for (var b = (byte) 2; b < bx; b++) {
 						var c = (bmkb & 1l << b) == 0 && a != b ? (byte) (a * b) : a;
-						if ((bmkc & 1l << c) == 0 && a != c && b != c) {
-							if (c < inc) {
+						if (c < inc) {
+							var d = (bmkc & 1l << c) == 0 && a != c && b != c;
+							if (d) {
 								g[x0][y0] = a;
 								g[x1][y1] = b;
 								g[x2][y2] = c;
