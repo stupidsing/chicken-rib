@@ -20,6 +20,23 @@ SCORE = 229
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12 {
 
+	private byte[][] combos = { //
+			{ 2, 3, 6, }, //
+			{ 2, 4, 8, }, //
+			{ 2, 5, 10, }, //
+			{ 2, 6, 12, }, //
+			// { 2, 7, 14, }, //
+			{ 3, 4, 12, }, //
+			{ 3, 5, 15, }, //
+			{ 3, 6, 18, }, //
+			// { 3, 7, 21, }, //
+			{ 4, 5, 20, }, //
+			{ 4, 6, 24, }, //
+			// { 4, 7, 28, }, //
+			{ 5, 6, 30, }, //
+			// { 5, 7, 35, }, //
+	};
+
 	@Test
 	public void test() {
 		var nr = 8;
@@ -48,6 +65,8 @@ public class Puzzle2018_12 {
 
 		var g = new byte[size][size];
 		var p = new byte[size + 2][size + 2];
+		var xbitmasks = new long[size];
+		var ybitmasks = new long[size];
 
 		var filler = new Object() {
 			private int score;
@@ -83,11 +102,11 @@ public class Puzzle2018_12 {
 				}
 
 				if (g[x0][y0] != 0) {
-					score = score0 + inc;
 					p[x2 + 1][y2 + 1] = 1;
+					score = score0 + inc;
 					r.run();
-					p[x2 + 1][y2 + 1] = 0;
 					score = score0;
+					p[x2 + 1][y2 + 1] = 0;
 					g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 				}
 			}
@@ -122,11 +141,11 @@ public class Puzzle2018_12 {
 				}
 
 				if (g[x0][y0] != 0) {
-					score = score0 + inc;
 					p[x3 + 1][y3 + 1] = 1;
+					score = score0 + inc;
 					r.run();
-					p[x3 + 1][y3 + 1] = 0;
 					score = score0;
+					p[x3 + 1][y3 + 1] = 0;
 					g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 				}
 			}
