@@ -24,6 +24,15 @@ for all tile order, find the first score
  * ,   ,   , * ,   ,   , * ,
    ,   , * ,   , * ,   ,   ,
  * ,   ,   , * ,   ,   , * ,
+
+ 5, 18,  6,  2, 10,  4,  3,
+10,  2,  3,  4,  5, 12,  6,
+ 4,  6, 20,  5,  2,  3, 18,
+ 3, 24,  5,  6,  4,  8,  2,
+12,  4,  2, 30,  3,  5, 10,
+ 2,  5, 10,  3, 18,  6,  4,
+ 6,  3,  4, 12,  1,  2,  8,
+SCORE = 226
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DPFixed {
@@ -163,30 +172,27 @@ public class Puzzle2018_12_DPFixed {
 									var inc = Math.min(pr, hallmark - score);
 									byte a, b, c;
 
+									var go = new Object() {
+										private void g(byte a, byte b, byte c) {
+											g[x0][y0] = a;
+											g[x1][y1] = b;
+											g[x2][y2] = c;
+											score = score0 + c;
+											p[x2 + 1][y2 + 1] = 1;
+											r.run();
+											p[x2 + 1][y2 + 1] = 0;
+											score = score0;
+											g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
+										}
+									};
+
 									for (var combo : combos)
 										if ((bmkc & 1l << (c = combo[2])) == 0 && c < inc) {
-											if ((bmka & 1l << (a = combo[0])) == 0 && (bmkb & 1l << (b = combo[1])) == 0) {
-												g[x0][y0] = a;
-												g[x1][y1] = b;
-												g[x2][y2] = c;
-												inc = c;
-											}
-											if ((bmka & 1l << (a = combo[1])) == 0 && (bmkb & 1l << (b = combo[0])) == 0) {
-												g[x0][y0] = a;
-												g[x1][y1] = b;
-												g[x2][y2] = c;
-												inc = c;
-											}
+											if ((bmka & 1l << (a = combo[0])) == 0 && (bmkb & 1l << (b = combo[1])) == 0)
+												go.g(a, b, c);
+											if ((bmka & 1l << (a = combo[1])) == 0 && (bmkb & 1l << (b = combo[0])) == 0)
+												go.g(a, b, c);
 										}
-
-									if (g[x0][y0] != 0) {
-										score = score0 + inc;
-										p[x2 + 1][y2 + 1] = 1;
-										r.run();
-										p[x2 + 1][y2 + 1] = 0;
-										score = score0;
-										g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
-									}
 								}
 
 								private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3,
@@ -199,6 +205,20 @@ public class Puzzle2018_12_DPFixed {
 									var inc = Math.min(pr, hallmark - score);
 									var ab = Integer.MAX_VALUE;
 
+									var go = new Object() {
+										private void g(byte a, byte b, byte c, byte d) {
+											g[x0][y0] = a;
+											g[x1][y1] = b;
+											g[x2][y2] = c;
+											g[x3][y3] = d;
+											score = score0 + d;
+											p[x3 + 1][y3 + 1] = 1;
+											r.run();
+											p[x3 + 1][y3 + 1] = 0;
+											score = score0;
+											g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+										}
+									};
 									var ax = Math.min(nr, inc);
 									for (var a = (byte) 1; a < ax; a++) {
 										var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
@@ -208,25 +228,11 @@ public class Puzzle2018_12_DPFixed {
 												var d = (bmkc & 1 << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
 												if (d < inc) {
 													var e = (bmkd & 1 << d) == 0 && a != d && b != d && c != d;
-													if (e) {
-														g[x0][y0] = a;
-														g[x1][y1] = b;
-														g[x2][y2] = c;
-														g[x3][y3] = d;
-														inc = d;
-													}
+													if (e)
+														go.g(a, b, c, d);
 												}
 											}
 										}
-									}
-
-									if (g[x0][y0] != 0) {
-										score = score0 + inc;
-										p[x3 + 1][y3 + 1] = 1;
-										r.run();
-										p[x3 + 1][y3 + 1] = 0;
-										score = score0;
-										g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 									}
 								}
 							};
