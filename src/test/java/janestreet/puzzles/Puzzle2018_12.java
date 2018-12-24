@@ -127,8 +127,9 @@ public class Puzzle2018_12 {
 						var cx = (bmkb & 1l << b) == 0 && a != b ? Math.min(nr, inc / (ab = a * b)) : 0;
 						for (var c = (byte) 1; c < cx; c++) {
 							var d = (bmkc & 1l << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
-							if ((bmkd & 1l << d) == 0 && a != d && b != d && c != d) {
-								if (d < inc) {
+							if (d < inc) {
+								var e = (bmkd & 1l << d) == 0 && a != d && b != d && c != d;
+								if (e) {
 									g[x0][y0] = a;
 									g[x1][y1] = b;
 									g[x2][y2] = c;
