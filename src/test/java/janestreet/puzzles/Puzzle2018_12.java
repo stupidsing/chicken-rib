@@ -2,7 +2,6 @@ package janestreet.puzzles;
 
 import org.junit.Test;
 
-import suite.primitive.adt.set.IntSet;
 import suite.streamlet.FunUtil.Sink;
 
 /*
@@ -81,7 +80,7 @@ public class Puzzle2018_12 {
 			private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, Runnable r) {
 				var bmka = findExcludeBitmask(x0, y0);
 				var bmkb = findExcludeBitmask(x1, y1);
-				var sc = findExcludeSet(x2, y2);
+				var bmkc = findExcludeBitmask(x2, y2);
 				var score0 = score;
 				var inc = Math.min(pr, hallmark - score);
 
@@ -90,7 +89,7 @@ public class Puzzle2018_12 {
 					var bx = (bmka & 1l << a) == 0 ? Math.min(nr, inc / a) : 0;
 					for (var b = (byte) 2; b < bx; b++) {
 						var c = (bmkb & 1l << b) == 0 && a != b ? (byte) (a * b) : a;
-						if (!sc.contains(c) && a != c && b != c) {
+						if ((bmkc & 1l << c) == 0 && a != c && b != c) {
 							if (c < inc) {
 								g[x0][y0] = a;
 								g[x1][y1] = b;
@@ -188,23 +187,14 @@ public class Puzzle2018_12 {
 
 			private long findExcludeBitmask(int x, int y) {
 				var bmk = 0l;
-				int v;
+				byte v;
 				for (byte i = 0; i < size; i++) {
-					if (0 <= (v = g[i][y]) && v < nr)
+					if (0 <= (v = g[i][y]) && v < 64)
 						bmk |= 1l << v;
-					if (0 <= (v = g[x][i]) && v < nr)
+					if (0 <= (v = g[x][i]) && v < 64)
 						bmk |= 1l << v;
 				}
 				return bmk;
-			}
-
-			private IntSet findExcludeSet(int x, int y) {
-				var s = new IntSet();
-				for (byte i = 0; i < size; i++) {
-					s.add(g[i][y]);
-					s.add(g[x][i]);
-				}
-				return s;
 			}
 		};
 
