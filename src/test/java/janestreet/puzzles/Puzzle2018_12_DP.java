@@ -11,7 +11,6 @@ import suite.inspect.Dump;
 import suite.node.util.TreeUtil.IntInt_Bool;
 import suite.primitive.IntMutable;
 import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.adt.set.IntSet;
 import suite.streamlet.Read;
 import suite.util.To;
 
@@ -147,7 +146,7 @@ public class Puzzle2018_12_DP {
 								private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
 									var bmka = findExcludeBitmask(x0, y0);
 									var bmkb = findExcludeBitmask(x1, y1);
-									var sc = findExcludeSet(x2, y2);
+									var bmkc = findExcludeBitmask(x2, y2);
 									var score0 = score;
 									var inc = Math.min(Byte.MAX_VALUE, hallmark - score);
 
@@ -156,8 +155,9 @@ public class Puzzle2018_12_DP {
 										var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
 										for (var b = (byte) 2; b < bx; b++) {
 											var c = (bmkb & 1 << b) == 0 && a != b ? (byte) (a * b) : a;
-											if (!sc.contains(c) && a != c && b != c) {
-												if (c < inc) {
+											if (c < inc) {
+												var d = (bmkc & 1 << c) == 0 && a != c && b != c;
+												if (d) {
 													g[x0][y0] = a;
 													g[x1][y1] = b;
 													g[x2][y2] = c;
@@ -181,7 +181,7 @@ public class Puzzle2018_12_DP {
 									var bmka = findExcludeBitmask(x0, y0);
 									var bmkb = findExcludeBitmask(x1, y1);
 									var bmkc = findExcludeBitmask(x2, y2);
-									var sd = findExcludeSet(x3, y3);
+									var bmkd = findExcludeBitmask(x3, y3);
 									var score0 = score;
 									var inc = Math.min(Byte.MAX_VALUE, hallmark - score);
 									var ab = Integer.MAX_VALUE;
@@ -193,8 +193,9 @@ public class Puzzle2018_12_DP {
 											var cx = (bmkb & 1 << b) == 0 && a != b ? Math.min(nr, inc / (ab = a * b)) : 0;
 											for (var c = (byte) 1; c < cx; c++) {
 												var d = (bmkc & 1 << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
-												if (!sd.contains(d) && a != d && b != d && c != d) {
-													if (d < inc) {
+												if (d < inc) {
+													var e = (bmkd & 1l << d) == 0 && a != d && b != d && c != d;
+													if (e) {
 														g[x0][y0] = a;
 														g[x1][y1] = b;
 														g[x2][y2] = c;
@@ -216,25 +217,16 @@ public class Puzzle2018_12_DP {
 									}
 								}
 
-								private int findExcludeBitmask(int x, int y) {
+								private long findExcludeBitmask(int x, int y) {
 									var bmk = 0;
-									int v;
+									byte v;
 									for (byte i = 0; i < size; i++) {
-										if (0 <= (v = g[i][y]) && v < nr)
+										if (0 <= (v = g[i][y]) && v < 64)
 											bmk |= 1 << v;
-										if (0 <= (v = g[x][i]) && v < nr)
+										if (0 <= (v = g[x][i]) && v < 64)
 											bmk |= 1 << v;
 									}
 									return bmk;
-								}
-
-								private IntSet findExcludeSet(int x, int y) {
-									var s = new IntSet();
-									for (byte i = 0; i < size; i++) {
-										s.add(g[i][y]);
-										s.add(g[x][i]);
-									}
-									return s;
 								}
 							};
 
