@@ -78,9 +78,9 @@ public class Puzzle2018_12 {
 			}
 
 			private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, Runnable r) {
-				var bmka = findExcludeBitmask(x0, y0);
-				var bmkb = findExcludeBitmask(x1, y1);
-				var bmkc = findExcludeBitmask(x2, y2);
+				var bmka = xbitmasks[x0] | ybitmasks[y0];
+				var bmkb = xbitmasks[x1] | ybitmasks[y1];
+				var bmkc = xbitmasks[x2] | ybitmasks[y2];
 				var score0 = score;
 				var inc = Math.min(pr, hallmark - score);
 
@@ -127,10 +127,10 @@ public class Puzzle2018_12 {
 			}
 
 			private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3, Runnable r) {
-				var bmka = findExcludeBitmask(x0, y0);
-				var bmkb = findExcludeBitmask(x1, y1);
-				var bmkc = findExcludeBitmask(x2, y2);
-				var bmkd = findExcludeBitmask(x3, y3);
+				var bmka = xbitmasks[x0] | ybitmasks[y0];
+				var bmkb = xbitmasks[x1] | ybitmasks[y1];
+				var bmkc = xbitmasks[x2] | ybitmasks[y2];
+				var bmkd = xbitmasks[x3] | ybitmasks[y3];
 				var score0 = score;
 				var inc = Math.min(pr, hallmark - score);
 				var ab = Integer.MAX_VALUE;
