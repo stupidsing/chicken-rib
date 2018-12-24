@@ -150,8 +150,8 @@ public class Puzzle2018_12 {
 				}
 			}
 
-			private int findExcludeBitmask(int x, int y) {
-				var bmk = 0;
+			private long findExcludeBitmask(int x, int y) {
+				var bmk = 0l;
 				int v;
 				for (byte i = 0; i < size; i++) {
 					if (0 <= (v = g[i][y]) && v < nr)
