@@ -102,11 +102,26 @@ public class Puzzle2018_12 {
 				}
 
 				if (g[x0][y0] != 0) {
+					var b0 = 1l << g[x0][y0];
+					var b1 = 1l << g[x1][y1];
+					var b2 = 1l << g[x2][y2];
+					xbitmasks[x0] |= b0;
+					xbitmasks[x1] |= b1;
+					xbitmasks[x2] |= b2;
+					ybitmasks[y0] |= b0;
+					ybitmasks[y1] |= b1;
+					ybitmasks[y2] |= b2;
 					p[x2 + 1][y2 + 1] = 1;
 					score = score0 + inc;
 					r.run();
 					score = score0;
 					p[x2 + 1][y2 + 1] = 0;
+					ybitmasks[y2] &= ~b2;
+					ybitmasks[y1] &= ~b1;
+					ybitmasks[y0] &= ~b0;
+					xbitmasks[x2] &= ~b2;
+					xbitmasks[x1] &= ~b1;
+					xbitmasks[x0] &= ~b0;
 					g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 				}
 			}
@@ -142,11 +157,31 @@ public class Puzzle2018_12 {
 				}
 
 				if (g[x0][y0] != 0) {
+					var b0 = 1l << g[x0][y0];
+					var b1 = 1l << g[x1][y1];
+					var b2 = 1l << g[x2][y2];
+					var b3 = 1l << g[x3][y3];
+					xbitmasks[x0] |= b0;
+					xbitmasks[x1] |= b1;
+					xbitmasks[x2] |= b2;
+					xbitmasks[x3] |= b3;
+					ybitmasks[y0] |= b0;
+					ybitmasks[y1] |= b1;
+					ybitmasks[y2] |= b2;
+					ybitmasks[y3] |= b3;
 					p[x3 + 1][y3 + 1] = 1;
 					score = score0 + inc;
 					r.run();
 					score = score0;
 					p[x3 + 1][y3 + 1] = 0;
+					ybitmasks[y3] &= ~b3;
+					ybitmasks[y2] &= ~b2;
+					ybitmasks[y1] &= ~b1;
+					ybitmasks[y0] &= ~b0;
+					xbitmasks[x2] &= ~b3;
+					xbitmasks[x2] &= ~b2;
+					xbitmasks[x1] &= ~b1;
+					xbitmasks[x0] &= ~b0;
 					g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 				}
 			}
