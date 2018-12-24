@@ -87,9 +87,9 @@ public class Puzzle2018_12 {
 
 				var ax = Math.min(nr, inc / 2);
 				for (var a = (byte) 2; a < ax; a++) {
-					var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
+					var bx = (bmka & 1l << a) == 0 ? Math.min(nr, inc / a) : 0;
 					for (var b = (byte) 2; b < bx; b++) {
-						var c = (bmkb & 1 << b) == 0 && a != b ? (byte) (a * b) : a;
+						var c = (bmkb & 1l << b) == 0 && a != b ? (byte) (a * b) : a;
 						if (!sc.contains(c) && a != c && b != c) {
 							if (c < inc) {
 								g[x0][y0] = a;
@@ -122,11 +122,11 @@ public class Puzzle2018_12 {
 
 				var ax = Math.min(nr, inc);
 				for (var a = (byte) 1; a < ax; a++) {
-					var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
+					var bx = (bmka & 1l << a) == 0 ? Math.min(nr, inc / a) : 0;
 					for (var b = (byte) 1; b < bx; b++) {
-						var cx = (bmkb & 1 << b) == 0 && a != b ? Math.min(nr, inc / (ab = a * b)) : 0;
+						var cx = (bmkb & 1l << b) == 0 && a != b ? Math.min(nr, inc / (ab = a * b)) : 0;
 						for (var c = (byte) 1; c < cx; c++) {
-							var d = (bmkc & 1 << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
+							var d = (bmkc & 1l << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
 							if (!sd.contains(d) && a != d && b != d && c != d) {
 								if (d < inc) {
 									g[x0][y0] = a;
@@ -155,9 +155,9 @@ public class Puzzle2018_12 {
 				int v;
 				for (byte i = 0; i < size; i++) {
 					if (0 <= (v = g[i][y]) && v < nr)
-						bmk |= 1 << v;
+						bmk |= 1l << v;
 					if (0 <= (v = g[x][i]) && v < nr)
-						bmk |= 1 << v;
+						bmk |= 1l << v;
 				}
 				return bmk;
 			}
