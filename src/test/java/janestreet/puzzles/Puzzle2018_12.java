@@ -185,18 +185,6 @@ public class Puzzle2018_12 {
 					g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 				}
 			}
-
-			private long findExcludeBitmask(int x, int y) {
-				var bmk = 0l;
-				byte v;
-				for (byte i = 0; i < size; i++) {
-					if (0 <= (v = g[i][y]) && v < 64)
-						bmk |= 1l << v;
-					if (0 <= (v = g[x][i]) && v < 64)
-						bmk |= 1l << v;
-				}
-				return bmk;
-			}
 		};
 
 		var minScore = new int[] { Integer.MAX_VALUE, };
