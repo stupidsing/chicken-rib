@@ -23,6 +23,7 @@ public class Puzzle2018_12 {
 	@Test
 	public void test() {
 		var nr = 8;
+		var pr = 36; // Byte.MAX_VALUE
 		var size = 7;
 		var hallmark = 240;
 
@@ -63,7 +64,7 @@ public class Puzzle2018_12 {
 				var bmkb = findExcludeBitmask(x1, y1);
 				var sc = findExcludeSet(x2, y2);
 				var score0 = score;
-				var inc = Math.min(Byte.MAX_VALUE, hallmark - score);
+				var inc = Math.min(pr, hallmark - score);
 
 				var ax = Math.min(nr, inc / 2);
 				for (var a = (byte) 2; a < ax; a++) {
@@ -97,7 +98,7 @@ public class Puzzle2018_12 {
 				var bmkc = findExcludeBitmask(x2, y2);
 				var sd = findExcludeSet(x3, y3);
 				var score0 = score;
-				var inc = Math.min(Byte.MAX_VALUE, hallmark - score);
+				var inc = Math.min(pr, hallmark - score);
 				var ab = Integer.MAX_VALUE;
 
 				var ax = Math.min(nr, inc);
