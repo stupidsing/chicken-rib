@@ -122,7 +122,7 @@ public class Puzzle2018_12_DP {
 								private int score = board.score;
 
 								private void fill(byte[] tile, Runnable r) {
-									int xs, ys;
+									byte xs, ys;
 
 									if (tile.length == 6) {
 										if (vp.apply(xs = tile[0], ys = tile[1]))
@@ -143,7 +143,7 @@ public class Puzzle2018_12_DP {
 									}
 								}
 
-								private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
+								private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, Runnable r) {
 									var bmka = findExcludeBitmask(x0, y0);
 									var bmkb = findExcludeBitmask(x1, y1);
 									var bmkc = findExcludeBitmask(x2, y2);
@@ -177,7 +177,8 @@ public class Puzzle2018_12_DP {
 									}
 								}
 
-								private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
+								private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3,
+										Runnable r) {
 									var bmka = findExcludeBitmask(x0, y0);
 									var bmkb = findExcludeBitmask(x1, y1);
 									var bmkc = findExcludeBitmask(x2, y2);
