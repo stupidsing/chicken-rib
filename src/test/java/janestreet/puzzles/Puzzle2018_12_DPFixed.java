@@ -16,26 +16,26 @@ import suite.util.To;
 
 /*
 fixes the product cells,
-use DP to build up each tiles one-by-one,
+use DP to build up each tiles one-by-one (and generate a list of boards with minimum score per each tile setting),
 assume greedy approach would work (that every smallest feasible new tile would lead to a final global minimum),
 and find it
 
-   , * ,   ,   , * ,   ,   ,
- * ,   ,   ,   ,   , * ,   ,
+   , * ,   ,   , * ,   , * ,
+ * ,   ,   ,   ,   ,   ,   ,
    ,   , * ,   ,   ,   , * ,
    , * ,   ,   ,   , * ,   ,
  * ,   ,   , * ,   ,   , * ,
    ,   , * ,   , * ,   ,   ,
    , * ,   , * ,   , * ,   ,
 
-.g[0] = [  5,  8,  4,  2, 12,  3,  6, ]
-.g[1] = [ 15,  3,  2,  4,  6, 18,  5, ]
-.g[2] = [  6,  4, 20,  5,  3,  2, 10, ]
-.g[3] = [  4, 24,  7,  3,  5, 15,  2, ]
-.g[4] = [ 20,  5,  3, 21,  2,  4,  8, ]
-.g[5] = [  3,  2,  6,  1, 10,  5,  4, ]
-.g[6] = [  2,  6,  5, 20,  4, 12,  3, ]
-SCORE = 225
+  3, 24,  4,  2, 10,  5, 15,
+ 21,  7,  6,  4,  5,  3,  2,
+  4,  3, 20,  5,  2,  6, 12,
+  6, 12,  2,  3,  4,  8,  5,
+ 24,  4,  5,  6,  3,  2, 10,
+  5,  2, 10,  1, 12,  4,  3,
+  2, 10,  3, 18,  6, 12,  4,
+SCORE = 224
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DPFixed {
@@ -47,7 +47,7 @@ public class Puzzle2018_12_DPFixed {
 			{ 5, 2, 4, 2, 5, 1, }, //
 			{ 6, 1, 6, 0, 5, 0, }, //
 			{ 6, 3, 6, 4, 5, 3, 6, 2, }, //
-			{ 1, 5, 0, 6, 0, 5, }, //
+			{ 0, 6, 1, 5, 0, 5, }, //
 			{ 0, 1, 0, 2, 1, 2, }, //
 			{ 3, 1, 2, 0, 2, 1, }, //
 			{ 3, 5, 2, 4, 3, 4, }, //
@@ -74,6 +74,7 @@ public class Puzzle2018_12_DPFixed {
 			{ 4, 7, 28, }, //
 			{ 5, 6, 30, }, //
 			{ 5, 7, 35, }, //
+			{ 6, 7, 42, }, //
 	};
 
 	private class Board {
@@ -115,10 +116,10 @@ public class Puzzle2018_12_DPFixed {
 
 	@Test
 	public void test() {
-		var nr = 8;
-		var pr = 36; // Byte.MAX_VALUE
+		var nr = 9;
+		var pr = 45; // Byte.MAX_VALUE
 		var size = 7;
-		var hallmark = 300;
+		var hallmark = 230;
 
 		var board0 = new Board(new byte[size][size], new byte[size + 2][size + 2], 0);
 		var map = new IntObjMap<Set<Board>>();
