@@ -24,7 +24,6 @@ for all tile order, find the first score
  * ,   ,   , * ,   ,   , * ,
    ,   , * ,   , * ,   ,   ,
  * ,   ,   , * ,   ,   , * ,
-SCORE = 229
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DPFixed {
