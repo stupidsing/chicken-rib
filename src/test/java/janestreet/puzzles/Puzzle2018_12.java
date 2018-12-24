@@ -2,7 +2,6 @@ package janestreet.puzzles;
 
 import org.junit.Test;
 
-import suite.primitive.adt.set.IntSet;
 import suite.streamlet.FunUtil.Sink;
 
 /*
@@ -10,34 +9,61 @@ for all tile order, find the first score
 
   3, 24,  6,  4,  2, 15,  5,
  15,  5,  4,  2,  8,  3,  6,
+<<<<<<< HEAD
   4, 12,  7, 14,  5,  2,  3,
   2,  3, 15,  5, 30,  6,  4,
   8,  4,  2,  3,  6,  5, 20,
   5,  6,  3,  1,  4, 24,  2,
  10,  2,  5, 15,  3,  4,  8,
 SCORE = 230
+=======
+  4, 12,  5, 10,  6,  2,  3,
+  2,  3, 18,  6, 30,  5,  4,
+  8,  4,  2,  3,  5,  6, 24,
+  5,  6,  3,  1,  4, 20,  2,
+ 10,  2, 15,  5,  3,  4,  8,
+SCORE = 229
+>>>>>>> 842b4b0d8c0cdf67f9f166a53df8c3476a7c3f92
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12 {
 
+	private byte[][] combos = { //
+			{ 2, 3, 6, }, //
+			{ 2, 4, 8, }, //
+			{ 2, 5, 10, }, //
+			{ 2, 6, 12, }, //
+			// { 2, 7, 14, }, //
+			{ 3, 4, 12, }, //
+			{ 3, 5, 15, }, //
+			{ 3, 6, 18, }, //
+			// { 3, 7, 21, }, //
+			{ 4, 5, 20, }, //
+			{ 4, 6, 24, }, //
+			// { 4, 7, 28, }, //
+			{ 5, 6, 30, }, //
+			// { 5, 7, 35, }, //
+	};
+
 	@Test
 	public void test() {
-		var nr = 9;
+		var nr = 8;
+		var pr = 36; // Byte.MAX_VALUE
 		var size = 7;
-		var hallmark = 230;
+		var hallmark = 240;
 
 		var tiles = new byte[][] { //
 				{ 2, 5, 2, 6, 1, 6, }, //
 				{ 5, 6, 6, 5, 6, 6, }, //
 				{ 0, 4, 0, 3, 1, 4, }, //
 				{ 4, 2, 5, 2, 5, 1, }, //
-				{ 6, 4, 5, 3, 6, 2, 6, 3, }, //
 				{ 6, 1, 5, 0, 6, 0, }, //
-				{ 0, 2, 1, 2, 0, 1, }, //
+				{ 6, 4, 5, 3, 6, 3, 6, 2, }, //
 				{ 0, 6, 1, 5, 0, 5, }, //
-				{ 4, 5, 3, 6, 4, 6, }, //
+				{ 0, 2, 1, 2, 0, 1, }, //
 				{ 2, 0, 3, 1, 2, 1, }, //
 				{ 3, 5, 2, 4, 3, 4, }, //
+				{ 4, 5, 3, 6, 4, 6, }, //
 				{ 1, 3, 2, 2, 2, 3, }, //
 				{ 3, 3, 4, 3, 3, 2, }, //
 				{ 0, 0, 1, 1, 1, 0, }, //
@@ -45,8 +71,10 @@ public class Puzzle2018_12 {
 				{ 4, 4, 5, 4, 5, 5, }, //
 		};
 
-		var g = new short[size][size];
+		var g = new byte[size][size];
 		var p = new byte[size + 2][size + 2];
+		var xbitmasks = new long[size];
+		var ybitmasks = new long[size];
 
 		var filler = new Object() {
 			private int score;
@@ -58,56 +86,82 @@ public class Puzzle2018_12 {
 					fill4(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], r);
 			}
 
-			private void fill3(int x0, int y0, int x1, int y1, int x2, int y2, Runnable r) {
-				var sa = findExcludeSet(x0, y0);
-				var sb = findExcludeSet(x1, y1);
-				var sc = findExcludeSet(x2, y2);
+			private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, Runnable r) {
+				var bmka = xbitmasks[x0] | ybitmasks[y0];
+				var bmkb = xbitmasks[x1] | ybitmasks[y1];
+				var bmkc = xbitmasks[x2] | ybitmasks[y2];
 				var score0 = score;
-				var inc = hallmark - score;
+				var inc = Math.min(pr, hallmark - score);
+				byte a = 0, b = 0, c = 0;
 
-				var ax = Math.min(nr, inc / 2);
-				for (var a = (short) 2; a < ax; a++) {
-					var bx = !sa.contains(a) ? Math.min(nr, inc / a) : 0;
-					for (var b = (short) 2; b < bx; b++) {
-						var c = !sb.contains(b) && a != b ? (short) (a * b) : a;
-						if (!sc.contains(c) && a != c && b != c) {
-							if (c < inc) {
-								g[x0][y0] = a;
-								g[x1][y1] = b;
-								g[x2][y2] = c;
-								inc = c;
-							}
-						}
+				for (var combo : combos)
+					if (true //
+							&& (bmka & 1l << (a = combo[0])) == 0 //
+							&& (bmkb & 1l << (b = combo[1])) == 0 //
+							&& (bmkc & 1l << (c = combo[2])) == 0 //
+							&& c < inc) {
+						g[x0][y0] = a;
+						g[x1][y1] = b;
+						g[x2][y2] = c;
+						inc = c;
 					}
-				}
 
-				if (inc < hallmark - score0) {
+				for (var combo : combos)
+					if (true //
+							&& (bmka & 1l << (a = combo[1])) == 0 //
+							&& (bmkb & 1l << (b = combo[0])) == 0 //
+							&& (bmkc & 1l << (c = combo[2])) == 0 //
+							&& c < inc) {
+						g[x0][y0] = a;
+						g[x1][y1] = b;
+						g[x2][y2] = c;
+						inc = c;
+					}
+
+				if (g[x0][y0] != 0) {
+					var b0 = 1l << g[x0][y0];
+					var b1 = 1l << g[x1][y1];
+					var b2 = 1l << g[x2][y2];
+					xbitmasks[x0] |= b0;
+					xbitmasks[x1] |= b1;
+					xbitmasks[x2] |= b2;
+					ybitmasks[y0] |= b0;
+					ybitmasks[y1] |= b1;
+					ybitmasks[y2] |= b2;
+					p[x2 + 1][y2 + 1] = 1;
 					score = score0 + inc;
 					r.run();
 					score = score0;
+					p[x2 + 1][y2 + 1] = 0;
+					ybitmasks[y2] &= ~b2;
+					ybitmasks[y1] &= ~b1;
+					ybitmasks[y0] &= ~b0;
+					xbitmasks[x2] &= ~b2;
+					xbitmasks[x1] &= ~b1;
+					xbitmasks[x0] &= ~b0;
+					g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 				}
-
-				g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 			}
 
-			private void fill4(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, Runnable r) {
-				var sa = findExcludeSet(x0, y0);
-				var sb = findExcludeSet(x1, y1);
-				var sc = findExcludeSet(x2, y2);
-				var sd = findExcludeSet(x3, y3);
+			private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3, Runnable r) {
+				var bmka = xbitmasks[x0] | ybitmasks[y0];
+				var bmkb = xbitmasks[x1] | ybitmasks[y1];
+				var bmkc = xbitmasks[x2] | ybitmasks[y2];
+				var bmkd = xbitmasks[x3] | ybitmasks[y3];
 				var score0 = score;
-				var inc = hallmark - score;
+				var inc = Math.min(pr, hallmark - score);
+				var ab = Integer.MAX_VALUE;
 
 				var ax = Math.min(nr, inc);
-				for (var a = (short) 1; a < ax; a++) {
-					var bx = !sa.contains(a) ? Math.min(nr, inc / a) : 0;
-					for (var b = (short) 1; b < bx; b++) {
-						var ab = a * b;
-						var cx = !sb.contains(b) && a != b ? Math.min(nr, inc / ab) : 0;
-						for (var c = (short) 1; c < cx; c++) {
-							var d = !sc.contains(c) && a != c && b != c ? (short) (ab * c) : a;
-							if (!sd.contains(d) && a != d && b != d && c != d) {
-								if (d < inc) {
+				for (var a = (byte) 1; a < ax; a++) {
+					var bx = (bmka & 1l << a) == 0 ? Math.min(nr, inc / a) : 0;
+					for (var b = (byte) 1; b < bx; b++) {
+						var cx = (bmkb & 1l << b) == 0 && a != b ? Math.min(nr, inc / (ab = a * b)) : 0;
+						for (var c = (byte) 1; c < cx; c++) {
+							var d = (bmkc & 1l << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
+							if (d < inc) {
+								var e = (bmkd & 1l << d) == 0 && a != d && b != d && c != d;
+								if (e) {
 									g[x0][y0] = a;
 									g[x1][y1] = b;
 									g[x2][y2] = c;
@@ -119,22 +173,34 @@ public class Puzzle2018_12 {
 					}
 				}
 
-				if (inc < hallmark - score0) {
+				if (g[x0][y0] != 0) {
+					var b0 = 1l << g[x0][y0];
+					var b1 = 1l << g[x1][y1];
+					var b2 = 1l << g[x2][y2];
+					var b3 = 1l << g[x3][y3];
+					xbitmasks[x0] |= b0;
+					xbitmasks[x1] |= b1;
+					xbitmasks[x2] |= b2;
+					xbitmasks[x3] |= b3;
+					ybitmasks[y0] |= b0;
+					ybitmasks[y1] |= b1;
+					ybitmasks[y2] |= b2;
+					ybitmasks[y3] |= b3;
+					p[x3 + 1][y3 + 1] = 1;
 					score = score0 + inc;
 					r.run();
 					score = score0;
+					p[x3 + 1][y3 + 1] = 0;
+					ybitmasks[y3] &= ~b3;
+					ybitmasks[y2] &= ~b2;
+					ybitmasks[y1] &= ~b1;
+					ybitmasks[y0] &= ~b0;
+					xbitmasks[x2] &= ~b3;
+					xbitmasks[x2] &= ~b2;
+					xbitmasks[x1] &= ~b1;
+					xbitmasks[x0] &= ~b0;
+					g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 				}
-
-				g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
-			}
-
-			private IntSet findExcludeSet(int x, int y) {
-				var s = new IntSet();
-				for (short i = 0; i < size; i++) {
-					s.add(g[i][y]);
-					s.add(g[x][i]);
-				}
-				return s;
 			}
 		};
 
@@ -153,8 +219,8 @@ public class Puzzle2018_12 {
 
 				System.out.println("TILES");
 
-				for (short x = 0; x < size; x++) {
-					for (short y = 0; y < size; y++) {
+				for (byte x = 0; x < size; x++) {
+					for (byte y = 0; y < size; y++) {
 						var s = "   " + g[x][y] + ",";
 						var length = s.length();
 						System.out.print(s.substring(length - 4, length));

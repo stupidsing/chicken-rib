@@ -15,30 +15,49 @@ import suite.streamlet.Read;
 import suite.util.To;
 
 /*
-for all tile order, find the first score
+fixes the product cells,
+use DP to build up each tiles one-by-one (and generate a list of boards with minimum score per each tile setting),
+assume greedy approach would work (that every smallest feasible new tile would lead to a final global minimum),
+and find it
 
-<<<<<<< HEAD
-  3, 24,  6,  4,  2, 15,  5,
- 15,  5,  4,  2,  8,  3,  6,
-  4, 12,  7, 14,  5,  2,  3,
-  2,  3, 15,  5, 30,  6,  4,
-  8,  4,  2,  3,  6,  5, 20,
-  5,  6,  3,  1,  4, 24,  2,
- 10,  2,  5, 15,  3,  4,  8,
-SCORE = 230
-=======
- 35,  6,  3,  5,  4,  8,  2,
-  5,  7, 18,  2, 20,  4,  3,
-  3,  4,  5, 10,  2, 18,  6,
-  2, 12,  4,  3, 10,  5,  8,
-  6,  3,  7, 12,  5,  2,  4,
-  4,  2, 14,  1,  3, 15,  5,
- 20,  5,  2,  4,  8,  3, 15,
-SCORE = 229
->>>>>>> 842b4b0d8c0cdf67f9f166a53df8c3476a7c3f92
+   , * ,   ,   , * ,   , * ,
+ * ,   ,   ,   ,   ,   ,   ,
+   ,   , * ,   ,   ,   , * ,
+   , * ,   ,   ,   , * ,   ,
+ * ,   ,   , * ,   ,   , * ,
+   ,   , * ,   , * ,   ,   ,
+   , * ,   , * ,   , * ,   ,
+
+  3, 24,  4,  2, 10,  5, 15,
+ 21,  7,  6,  4,  5,  3,  2,
+  4,  3, 20,  5,  2,  6, 12,
+  6, 12,  2,  3,  4,  8,  5,
+ 24,  4,  5,  6,  3,  2, 10,
+  5,  2, 10,  1, 12,  4,  3,
+  2, 10,  3, 18,  6, 12,  4,
+SCORE = 224
  */
 // https://www.janestreet.com/puzzles/block-party-2/
-public class Puzzle2018_12_DP {
+public class Puzzle2018_12_DPFixed {
+
+	private byte[][] tiles = { //
+			{ 2, 6, 2, 5, 1, 6, }, //
+			{ 6, 5, 6, 6, 5, 6, }, //
+			{ 0, 4, 0, 3, 1, 4, }, //
+			{ 5, 2, 4, 2, 5, 1, }, //
+			{ 6, 1, 6, 0, 5, 0, }, //
+			{ 6, 3, 6, 4, 5, 3, 6, 2, }, //
+			{ 0, 6, 1, 5, 0, 5, }, //
+			{ 0, 1, 0, 2, 1, 2, }, //
+			{ 3, 1, 2, 0, 2, 1, }, //
+			{ 3, 5, 2, 4, 3, 4, }, //
+			{ 4, 6, 4, 5, 3, 6, }, //
+			{ 2, 2, 1, 3, 2, 3, }, //
+			{ 4, 3, 3, 3, 3, 2, }, //
+			{ 1, 0, 0, 0, 1, 1, }, //
+			{ 4, 0, 3, 0, 4, 1, }, //
+			{ 5, 4, 4, 4, 5, 5, }, //
+	};
 
 	private byte[][] combos = { //
 			{ 2, 3, 6, }, //
@@ -55,6 +74,7 @@ public class Puzzle2018_12_DP {
 			{ 4, 7, 28, }, //
 			{ 5, 6, 30, }, //
 			{ 5, 7, 35, }, //
+			{ 6, 7, 42, }, //
 	};
 
 	private class Board {
@@ -81,7 +101,7 @@ public class Puzzle2018_12_DP {
 
 		public boolean equals(Object object) {
 			if (object.getClass() == Board.class) {
-				Board board = (Board) object;
+				var board = (Board) object;
 				var b = true;
 
 				for (var x = 0; x < g.length; x++)
@@ -96,35 +116,15 @@ public class Puzzle2018_12_DP {
 
 	@Test
 	public void test() {
-		var nr = 8;
-		var pr = 36; // Byte.MAX_VALUE
+		var nr = 9;
+		var pr = 45; // Byte.MAX_VALUE
 		var size = 7;
 		var hallmark = 230;
-
-		var tiles = new byte[][] { //
-				{ 2, 5, 2, 6, 1, 6, }, //
-				{ 5, 6, 6, 5, 6, 6, }, //
-				{ 0, 4, 0, 3, 1, 4, }, //
-				{ 4, 2, 5, 2, 5, 1, }, //
-				{ 6, 1, 5, 0, 6, 0, }, //
-				{ 6, 4, 5, 3, 6, 3, 6, 2, }, //
-				{ 0, 6, 1, 5, 0, 5, }, //
-				{ 0, 2, 1, 2, 0, 1, }, //
-				{ 2, 0, 3, 1, 2, 1, }, //
-				{ 3, 5, 2, 4, 3, 4, }, //
-				{ 4, 5, 3, 6, 4, 6, }, //
-				{ 1, 3, 2, 2, 2, 3, }, //
-				{ 3, 3, 4, 3, 3, 2, }, //
-				{ 0, 0, 1, 1, 1, 0, }, //
-				{ 3, 0, 4, 1, 4, 0, }, //
-				{ 4, 4, 5, 4, 5, 5, }, //
-		};
 
 		var board0 = new Board(new byte[size][size], new byte[size + 2][size + 2], 0);
 		var map = new IntObjMap<Set<Board>>();
 		map.put(0, Set.of(board0));
 
-		// for (var n = 0; n < 9; n++) {
 		for (var n = 0; n < tiles.length; n++) {
 			var map1 = new IntObjMap<Set<Board>>();
 
@@ -162,23 +162,10 @@ public class Puzzle2018_12_DP {
 								private void fill(byte[] tile, Runnable r) {
 									byte xs, ys;
 
-									if (tile.length == 6) {
-										if (vp.apply(xs = tile[0], ys = tile[1]))
-											fill3(tile[2], tile[3], tile[4], tile[5], xs, ys, r);
-										if (vp.apply(xs = tile[2], ys = tile[3]))
-											fill3(tile[0], tile[1], tile[4], tile[5], xs, ys, r);
-										if (vp.apply(xs = tile[4], ys = tile[5]))
-											fill3(tile[0], tile[1], tile[2], tile[3], xs, ys, r);
-									} else {
-										if (vp.apply(xs = tile[0], ys = tile[1]))
-											fill4(tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], xs, ys, r);
-										if (vp.apply(xs = tile[2], ys = tile[3]))
-											fill4(tile[0], tile[1], tile[4], tile[5], tile[6], tile[7], xs, ys, r);
-										if (vp.apply(xs = tile[4], ys = tile[5]))
-											fill4(tile[0], tile[1], tile[2], tile[3], tile[6], tile[7], xs, ys, r);
-										if (vp.apply(xs = tile[6], ys = tile[7]))
-											fill4(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], xs, ys, r);
-									}
+									if (tile.length == 6 && vp.apply(xs = tile[0], ys = tile[1]))
+										fill3(tile[2], tile[3], tile[4], tile[5], xs, ys, r);
+									else if (tile.length == 8 && vp.apply(xs = tile[0], ys = tile[1]))
+										fill4(tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], xs, ys, r);
 								}
 
 								private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, Runnable r) {
@@ -187,40 +174,29 @@ public class Puzzle2018_12_DP {
 									var bmkc = xbitmasks[x2] | ybitmasks[y2];
 									var score0 = score;
 									var inc = Math.min(pr, hallmark - score);
-									byte a = 0, b = 0, c = 0;
+									byte a, b, c;
 
-									for (var combo : combos)
-										if (true //
-												&& (bmka & 1l << (a = combo[0])) == 0 //
-												&& (bmkb & 1l << (b = combo[1])) == 0 //
-												&& (bmkc & 1l << (c = combo[2])) == 0 //
-												&& c < inc) {
+									var go = new Object() {
+										private void g(byte a, byte b, byte c) {
 											g[x0][y0] = a;
 											g[x1][y1] = b;
 											g[x2][y2] = c;
-											inc = c;
+											score = score0 + c;
+											p[x2 + 1][y2 + 1] = 1;
+											r.run();
+											p[x2 + 1][y2 + 1] = 0;
+											score = score0;
+											g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 										}
+									};
 
 									for (var combo : combos)
-										if (true //
-												&& (bmka & 1l << (a = combo[1])) == 0 //
-												&& (bmkb & 1l << (b = combo[0])) == 0 //
-												&& (bmkc & 1l << (c = combo[2])) == 0 //
-												&& c < inc) {
-											g[x0][y0] = a;
-											g[x1][y1] = b;
-											g[x2][y2] = c;
-											inc = c;
+										if ((bmkc & 1l << (c = combo[2])) == 0 && c < inc) {
+											if ((bmka & 1l << (a = combo[0])) == 0 && (bmkb & 1l << (b = combo[1])) == 0)
+												go.g(a, b, c);
+											if ((bmka & 1l << (a = combo[1])) == 0 && (bmkb & 1l << (b = combo[0])) == 0)
+												go.g(a, b, c);
 										}
-
-									if (g[x0][y0] != 0) {
-										score = score0 + inc;
-										p[x2 + 1][y2 + 1] = 1;
-										r.run();
-										p[x2 + 1][y2 + 1] = 0;
-										score = score0;
-										g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
-									}
 								}
 
 								private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3,
@@ -233,6 +209,21 @@ public class Puzzle2018_12_DP {
 									var inc = Math.min(pr, hallmark - score);
 									var ab = Integer.MAX_VALUE;
 
+									var go = new Object() {
+										private void g(byte a, byte b, byte c, byte d) {
+											g[x0][y0] = a;
+											g[x1][y1] = b;
+											g[x2][y2] = c;
+											g[x3][y3] = d;
+											score = score0 + d;
+											p[x3 + 1][y3 + 1] = 1;
+											r.run();
+											p[x3 + 1][y3 + 1] = 0;
+											score = score0;
+											g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+										}
+									};
+
 									var ax = Math.min(nr, inc);
 									for (var a = (byte) 1; a < ax; a++) {
 										var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
@@ -241,26 +232,12 @@ public class Puzzle2018_12_DP {
 											for (var c = (byte) 1; c < cx; c++) {
 												var d = (bmkc & 1 << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
 												if (d < inc) {
-													var e = (bmkd & 1l << d) == 0 && a != d && b != d && c != d;
-													if (e) {
-														g[x0][y0] = a;
-														g[x1][y1] = b;
-														g[x2][y2] = c;
-														g[x3][y3] = d;
-														inc = d;
-													}
+													var e = (bmkd & 1 << d) == 0 && a != d && b != d && c != d;
+													if (e)
+														go.g(a, b, c, d);
 												}
 											}
 										}
-									}
-
-									if (g[x0][y0] != 0) {
-										score = score0 + inc;
-										p[x3 + 1][y3 + 1] = 1;
-										r.run();
-										p[x3 + 1][y3 + 1] = 0;
-										score = score0;
-										g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 									}
 								}
 							};
