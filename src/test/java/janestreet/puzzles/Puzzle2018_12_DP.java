@@ -129,6 +129,15 @@ public class Puzzle2018_12_DP {
 						for (var board : e.t1) {
 							var g = board.g;
 							var p = board.p;
+							var xbitmasks = new long[size];
+							var ybitmasks = new long[size];
+
+							for (var x = 0; x < size; x++)
+								for (var y = 0; y < size; y++) {
+									var m = 1l << g[x][y];
+									xbitmasks[x] |= m;
+									ybitmasks[y] |= m;
+								}
 
 							IntInt_Bool vp = (xs, ys) -> {
 								var xp = 1 + xs;
@@ -162,9 +171,9 @@ public class Puzzle2018_12_DP {
 								}
 
 								private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, Runnable r) {
-									var bmka = findExcludeBitmask(x0, y0);
-									var bmkb = findExcludeBitmask(x1, y1);
-									var bmkc = findExcludeBitmask(x2, y2);
+									var bmka = xbitmasks[x0] | ybitmasks[y0];
+									var bmkb = xbitmasks[x1] | ybitmasks[y1];
+									var bmkc = xbitmasks[x2] | ybitmasks[y2];
 									var score0 = score;
 									var inc = Math.min(pr, hallmark - score);
 									byte a = 0, b = 0, c = 0;
@@ -205,10 +214,10 @@ public class Puzzle2018_12_DP {
 
 								private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3,
 										Runnable r) {
-									var bmka = findExcludeBitmask(x0, y0);
-									var bmkb = findExcludeBitmask(x1, y1);
-									var bmkc = findExcludeBitmask(x2, y2);
-									var bmkd = findExcludeBitmask(x3, y3);
+									var bmka = xbitmasks[x0] | ybitmasks[y0];
+									var bmkb = xbitmasks[x1] | ybitmasks[y1];
+									var bmkc = xbitmasks[x2] | ybitmasks[y2];
+									var bmkd = xbitmasks[x3] | ybitmasks[y3];
 									var score0 = score;
 									var inc = Math.min(pr, hallmark - score);
 									var ab = Integer.MAX_VALUE;
@@ -242,18 +251,6 @@ public class Puzzle2018_12_DP {
 										score = score0;
 										g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 									}
-								}
-
-								private long findExcludeBitmask(byte x, byte y) {
-									var bmk = 0;
-									byte v;
-									for (byte i = 0; i < size; i++) {
-										if (0 <= (v = g[i][y]) && v < 64)
-											bmk |= 1 << v;
-										if (0 <= (v = g[x][i]) && v < 64)
-											bmk |= 1 << v;
-									}
-									return bmk;
 								}
 							};
 
