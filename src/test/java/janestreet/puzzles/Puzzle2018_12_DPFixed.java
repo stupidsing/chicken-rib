@@ -78,7 +78,7 @@ public class Puzzle2018_12_DPFixed {
 
 		public boolean equals(Object object) {
 			if (object.getClass() == Board.class) {
-				Board board = (Board) object;
+				var board = (Board) object;
 				var b = true;
 
 				for (var x = 0; x < g.length; x++)

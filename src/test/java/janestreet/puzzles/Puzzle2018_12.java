@@ -83,23 +83,31 @@ public class Puzzle2018_12 {
 				var bmkc = xbitmasks[x2] | ybitmasks[y2];
 				var score0 = score;
 				var inc = Math.min(pr, hallmark - score);
+				byte a = 0, b = 0, c = 0;
 
-				var ax = Math.min(nr, inc / 2);
-				for (var a = (byte) 2; a < ax; a++) {
-					var bx = (bmka & 1l << a) == 0 ? Math.min(nr, inc / a) : 0;
-					for (var b = (byte) 2; b < bx; b++) {
-						var c = (bmkb & 1l << b) == 0 && a != b ? (byte) (a * b) : a;
-						if (c < inc) {
-							var d = (bmkc & 1l << c) == 0 && a != c && b != c;
-							if (d) {
-								g[x0][y0] = a;
-								g[x1][y1] = b;
-								g[x2][y2] = c;
-								inc = c;
-							}
-						}
+				for (var combo : combos)
+					if (true //
+							&& (bmka & 1l << (a = combo[0])) == 0 //
+							&& (bmkb & 1l << (b = combo[1])) == 0 //
+							&& (bmkc & 1l << (c = combo[2])) == 0 //
+							&& c < inc) {
+						g[x0][y0] = a;
+						g[x1][y1] = b;
+						g[x2][y2] = c;
+						inc = c;
 					}
-				}
+
+				for (var combo : combos)
+					if (true //
+							&& (bmka & 1l << (a = combo[1])) == 0 //
+							&& (bmkb & 1l << (b = combo[0])) == 0 //
+							&& (bmkc & 1l << (c = combo[2])) == 0 //
+							&& c < inc) {
+						g[x0][y0] = a;
+						g[x1][y1] = b;
+						g[x2][y2] = c;
+						inc = c;
+					}
 
 				if (g[x0][y0] != 0) {
 					var b0 = 1l << g[x0][y0];
