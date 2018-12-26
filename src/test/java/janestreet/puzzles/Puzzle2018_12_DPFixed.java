@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import suite.inspect.Dump;
 import suite.primitive.IntMutable;
+import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -146,21 +147,31 @@ public class Puzzle2018_12_DPFixed {
 									ybitmasks[y] |= m;
 								}
 
+							IntSink updateMin = score -> {
+								if (score < minScore.value()) {
+									minScore.update(score);
+									set.clear();
+								}
+
+								if (score <= minScore.value()) {
+									var g1 = To.array(g.length, byte[].class, j -> Arrays.copyOf(g[j], g[j].length));
+									set.add(new Board(g1, score));
+								}
+							};
 							var filler = new Object() {
 								private int score = board.score;
 
-								private void fill(byte[] tile, Runnable r) {
+								private void fill(byte[] tile) {
 									if (tile.length == 6)
-										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1], r);
+										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
 									else if (tile.length == 8)
-										fill4(tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], tile[0], tile[1], r);
+										fill4(tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], tile[0], tile[1]);
 								}
 
-								private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, Runnable r) {
+								private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2) {
 									var bmka = xbitmasks[x0] | ybitmasks[y0];
 									var bmkb = xbitmasks[x1] | ybitmasks[y1];
 									var bmkc = xbitmasks[x2] | ybitmasks[y2];
-									var score0 = score;
 									var inc = Math.min(pr, hallmark - score);
 									byte a, b, c;
 
@@ -169,9 +180,7 @@ public class Puzzle2018_12_DPFixed {
 											g[x0][y0] = a;
 											g[x1][y1] = b;
 											g[x2][y2] = c;
-											score = score0 + c;
-											r.run();
-											score = score0;
+											updateMin.f(score + c);
 											g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 										}
 									};
@@ -185,13 +194,11 @@ public class Puzzle2018_12_DPFixed {
 										}
 								}
 
-								private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3,
-										Runnable r) {
+								private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3) {
 									var bmka = xbitmasks[x0] | ybitmasks[y0];
 									var bmkb = xbitmasks[x1] | ybitmasks[y1];
 									var bmkc = xbitmasks[x2] | ybitmasks[y2];
 									var bmkd = xbitmasks[x3] | ybitmasks[y3];
-									var score0 = score;
 									var inc = Math.min(pr, hallmark - score);
 									var ab = Integer.MAX_VALUE;
 
@@ -201,9 +208,7 @@ public class Puzzle2018_12_DPFixed {
 											g[x1][y1] = b;
 											g[x2][y2] = c;
 											g[x3][y3] = d;
-											score = score0 + d;
-											r.run();
-											score = score0;
+											updateMin.f(score + d);
 											g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 										}
 									};
@@ -226,19 +231,7 @@ public class Puzzle2018_12_DPFixed {
 								}
 							};
 
-							filler.fill(tile, () -> {
-								var score = filler.score;
-
-								if (score < minScore.value()) {
-									minScore.update(score);
-									set.clear();
-								}
-
-								if (score <= minScore.value()) {
-									var g1 = To.array(g.length, byte[].class, j -> Arrays.copyOf(g[j], g[j].length));
-									set.add(new Board(g1, score));
-								}
-							});
+							filler.fill(tile);
 						}
 					}
 			}
