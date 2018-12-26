@@ -158,6 +158,7 @@ public class Puzzle2018_12_DPFixed {
 									set.add(new Board(g1, score));
 								}
 							};
+
 							var filler = new Object() {
 								private int score = board.score;
 
