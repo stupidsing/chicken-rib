@@ -114,7 +114,7 @@ public class Puzzle2018_12_DPFixed {
 
 	@Test
 	public void test() {
-		var pr = 45; // Byte.MAX_VALUE
+		var pr = 35;
 		var size = 7;
 		var hallmark = 225;
 
@@ -160,7 +160,7 @@ public class Puzzle2018_12_DPFixed {
 
 							var score = board.score;
 
-							var filler = new Object() {
+							new Object() {
 								private void fill(byte[] tile) {
 									if (tile.length == 6)
 										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
@@ -179,7 +179,7 @@ public class Puzzle2018_12_DPFixed {
 									var bmkb = xbitmasks[x1] | ybitmasks[y1];
 									var bmkc = xbitmasks[x2] | ybitmasks[y2];
 									var inc = Math.min(pr, hallmark - score);
-									byte a, b, c;
+									byte c;
 
 									var go = new Object() {
 										private void g(byte a, byte b, byte c) {
@@ -199,9 +199,7 @@ public class Puzzle2018_12_DPFixed {
 											go.g(combo[1], combo[0], c);
 										}
 								}
-							};
-
-							filler.fill(tile);
+							}.fill(tile);
 						}
 					}
 			}

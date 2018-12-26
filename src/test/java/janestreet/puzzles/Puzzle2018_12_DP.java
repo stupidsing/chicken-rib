@@ -87,7 +87,7 @@ public class Puzzle2018_12_DP {
 	@Test
 	public void test() {
 		var nr = 8;
-		var pr = 36; // Byte.MAX_VALUE
+		var pr = 36;
 		var size = 7;
 		var hallmark = 230;
 
