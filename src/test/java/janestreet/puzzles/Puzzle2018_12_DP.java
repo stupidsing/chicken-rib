@@ -10,6 +10,7 @@ import org.junit.Test;
 import suite.inspect.Dump;
 import suite.node.util.TreeUtil.IntInt_Bool;
 import suite.primitive.IntMutable;
+import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -145,36 +146,57 @@ public class Puzzle2018_12_DP {
 								return p[xp - 1][yp] + p[xp + 1][yp] + p[xp][yp - 1] + p[xp][yp + 1] == 0;
 							};
 
-							var filler = new Object() {
-								private int score = board.score;
+							IntSink r = score -> {
+								if (score < minScore.value()) {
+									minScore.update(score);
+									set.clear();
+								}
 
-								private void fill(byte[] tile, Runnable r) {
+								if (score <= minScore.value()) {
+									var g1 = To.array(g.length, byte[].class, j -> Arrays.copyOf(g[j], g[j].length));
+									var p1 = To.array(p.length, byte[].class, j -> Arrays.copyOf(p[j], p[j].length));
+									set.add(new Board(g1, p1, score));
+								}
+							};
+
+							var score = board.score;
+
+							var filler = new Object() {
+								private void fill(byte[] tile) {
 									byte xs, ys;
 
 									if (tile.length == 6) {
 										if (vp.apply(xs = tile[0], ys = tile[1]))
-											fill3(tile[2], tile[3], tile[4], tile[5], xs, ys, r);
+											fill3(tile[2], tile[3], tile[4], tile[5], xs, ys);
 										if (vp.apply(xs = tile[2], ys = tile[3]))
-											fill3(tile[0], tile[1], tile[4], tile[5], xs, ys, r);
+											fill3(tile[0], tile[1], tile[4], tile[5], xs, ys);
 										if (vp.apply(xs = tile[4], ys = tile[5]))
-											fill3(tile[0], tile[1], tile[2], tile[3], xs, ys, r);
+											fill3(tile[0], tile[1], tile[2], tile[3], xs, ys);
 									} else {
 										if (vp.apply(xs = tile[0], ys = tile[1]))
-											fill4(tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], xs, ys, r);
+											fill4(tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], xs, ys);
 										if (vp.apply(xs = tile[2], ys = tile[3]))
-											fill4(tile[0], tile[1], tile[4], tile[5], tile[6], tile[7], xs, ys, r);
+											fill4(tile[0], tile[1], tile[4], tile[5], tile[6], tile[7], xs, ys);
 										if (vp.apply(xs = tile[4], ys = tile[5]))
-											fill4(tile[0], tile[1], tile[2], tile[3], tile[6], tile[7], xs, ys, r);
+											fill4(tile[0], tile[1], tile[2], tile[3], tile[6], tile[7], xs, ys);
 										if (vp.apply(xs = tile[6], ys = tile[7]))
-											fill4(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], xs, ys, r);
+											fill4(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], xs, ys);
 									}
 								}
 
-								private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, Runnable r) {
+								private void fill4_(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3) {
+									g[x0][y0] = 1;
+									fill3(x1, y1, x2, y2, x3, y3);
+									g[x1][y1] = 1;
+									fill3(x0, y0, x2, y2, x3, y3);
+									g[x2][y2] = 1;
+									fill3(x0, y0, x1, y1, x3, y3);
+								}
+
+								private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2) {
 									var bmka = xbitmasks[x0] | ybitmasks[y0];
 									var bmkb = xbitmasks[x1] | ybitmasks[y1];
 									var bmkc = xbitmasks[x2] | ybitmasks[y2];
-									var score0 = score;
 									var inc = Math.min(pr, hallmark - score);
 									byte a = 0, b = 0, c = 0;
 
@@ -203,22 +225,18 @@ public class Puzzle2018_12_DP {
 										}
 
 									if (g[x0][y0] != 0) {
-										score = score0 + inc;
 										p[x2 + 1][y2 + 1] = 1;
-										r.run();
+										r.f(score + inc);
 										p[x2 + 1][y2 + 1] = 0;
-										score = score0;
 										g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
 									}
 								}
 
-								private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3,
-										Runnable r) {
+								private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3) {
 									var bmka = xbitmasks[x0] | ybitmasks[y0];
 									var bmkb = xbitmasks[x1] | ybitmasks[y1];
 									var bmkc = xbitmasks[x2] | ybitmasks[y2];
 									var bmkd = xbitmasks[x3] | ybitmasks[y3];
-									var score0 = score;
 									var inc = Math.min(pr, hallmark - score);
 									var ab = Integer.MAX_VALUE;
 
@@ -244,30 +262,15 @@ public class Puzzle2018_12_DP {
 									}
 
 									if (g[x0][y0] != 0) {
-										score = score0 + inc;
 										p[x3 + 1][y3 + 1] = 1;
-										r.run();
+										r.f(score + inc);
 										p[x3 + 1][y3 + 1] = 0;
-										score = score0;
 										g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
 									}
 								}
 							};
 
-							filler.fill(tile, () -> {
-								var score = filler.score;
-
-								if (score < minScore.value()) {
-									minScore.update(score);
-									set.clear();
-								}
-
-								if (score <= minScore.value()) {
-									var g1 = To.array(g.length, byte[].class, j -> Arrays.copyOf(g[j], g[j].length));
-									var p1 = To.array(p.length, byte[].class, j -> Arrays.copyOf(p[j], p[j].length));
-									set.add(new Board(g1, p1, score));
-								}
-							});
+							filler.fill(tile);
 						}
 					}
 			}

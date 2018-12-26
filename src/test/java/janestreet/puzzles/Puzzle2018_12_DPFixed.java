@@ -28,14 +28,14 @@ and find it
    ,   , * ,   , * ,   ,   ,
    , * ,   , * ,   , * ,   ,
 
-  3, 24,  4,  2, 10,  5, 15,
- 21,  7,  6,  4,  5,  3,  2,
-  4,  3, 20,  5,  2,  6, 12,
-  6, 12,  2,  3,  4,  8,  5,
- 24,  4,  5,  6,  3,  2, 10,
-  5,  2, 10,  1, 12,  4,  3,
-  2, 10,  3, 18,  6, 12,  4,
-SCORE = 224
+.g[0] = [  2, 20,  4,  3, 18,  5, 15, ]
+.g[1] = [ 14,  7,  5,  4,  6,  3,  2, ]
+.g[2] = [  4,  3, 20,  5,  2,  6, 12, ]
+.g[3] = [  6, 12,  3,  2,  4,  8,  5, ]
+.g[4] = [ 24,  4,  7,  6,  3,  2, 10, ]
+.g[5] = [  5,  2, 14,  1, 12,  4,  3, ]
+.g[6] = [  3, 15,  2, 10,  5, 12,  4, ]
+SCORE = 222 [Integer]
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DPFixed {
@@ -73,8 +73,8 @@ public class Puzzle2018_12_DPFixed {
 			{ 4, 6, 24, }, //
 			{ 4, 7, 28, }, //
 			{ 5, 6, 30, }, //
-			{ 5, 7, 35, }, //
-			{ 6, 7, 42, }, //
+			// { 5, 7, 35, }, //
+			// { 6, 7, 42, }, //
 	};
 
 	private class Board {
@@ -114,10 +114,9 @@ public class Puzzle2018_12_DPFixed {
 
 	@Test
 	public void test() {
-		var nr = 9;
 		var pr = 45; // Byte.MAX_VALUE
 		var size = 7;
-		var hallmark = 230;
+		var hallmark = 225;
 
 		var board0 = new Board(new byte[size][size], 0);
 		var map = new IntObjMap<Set<Board>>();
@@ -159,14 +158,20 @@ public class Puzzle2018_12_DPFixed {
 								}
 							};
 
-							var filler = new Object() {
-								private int score = board.score;
+							var score = board.score;
 
+							var filler = new Object() {
 								private void fill(byte[] tile) {
 									if (tile.length == 6)
 										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
-									else if (tile.length == 8)
-										fill4(tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], tile[0], tile[1]);
+									else if (tile.length == 8) {
+										g[tile[2]][tile[3]] = 1;
+										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
+										g[tile[4]][tile[5]] = 1;
+										fill3(tile[2], tile[3], tile[6], tile[7], tile[0], tile[1]);
+										g[tile[6]][tile[7]] = 1;
+										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
+									}
 								}
 
 								private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2) {
@@ -178,57 +183,21 @@ public class Puzzle2018_12_DPFixed {
 
 									var go = new Object() {
 										private void g(byte a, byte b, byte c) {
-											g[x0][y0] = a;
-											g[x1][y1] = b;
-											g[x2][y2] = c;
-											updateMin.f(score + c);
-											g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
+											if ((bmka & 1l << a) == 0 && (bmkb & 1l << b) == 0) {
+												g[x0][y0] = a;
+												g[x1][y1] = b;
+												g[x2][y2] = c;
+												updateMin.f(score + c);
+												g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
+											}
 										}
 									};
 
 									for (var combo : combos)
 										if ((bmkc & 1l << (c = combo[2])) == 0 && c < inc) {
-											if ((bmka & 1l << (a = combo[0])) == 0 && (bmkb & 1l << (b = combo[1])) == 0)
-												go.g(a, b, c);
-											if ((bmka & 1l << (a = combo[1])) == 0 && (bmkb & 1l << (b = combo[0])) == 0)
-												go.g(a, b, c);
+											go.g(combo[0], combo[1], c);
+											go.g(combo[1], combo[0], c);
 										}
-								}
-
-								private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3) {
-									var bmka = xbitmasks[x0] | ybitmasks[y0];
-									var bmkb = xbitmasks[x1] | ybitmasks[y1];
-									var bmkc = xbitmasks[x2] | ybitmasks[y2];
-									var bmkd = xbitmasks[x3] | ybitmasks[y3];
-									var inc = Math.min(pr, hallmark - score);
-									var ab = Integer.MAX_VALUE;
-
-									var go = new Object() {
-										private void g(byte a, byte b, byte c, byte d) {
-											g[x0][y0] = a;
-											g[x1][y1] = b;
-											g[x2][y2] = c;
-											g[x3][y3] = d;
-											updateMin.f(score + d);
-											g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
-										}
-									};
-
-									var ax = Math.min(nr, inc);
-									for (var a = (byte) 1; a < ax; a++) {
-										var bx = (bmka & 1 << a) == 0 ? Math.min(nr, inc / a) : 0;
-										for (var b = (byte) 1; b < bx; b++) {
-											var cx = (bmkb & 1 << b) == 0 && a != b ? Math.min(nr, inc / (ab = a * b)) : 0;
-											for (var c = (byte) 1; c < cx; c++) {
-												var d = (bmkc & 1 << c) == 0 && a != c && b != c ? (byte) (ab * c) : a;
-												if (d < inc) {
-													var e = (bmkd & 1 << d) == 0 && a != d && b != d && c != d;
-													if (e)
-														go.g(a, b, c, d);
-												}
-											}
-										}
-									}
 								}
 							};
 
