@@ -28,6 +28,15 @@ and find it
    ,   , * ,   , * ,   ,   ,
    , * ,   , * ,   , * ,   ,
 
+.g[0] = [  3, 24,  4,  2, 10,  5, 15, ]
+.g[1] = [ 21,  7,  6,  4,  5,  3,  2, ]
+.g[2] = [  4,  3, 20,  5,  2,  6, 12, ]
+.g[3] = [  6, 12,  2,  3,  4,  8,  5, ]
+.g[4] = [ 24,  4,  5,  6,  3,  2, 10, ]
+.g[5] = [  5,  2, 10,  1, 12,  4,  3, ]
+.g[6] = [  2, 10,  3, 18,  6, 12,  4, ]
+.score = 224 [Integer]
+
 .g[0] = [  2, 20,  4,  3, 18,  5, 15, ]
 .g[1] = [ 14,  7,  5,  4,  6,  3,  2, ]
 .g[2] = [  4,  3, 20,  5,  2,  6, 12, ]
@@ -166,7 +175,7 @@ public class Puzzle2018_12_DPFixed {
 										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
 									else if (tile.length == 8) {
 										g[tile[2]][tile[3]] = 1;
-										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
+										fill3(tile[4], tile[5], tile[6], tile[7], tile[0], tile[1]);
 										g[tile[4]][tile[5]] = 1;
 										fill3(tile[2], tile[3], tile[6], tile[7], tile[0], tile[1]);
 										g[tile[6]][tile[7]] = 1;
