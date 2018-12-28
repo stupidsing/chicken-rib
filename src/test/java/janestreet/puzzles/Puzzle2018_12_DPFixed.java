@@ -85,7 +85,7 @@ public class Puzzle2018_12_DPFixed {
 			this.g = g;
 			this.score = score;
 
-			int h = 7;
+			var h = 7;
 			for (var r : g)
 				for (var b : r)
 					h = h * 31 + b;
@@ -166,7 +166,7 @@ public class Puzzle2018_12_DPFixed {
 										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
 									else if (tile.length == 8) {
 										g[tile[2]][tile[3]] = 1;
-										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
+										fill3(tile[4], tile[5], tile[6], tile[7], tile[0], tile[1]);
 										g[tile[4]][tile[5]] = 1;
 										fill3(tile[2], tile[3], tile[6], tile[7], tile[0], tile[1]);
 										g[tile[6]][tile[7]] = 1;
