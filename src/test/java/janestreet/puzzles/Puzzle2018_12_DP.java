@@ -13,7 +13,6 @@ import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Read;
-import suite.util.To;
 
 /*
 for all tile order, find the first score
@@ -29,6 +28,9 @@ SCORE = 229
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DP {
+
+	private int size = 7;
+	private int size2 = c(size, size);
 
 	private byte[][] combos = { //
 			{ 2, 3, 6, }, //
@@ -48,21 +50,15 @@ public class Puzzle2018_12_DP {
 	};
 
 	private class Board {
-		private final byte[][] g;
-		private final byte[][] p;
+		private final byte[] g;
+		private final byte[] p;
 		private final int score, hashCode;
 
-		private Board(byte[][] g, byte[][] p, int score) {
+		private Board(byte[] g, byte[] p, int score) {
 			this.g = g;
 			this.p = p;
 			this.score = score;
-
-			int h = 7;
-			for (var r : g)
-				for (var b : r)
-					h = h * 31 + b;
-
-			hashCode = h;
+			hashCode = Arrays.hashCode(g);
 		}
 
 		public int hashCode() {
@@ -70,17 +66,7 @@ public class Puzzle2018_12_DP {
 		}
 
 		public boolean equals(Object object) {
-			if (object.getClass() == Board.class) {
-				Board board = (Board) object;
-				var b = true;
-
-				for (var x = 0; x < g.length; x++)
-					for (var y = 0; y < g[x].length; y++)
-						b &= g[x][y] == board.g[x][y];
-
-				return b;
-			} else
-				return false;
+			return object.getClass() == Board.class ? Arrays.equals(g, ((Board) object).g) : false;
 		}
 	}
 
@@ -88,7 +74,6 @@ public class Puzzle2018_12_DP {
 	public void test() {
 		var nr = 8;
 		var pr = 36;
-		var size = 7;
 		var hallmark = 230;
 
 		var tiles = new byte[][] { //
@@ -110,7 +95,7 @@ public class Puzzle2018_12_DP {
 				{ 4, 4, 5, 4, 5, 5, }, //
 		};
 
-		var board0 = new Board(new byte[size][size], new byte[size + 2][size + 2], 0);
+		var board0 = new Board(new byte[size2], new byte[c(size + 1, size + 1)], 0);
 		var map = new IntObjMap<Set<Board>>();
 		map.put(0, Set.of(board0));
 
@@ -135,7 +120,7 @@ public class Puzzle2018_12_DP {
 
 							for (var x = 0; x < size; x++)
 								for (var y = 0; y < size; y++) {
-									var m = 1l << g[x][y];
+									var m = 1l << g[c(x, y)];
 									xbitmasks[x] |= m;
 									ybitmasks[y] |= m;
 								}
@@ -143,7 +128,7 @@ public class Puzzle2018_12_DP {
 							IntInt_Bool vp = (xs, ys) -> {
 								var xp = 1 + xs;
 								var yp = 1 + ys;
-								return p[xp - 1][yp] + p[xp + 1][yp] + p[xp][yp - 1] + p[xp][yp + 1] == 0;
+								return p[cm(xp - 1, yp)] + p[cm(xp + 1, yp)] + p[cm(xp, yp - 1)] + p[cm(xp, yp + 1)] == 0;
 							};
 
 							IntSink r = score -> {
@@ -152,11 +137,8 @@ public class Puzzle2018_12_DP {
 									set.clear();
 								}
 
-								if (score <= minScore.value()) {
-									var g1 = To.array(g.length, byte[].class, j -> Arrays.copyOf(g[j], g[j].length));
-									var p1 = To.array(p.length, byte[].class, j -> Arrays.copyOf(p[j], p[j].length));
-									set.add(new Board(g1, p1, score));
-								}
+								if (score <= minScore.value())
+									set.add(new Board(Arrays.copyOf(g, size2), Arrays.copyOf(p, c(size + 2, size + 2)), score));
 							};
 
 							var score = board.score;
@@ -185,11 +167,11 @@ public class Puzzle2018_12_DP {
 								}
 
 								private void fill4_(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3) {
-									g[x0][y0] = 1;
+									g[c(x0, y0)] = 1;
 									fill3(x1, y1, x2, y2, x3, y3);
-									g[x1][y1] = 1;
+									g[c(x1, y1)] = 1;
 									fill3(x0, y0, x2, y2, x3, y3);
-									g[x2][y2] = 1;
+									g[c(x2, y2)] = 1;
 									fill3(x0, y0, x1, y1, x3, y3);
 								}
 
@@ -206,9 +188,9 @@ public class Puzzle2018_12_DP {
 												&& (bmkb & 1l << (b = combo[1])) == 0 //
 												&& (bmkc & 1l << (c = combo[2])) == 0 //
 												&& c < inc) {
-											g[x0][y0] = a;
-											g[x1][y1] = b;
-											g[x2][y2] = c;
+											g[c(x0, y0)] = a;
+											g[c(x1, y1)] = b;
+											g[c(x2, y2)] = c;
 											inc = c;
 										}
 
@@ -218,17 +200,17 @@ public class Puzzle2018_12_DP {
 												&& (bmkb & 1l << (b = combo[0])) == 0 //
 												&& (bmkc & 1l << (c = combo[2])) == 0 //
 												&& c < inc) {
-											g[x0][y0] = a;
-											g[x1][y1] = b;
-											g[x2][y2] = c;
+											g[c(x0, y0)] = a;
+											g[c(x1, y1)] = b;
+											g[c(x2, y2)] = c;
 											inc = c;
 										}
 
-									if (g[x0][y0] != 0) {
-										p[x2 + 1][y2 + 1] = 1;
+									if (g[c(x0, y0)] != 0) {
+										p[cm(x2 + 1, y2 + 1)] = 1;
 										r.f(score + inc);
-										p[x2 + 1][y2 + 1] = 0;
-										g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
+										p[cm(x2 + 1, y2 + 1)] = 0;
+										g[c(x0, y0)] = g[c(x1, y1)] = g[c(x2, y2)] = 0;
 									}
 								}
 
@@ -250,10 +232,10 @@ public class Puzzle2018_12_DP {
 												if (d < inc) {
 													var e = (bmkd & 1l << d) == 0 && a != d && b != d && c != d;
 													if (e) {
-														g[x0][y0] = a;
-														g[x1][y1] = b;
-														g[x2][y2] = c;
-														g[x3][y3] = d;
+														g[c(x0, y0)] = a;
+														g[c(x1, y1)] = b;
+														g[c(x2, y2)] = c;
+														g[c(x3, y3)] = d;
 														inc = d;
 													}
 												}
@@ -261,11 +243,11 @@ public class Puzzle2018_12_DP {
 										}
 									}
 
-									if (g[x0][y0] != 0) {
-										p[x3 + 1][y3 + 1] = 1;
+									if (g[c(x0, y0)] != 0) {
+										p[cm(x3 + 1, y3 + 1)] = 1;
 										r.f(score + inc);
-										p[x3 + 1][y3 + 1] = 0;
-										g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+										p[cm(x3 + 1, y3 + 1)] = 0;
+										g[c(x0, y0)] = g[c(x1, y1)] = g[c(x2, y2)] = g[c(x3, y3)] = 0;
 									}
 								}
 							};
@@ -282,6 +264,14 @@ public class Puzzle2018_12_DP {
 		var min = map.streamlet().values().concatMap(Read::from).min(Comparator.comparingInt(board -> board.score));
 
 		Dump.details(min);
+	}
+
+	private byte cm(int x, int y) {
+		return c(x & 7, y & 7);
+	}
+
+	private byte c(int x, int y) {
+		return (byte) (x * 8 + y);
 	}
 
 }
