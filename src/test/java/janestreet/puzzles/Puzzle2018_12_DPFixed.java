@@ -3,6 +3,7 @@ package janestreet.puzzles;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
@@ -11,6 +12,7 @@ import suite.inspect.Dump;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 
 /*
@@ -106,6 +108,29 @@ public class Puzzle2018_12_DPFixed {
 		var board0 = new Board(new byte[size2], 0);
 		var map = new IntObjMap<Set<Board>>();
 		map.put(0, Set.of(board0));
+
+		var random = new Random();
+
+		Source<Boolean> check = () -> {
+			var b = true;
+			var p = new byte[c(size + 1, size + 1)];
+			for (var tile : tiles) {
+				var xy = tile[0] + 9;
+				p[xy] = 1;
+				b &= p[xy - 1] == 0 && p[xy - 1] == 0 && p[xy - 8] == 0 && p[xy + 8] == 0;
+			}
+			return b;
+		};
+
+		do {
+			for (var i = 0; i < 9; i++) {
+				var tile = tiles[random.nextInt(tiles.length)];
+				var j = random.nextInt(3);
+				var t = tile[j];
+				tile[j] = tile[0];
+				tile[0] = t;
+			}
+		} while (!check.g());
 
 		for (var n = 0; n < tiles.length; n++) {
 			var map1 = new IntObjMap<Set<Board>>();

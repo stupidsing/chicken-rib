@@ -138,7 +138,7 @@ public class Puzzle2018_12_DP {
 								}
 
 								if (score <= minScore.value())
-									set.add(new Board(Arrays.copyOf(g, size2), Arrays.copyOf(p, c(size + 2, size + 2)), score));
+									set.add(new Board(Arrays.copyOf(g, size2), Arrays.copyOf(p, c(size + 1, size + 1)), score));
 							};
 
 							var score = board.score;
