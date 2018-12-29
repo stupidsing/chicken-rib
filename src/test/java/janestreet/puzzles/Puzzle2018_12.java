@@ -189,7 +189,7 @@ public class Puzzle2018_12 {
 					ybitmasks[y2] &= ~b2;
 					ybitmasks[y1] &= ~b1;
 					ybitmasks[y0] &= ~b0;
-					xbitmasks[x2] &= ~b3;
+					xbitmasks[x3] &= ~b3;
 					xbitmasks[x2] &= ~b2;
 					xbitmasks[x1] &= ~b1;
 					xbitmasks[x0] &= ~b0;
