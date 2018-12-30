@@ -10,13 +10,14 @@ import org.junit.Test;
 
 import suite.inspect.Dump;
 import suite.primitive.IntMutable;
-import suite.primitive.IntPrimitives.IntSink;
+import suite.primitive.IntPrimitives.IntObjSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.set.IntSet;
 import suite.streamlet.Read;
 
 /*
-fixes the product cells,
+fixes the produ
+import suite.weiqi.Board;ct cells,
 use DP to build up each tiles one-by-one (and generate a list of boards with minimum score per each tile setting),
 assume greedy approach would work (that every smallest feasible new tile would lead to a final global minimum),
 and find it
@@ -49,7 +50,7 @@ public class Puzzle2018_12_DPFixedP {
 			{ 3, 7, 21, }, //
 			{ 4, 5, 20, }, //
 			{ 4, 6, 24, }, //
-			{ 4, 7, 28, }, //
+			// { 4, 7, 28, }, //
 			// { 5, 6, 30, }, //
 			// { 5, 7, 35, }, //
 			// { 6, 7, 42, }, //
@@ -165,6 +166,16 @@ public class Puzzle2018_12_DPFixedP {
 						var set = map1.computeIfAbsent(v, v_ -> new HashSet<>());
 						var minScore = IntMutable.of(!set.isEmpty() ? set.iterator().next().score : Integer.MAX_VALUE);
 
+						IntObjSink<Board> updateMin = (score, board) -> {
+							if (score < minScore.value()) {
+								minScore.update(score);
+								set.clear();
+							}
+
+							if (score <= minScore.value())
+								set.add(new Board(Arrays.copyOf(board.g, size2), score));
+						};
+
 						for (var board : e.t1) {
 							var g = board.g;
 							var xbitmasks = new long[size];
@@ -176,16 +187,6 @@ public class Puzzle2018_12_DPFixedP {
 									xbitmasks[x] |= m;
 									ybitmasks[y] |= m;
 								}
-
-							IntSink updateMin = score -> {
-								if (score < minScore.value()) {
-									minScore.update(score);
-									set.clear();
-								}
-
-								if (score <= minScore.value())
-									set.add(new Board(Arrays.copyOf(g, size2), score));
-							};
 
 							var score = board.score;
 
@@ -217,16 +218,14 @@ public class Puzzle2018_12_DPFixedP {
 											if ((bmka & 1l << (a = combo[0])) == 0 && (bmkb & 1l << (b = combo[1])) == 0) {
 												g[xy0] = a;
 												g[xy1] = b;
-												updateMin.f(score + c);
-												g[xy0] = g[xy1] = 0;
+												updateMin.sink2(score + c, board);
 											}
 											if ((bmka & 1l << (a = combo[1])) == 0 && (bmkb & 1l << (b = combo[0])) == 0) {
 												g[xy0] = a;
 												g[xy1] = b;
-												updateMin.f(score + c);
-												g[xy0] = g[xy1] = 0;
+												updateMin.sink2(score + c, board);
 											}
-											g[xy2] = 0;
+											g[xy0] = g[xy1] = g[xy2] = 0;
 										}
 								}
 							}.fill(tile);
