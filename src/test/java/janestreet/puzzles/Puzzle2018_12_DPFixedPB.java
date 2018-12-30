@@ -30,6 +30,32 @@ and find it
  4, 15,  5,  1, 14,  2,  3
 20,  5,  6,  3,  2, 12,  4
 .score = 217 [Integer]
+
+// tiles[0] = new byte[] { 8, 0, 9, };
+// tiles[1] = new byte[] { 29, 20, 28, };
+// tiles[2] = new byte[] { 35, 27, 26, };
+// tiles[3] = new byte[] { 25, 16, 17, };
+// tiles[4] = new byte[] { 54, 46, 53, };
+// tiles[5] = new byte[] { 38, 37, 30, };
+// tiles[6] = new byte[] { 42, 34, 41, };
+// tiles[7] = new byte[] { 45, 44, 36, };
+// tiles[8] = new byte[] { 12, 3, 4, };
+// tiles[9] = new byte[] { 1, 2, 10, };
+// tiles[10] = new byte[] { 22, 21, 14, };
+// tiles[11] = new byte[] { 18, 11, 19, };
+// tiles[12] = new byte[] { 5, 13, 6, };
+// tiles[13] = new byte[] { 32, 24, 33, };
+// tiles[14] = new byte[] { 49, 48, 40, };
+// tiles[15] = new byte[] { 52, 51, 43, 50, };
+
+ 4, 18,  3,  2,  6, 20,  5
+20,  5,  6,  3, 12,  4,  2
+ 3,  4, 18,  6,  2,  5, 10
+ 6, 12,  2,  4,  5, 10,  3
+18,  3,  5,  8,  4,  2,  6
+ 5,  2, 10,  1,  3, 12,  4
+ 2, 10,  4,  5, 20,  3, 12
+.score = 216 [Integer]
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DPFixedPB {
