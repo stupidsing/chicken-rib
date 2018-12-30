@@ -61,7 +61,7 @@ and find it
 public class Puzzle2018_12_DPFixedPB {
 
 	private int size = 7;
-	private int hallmark = 230;
+	private int hallmark = 240;
 
 	private byte[][] combos = { //
 			{ 2, 3, 6, }, //
@@ -236,38 +236,39 @@ public class Puzzle2018_12_DPFixedPB {
 									var inc = hallmark - score - est;
 									byte c;
 
-									for (var combo : combos)
-										if ((bmkc & 1l << (c = combo[2])) == 0 && c < inc) {
-											byte a, b;
-											xbitmasks[x2] |= 1 << c;
-											ybitmasks[y2] |= 1 << c;
+									for (var combo : combos) {
+										int ma, mb, mc;
+										if ((bmkc & (mc = 1 << (c = combo[2]))) == 0 && c < inc) {
+											xbitmasks[x2] |= mc;
+											ybitmasks[y2] |= mc;
 
-											if ((bmka & 1l << (a = combo[0])) == 0 && (bmkb & 1l << (b = combo[1])) == 0) {
-												xbitmasks[x0] |= 1 << a;
-												ybitmasks[y0] |= 1 << a;
-												xbitmasks[x1] |= 1 << b;
-												ybitmasks[y1] |= 1 << b;
+											if ((bmka & (ma = 1 << combo[0])) == 0 && (bmkb & (mb = 1 << combo[1])) == 0) {
+												xbitmasks[x0] |= ma;
+												ybitmasks[y0] |= ma;
+												xbitmasks[x1] |= mb;
+												ybitmasks[y1] |= mb;
 												updateMin.sink2(score + c, board);
-												ybitmasks[y1] &= ~(1 << b);
-												xbitmasks[x1] &= ~(1 << b);
-												ybitmasks[y0] &= ~(1 << a);
-												xbitmasks[x0] &= ~(1 << a);
+												ybitmasks[y1] &= ~mb;
+												xbitmasks[x1] &= ~mb;
+												ybitmasks[y0] &= ~ma;
+												xbitmasks[x0] &= ~ma;
 											}
-											if ((bmka & 1l << (a = combo[1])) == 0 && (bmkb & 1l << (b = combo[0])) == 0) {
-												xbitmasks[x0] |= 1 << a;
-												ybitmasks[y0] |= 1 << a;
-												xbitmasks[x1] |= 1 << b;
-												ybitmasks[y1] |= 1 << b;
+											if ((bmka & (ma = 1 << combo[1])) == 0 && (bmkb & (mb = 1 << combo[0])) == 0) {
+												xbitmasks[x0] |= ma;
+												ybitmasks[y0] |= ma;
+												xbitmasks[x1] |= mb;
+												ybitmasks[y1] |= mb;
 												updateMin.sink2(score + c, board);
-												ybitmasks[y1] &= ~(1 << b);
-												xbitmasks[x1] &= ~(1 << b);
-												ybitmasks[y0] &= ~(1 << a);
-												xbitmasks[x0] &= ~(1 << a);
+												ybitmasks[y1] &= ~mb;
+												xbitmasks[x1] &= ~mb;
+												ybitmasks[y0] &= ~ma;
+												xbitmasks[x0] &= ~ma;
 											}
 
-											ybitmasks[y2] &= ~(1 << c);
-											xbitmasks[x2] &= ~(1 << c);
+											ybitmasks[y2] &= ~mc;
+											xbitmasks[x2] &= ~mc;
 										}
+									}
 								}
 							};
 
