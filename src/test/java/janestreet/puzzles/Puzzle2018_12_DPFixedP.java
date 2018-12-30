@@ -149,6 +149,8 @@ public class Puzzle2018_12_DPFixedP {
 
 	private Board find(byte[][] tiles) {
 		var board0 = new Board(new byte[size2], 0);
+		var xbitmasks = new long[size];
+		var ybitmasks = new long[size];
 
 		var map = new IntObjMap<Set<Board>>();
 		map.put(0, Set.of(board0));
@@ -178,8 +180,8 @@ public class Puzzle2018_12_DPFixedP {
 
 						for (var board : e.t1) {
 							var g = board.g;
-							var xbitmasks = new long[size];
-							var ybitmasks = new long[size];
+							Arrays.fill(xbitmasks, 0);
+							Arrays.fill(ybitmasks, 0);
 
 							for (var x = 0; x < size; x++)
 								for (var y = 0; y < size; y++) {
