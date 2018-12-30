@@ -12,6 +12,7 @@ import suite.inspect.Dump;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.set.IntSet;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 
@@ -29,14 +30,15 @@ and find it
    ,   , * ,   , * ,   ,   ,
    , * ,   , * ,   , * ,   ,
 
-.g[0] = [  2, 20,  4,  3, 18,  5, 15, ]
-.g[1] = [ 14,  7,  5,  4,  6,  3,  2, ]
-.g[2] = [  4,  3, 20,  5,  2,  6, 12, ]
-.g[3] = [  6, 12,  3,  2,  4,  8,  5, ]
-.g[4] = [ 24,  4,  7,  6,  3,  2, 10, ]
-.g[5] = [  5,  2, 14,  1, 12,  4,  3, ]
-.g[6] = [  3, 15,  2, 10,  5, 12,  4, ]
-SCORE = 222 [Integer]
+ 8,  3,  5, 12,  2,  6,  4,
+ 4,  2, 15,  3,  6, 24,  5,
+ 5, 20,  2,  6,  4,  3, 15,
+ 6,  4, 20,  5,  3, 12,  2,
+ 2, 12,  3,  4, 20,  5, 10,
+15,  6, 18,  2,  5,  4,  3,
+ 3,  5,  4,  8,  1,  2,  6,
+.score = 221 [Integer]
+
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DPFixed {
@@ -77,8 +79,8 @@ public class Puzzle2018_12_DPFixed {
 			{ 4, 6, 24, }, //
 			{ 4, 7, 28, }, //
 			{ 5, 6, 30, }, //
-			// { 5, 7, 35, }, //
-			// { 6, 7, 42, }, //
+			{ 5, 7, 35, }, //
+			{ 6, 7, 42, }, //
 	};
 
 	private class Board {
@@ -102,8 +104,8 @@ public class Puzzle2018_12_DPFixed {
 
 	@Test
 	public void test() {
-		var pr = 35;
-		var hallmark = 225;
+		var pr = 50;
+		var hallmark = 240;
 
 		var board0 = new Board(new byte[size2], 0);
 		var map = new IntObjMap<Set<Board>>();
@@ -112,18 +114,18 @@ public class Puzzle2018_12_DPFixed {
 		var random = new Random();
 
 		Source<Boolean> check = () -> {
+			var set = new IntSet();
 			var b = true;
-			var p = new byte[c(size + 1, size + 1)];
 			for (var tile : tiles) {
-				var xy = tile[0] + 9;
-				p[xy] = 1;
-				b &= p[xy - 1] == 0 && p[xy - 1] == 0 && p[xy - 8] == 0 && p[xy + 8] == 0;
+				var xy = tile[0];
+				set.add(xy);
+				b &= !set.contains(xy - 1) && !set.contains(xy + 1) && !set.contains(xy - 8) && !set.contains(xy + 8);
 			}
 			return b;
 		};
 
 		do {
-			for (var i = 0; i < 9; i++) {
+			for (var i = 0; i < 19; i++) {
 				var tile = tiles[random.nextInt(tiles.length)];
 				var j = random.nextInt(3);
 				var t = tile[j];
