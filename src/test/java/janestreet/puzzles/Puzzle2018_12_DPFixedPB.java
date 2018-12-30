@@ -61,24 +61,24 @@ and find it
 public class Puzzle2018_12_DPFixedPB {
 
 	private int size = 7;
-	private int hallmark = 240;
+	private int hallmark = 225;
 
-	private byte[][] combos = { //
-			{ 2, 3, 6, }, //
-			{ 2, 4, 8, }, //
-			{ 2, 5, 10, }, //
-			{ 2, 6, 12, }, //
-			{ 2, 7, 14, }, //
-			{ 3, 4, 12, }, //
-			{ 3, 5, 15, }, //
-			{ 3, 6, 18, }, //
-			{ 3, 7, 21, }, //
-			{ 4, 5, 20, }, //
-			{ 4, 6, 24, }, //
-			// { 4, 7, 28, }, //
-			// { 5, 6, 30, }, //
-			// { 5, 7, 35, }, //
-			// { 6, 7, 42, }, //
+	private int[][] combos = { //
+			{ 1 << 2, 1 << 3, 1 << 6, 6, }, //
+			{ 1 << 2, 1 << 4, 1 << 8, 8, }, //
+			{ 1 << 2, 1 << 5, 1 << 10, 10, }, //
+			{ 1 << 2, 1 << 6, 1 << 12, 12, }, //
+			{ 1 << 2, 1 << 7, 1 << 14, 14, }, //
+			{ 1 << 3, 1 << 4, 1 << 12, 12, }, //
+			{ 1 << 3, 1 << 5, 1 << 15, 15, }, //
+			{ 1 << 3, 1 << 6, 1 << 18, 18, }, //
+			{ 1 << 3, 1 << 7, 1 << 21, 21, }, //
+			{ 1 << 4, 1 << 5, 1 << 20, 20, }, //
+			{ 1 << 4, 1 << 6, 1 << 24, 24, }, //
+			// { 1 << 4, 1 << 7, 1 << 28, 28, }, //
+			// { 1<<5, 1<<6, 1<<30,30, }, //
+			// { 1<<5, 1<<7, 1<<35,35, }, //
+			// { 1<<6, 1<<7, 1<<42,42, }, //
 	};
 
 	private class Board {
@@ -238,11 +238,11 @@ public class Puzzle2018_12_DPFixedPB {
 
 									for (var combo : combos) {
 										int ma, mb, mc;
-										if ((bmkc & (mc = 1 << (c = combo[2]))) == 0 && c < inc) {
+										if ((bmkc & (mc = combo[2])) == 0 && (c = (byte) combo[3]) < inc) {
 											xbitmasks[x2] |= mc;
 											ybitmasks[y2] |= mc;
 
-											if ((bmka & (ma = 1 << combo[0])) == 0 && (bmkb & (mb = 1 << combo[1])) == 0) {
+											if ((bmka & (ma = combo[0])) == 0 && (bmkb & (mb = combo[1])) == 0) {
 												xbitmasks[x0] |= ma;
 												ybitmasks[y0] |= ma;
 												xbitmasks[x1] |= mb;
@@ -253,7 +253,7 @@ public class Puzzle2018_12_DPFixedPB {
 												ybitmasks[y0] &= ~ma;
 												xbitmasks[x0] &= ~ma;
 											}
-											if ((bmka & (ma = 1 << combo[1])) == 0 && (bmkb & (mb = 1 << combo[0])) == 0) {
+											if ((bmka & (ma = combo[1])) == 0 && (bmkb & (mb = combo[0])) == 0) {
 												xbitmasks[x0] |= ma;
 												ybitmasks[y0] |= ma;
 												xbitmasks[x1] |= mb;
