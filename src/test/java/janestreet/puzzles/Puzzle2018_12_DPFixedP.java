@@ -3,6 +3,7 @@ package janestreet.puzzles;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
@@ -20,14 +21,14 @@ use DP to build up each tiles one-by-one (and generate a list of boards with min
 assume greedy approach would work (that every smallest feasible new tile would lead to a final global minimum),
 and find it
 
- 8,  3,  5, 12,  2,  6,  4,
- 4,  2, 15,  3,  6, 24,  5,
- 5, 20,  2,  6,  4,  3, 15,
- 6,  4, 20,  5,  3, 12,  2,
- 2, 12,  3,  4, 20,  5, 10,
-15,  6, 18,  2,  5,  4,  3,
- 3,  5,  4,  8,  1,  2,  6,
-.score = 221 [Integer]
+5, 2, 8, 4, 3, 6, 18
+2, 10, 4, 6, 12, 3, 5
+18, 3, 2, 12, 5, 4, 20
+3, 6, 10, 5, 4, 20, 2
+12, 4, 3, 2, 7, 5, 10
+4, 15, 5, 1, 14, 2, 3
+20, 5, 6, 3, 2, 12, 4
+.score = 217 [Integer]
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DPFixedP {
@@ -76,8 +77,6 @@ public class Puzzle2018_12_DPFixedP {
 	@Test
 	public void test() {
 		byte[][] tiles = { //
-				{ c(2, 6), c(2, 5), c(1, 6), }, //
-				{ c(3, 1), c(2, 0), c(2, 1), }, //
 				{ c(3, 5), c(2, 4), c(3, 4), }, //
 				{ c(4, 6), c(4, 5), c(3, 6), }, //
 				{ c(2, 2), c(1, 3), c(2, 3), }, //
@@ -86,13 +85,25 @@ public class Puzzle2018_12_DPFixedP {
 				{ c(4, 0), c(3, 0), c(4, 1), }, //
 				{ c(5, 4), c(4, 4), c(5, 5), }, //
 				{ c(6, 5), c(6, 6), c(5, 6), }, //
+				{ c(0, 6), c(1, 5), c(0, 5), }, //
+				{ c(0, 1), c(0, 2), c(1, 2), }, //
+				{ c(2, 6), c(2, 5), c(1, 6), }, //
+				{ c(3, 1), c(2, 0), c(2, 1), }, //
 				{ c(0, 4), c(0, 3), c(1, 4), }, //
 				{ c(5, 2), c(4, 2), c(5, 1), }, //
 				{ c(6, 1), c(6, 0), c(5, 0), }, //
 				{ c(6, 3), c(6, 4), c(5, 3), c(6, 2), }, //
-				{ c(0, 6), c(1, 5), c(0, 5), }, //
-				{ c(0, 1), c(0, 2), c(1, 2), }, //
 		};
+
+		var random = new Random();
+
+		for (var i = 0; i < 19; i++) {
+			var tile = tiles[random.nextInt(tiles.length)];
+			var j = random.nextInt(3);
+			var t = tile[j];
+			tile[j] = tile[0];
+			tile[0] = t;
+		}
 
 		var set = new IntSet();
 
@@ -144,6 +155,7 @@ public class Puzzle2018_12_DPFixedP {
 		map.put(0, Set.of(board0));
 
 		for (var n = 0; n < tiles.length; n++) {
+			var est = (tiles.length - 1 - n) * 6;
 			var map1 = new IntObjMap<Set<Board>>();
 
 			for (var e : map.streamlet()) {
@@ -197,7 +209,7 @@ public class Puzzle2018_12_DPFixedP {
 									var bmka = xbitmasks[xy0 / 8] | ybitmasks[xy0 % 8];
 									var bmkb = xbitmasks[xy1 / 8] | ybitmasks[xy1 % 8];
 									var bmkc = xbitmasks[xy2 / 8] | ybitmasks[xy2 % 8];
-									var inc = Math.min(pr, hallmark - score);
+									var inc = Math.min(pr, hallmark - score - est);
 									byte c;
 
 									var go = new Object() {
