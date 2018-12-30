@@ -234,10 +234,10 @@ public class Puzzle2018_12_DPFixedPB {
 									var bmkb = xbitmasks[x1] | ybitmasks[y1];
 									var bmkc = xbitmasks[x2] | ybitmasks[y2];
 									var inc = hallmark - score - est;
+									int ma, mb, mc;
 									byte c;
 
-									for (var combo : combos) {
-										int ma, mb, mc;
+									for (var combo : combos)
 										if ((bmkc & (mc = combo[2])) == 0 && (c = (byte) combo[3]) < inc) {
 											xbitmasks[x2] |= mc;
 											ybitmasks[y2] |= mc;
@@ -268,7 +268,6 @@ public class Puzzle2018_12_DPFixedPB {
 											ybitmasks[y2] &= ~mc;
 											xbitmasks[x2] &= ~mc;
 										}
-									}
 								}
 							};
 
