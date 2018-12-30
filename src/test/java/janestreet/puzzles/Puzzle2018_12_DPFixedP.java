@@ -98,6 +98,13 @@ public class Puzzle2018_12_DPFixedP {
 
 		var random = new Random();
 
+		for (var i = 0; i < 9; i++) {
+			var j = random.nextInt(tiles.length);
+			var t = tiles[j];
+			tiles[j] = tiles[i];
+			tiles[i] = t;
+		}
+
 		for (var i = 0; i < 19; i++) {
 			var tile = tiles[random.nextInt(tiles.length)];
 			var j = random.nextInt(3);
