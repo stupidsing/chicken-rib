@@ -210,22 +210,23 @@ public class Puzzle2018_12_DPFixedP {
 									var inc = hallmark - score - est;
 									byte c;
 
-									var go = new Object() {
-										private void g(byte a, byte b, byte c) {
-											if ((bmka & 1l << a) == 0 && (bmkb & 1l << b) == 0) {
-												g[xy0] = a;
-												g[xy1] = b;
-												g[xy2] = c;
-												updateMin.f(score + c);
-												g[xy0] = g[xy1] = g[xy2] = 0;
-											}
-										}
-									};
-
 									for (var combo : combos)
 										if ((bmkc & 1l << (c = combo[2])) == 0 && c < inc) {
-											go.g(combo[0], combo[1], c);
-											go.g(combo[1], combo[0], c);
+											byte a, b;
+											g[xy2] = c;
+											if ((bmka & 1l << (a = combo[0])) == 0 && (bmkb & 1l << (b = combo[1])) == 0) {
+												g[xy0] = a;
+												g[xy1] = b;
+												updateMin.f(score + c);
+												g[xy0] = g[xy1] = 0;
+											}
+											if ((bmka & 1l << (a = combo[1])) == 0 && (bmkb & 1l << (b = combo[0])) == 0) {
+												g[xy0] = a;
+												g[xy1] = b;
+												updateMin.f(score + c);
+												g[xy0] = g[xy1] = 0;
+											}
+											g[xy2] = 0;
 										}
 								}
 							}.fill(tile);
