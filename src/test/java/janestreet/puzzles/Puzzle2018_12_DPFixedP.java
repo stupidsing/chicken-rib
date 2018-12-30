@@ -21,13 +21,13 @@ use DP to build up each tiles one-by-one (and generate a list of boards with min
 assume greedy approach would work (that every smallest feasible new tile would lead to a final global minimum),
 and find it
 
-5, 2, 8, 4, 3, 6, 18
-2, 10, 4, 6, 12, 3, 5
-18, 3, 2, 12, 5, 4, 20
-3, 6, 10, 5, 4, 20, 2
-12, 4, 3, 2, 7, 5, 10
-4, 15, 5, 1, 14, 2, 3
-20, 5, 6, 3, 2, 12, 4
+ 5,  2,  8,  4,  3,  6, 18
+ 2, 10,  4,  6, 12,  3,  5
+18,  3,  2, 12,  5,  4, 20
+ 3,  6, 10,  5,  4, 20,  2
+12,  4,  3,  2,  7,  5, 10
+ 4, 15,  5,  1, 14,  2,  3
+20,  5,  6,  3,  2, 12,  4
 .score = 217 [Integer]
  */
 // https://www.janestreet.com/puzzles/block-party-2/
