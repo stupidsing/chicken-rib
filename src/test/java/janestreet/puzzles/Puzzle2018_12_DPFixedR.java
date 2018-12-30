@@ -41,7 +41,7 @@ and find it
 
  */
 // https://www.janestreet.com/puzzles/block-party-2/
-public class Puzzle2018_12_DPFixed {
+public class Puzzle2018_12_DPFixedR {
 
 	private int size = 7;
 	private int size2 = c(size, size);
