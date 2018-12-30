@@ -147,8 +147,6 @@ public class Puzzle2018_12_DPFixedP {
 	}
 
 	private Board find(byte[][] tiles) {
-		var pr = 30;
-
 		var board0 = new Board(new byte[size2], 0);
 
 		var map = new IntObjMap<Set<Board>>();
@@ -209,7 +207,7 @@ public class Puzzle2018_12_DPFixedP {
 									var bmka = xbitmasks[xy0 / 8] | ybitmasks[xy0 % 8];
 									var bmkb = xbitmasks[xy1 / 8] | ybitmasks[xy1 % 8];
 									var bmkc = xbitmasks[xy2 / 8] | ybitmasks[xy2 % 8];
-									var inc = Math.min(pr, hallmark - score - est);
+									var inc = hallmark - score - est;
 									byte c;
 
 									var go = new Object() {
