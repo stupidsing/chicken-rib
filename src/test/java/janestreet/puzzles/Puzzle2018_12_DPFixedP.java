@@ -190,20 +190,7 @@ public class Puzzle2018_12_DPFixedP {
 
 							var score = board.score;
 
-							new Object() {
-								private void fill(byte[] tile) {
-									if (tile.length == 3)
-										fill3(tile[1], tile[2], tile[0]);
-									else if (tile.length == 4) {
-										g[tile[1]] = 1;
-										fill3(tile[2], tile[3], tile[0]);
-										g[tile[2]] = 1;
-										fill3(tile[1], tile[3], tile[0]);
-										g[tile[3]] = 1;
-										fill3(tile[1], tile[2], tile[0]);
-									}
-								}
-
+							var filler = new Object() {
 								private void fill3(byte xy0, byte xy1, byte xy2) {
 									var bmka = xbitmasks[xy0 / 8] | ybitmasks[xy0 % 8];
 									var bmkb = xbitmasks[xy1 / 8] | ybitmasks[xy1 % 8];
@@ -228,7 +215,18 @@ public class Puzzle2018_12_DPFixedP {
 											g[xy0] = g[xy1] = g[xy2] = 0;
 										}
 								}
-							}.fill(tile);
+							};
+
+							if (tile.length == 3)
+								filler.fill3(tile[1], tile[2], tile[0]);
+							else if (tile.length == 4) {
+								g[tile[1]] = 1;
+								filler.fill3(tile[2], tile[3], tile[0]);
+								g[tile[2]] = 1;
+								filler.fill3(tile[1], tile[3], tile[0]);
+								g[tile[3]] = 1;
+								filler.fill3(tile[1], tile[2], tile[0]);
+							}
 						}
 					}
 			}
