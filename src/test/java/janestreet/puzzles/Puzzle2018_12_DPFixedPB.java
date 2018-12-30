@@ -56,6 +56,31 @@ and find it
  5,  2, 10,  1,  3, 12,  4
  2, 10,  4,  5, 20,  3, 12
 .score = 216 [Integer]
+
+tiles = [[B@20d525 [byte[][]]
+tiles[0] = [ 38, 37, 30, ]
+tiles[1] = [ 8, 0, 9, ]
+tiles[2] = [ 29, 20, 28, ]
+tiles[3] = [ 17, 16, 25, ]
+tiles[4] = [ 24, 33, 32, ]
+tiles[5] = [ 48, 49, 40, ]
+tiles[6] = [ 53, 54, 46, ]
+tiles[7] = [ 43, 52, 51, 50, ]
+tiles[8] = [ 19, 11, 18, ]
+tiles[9] = [ 10, 2, 1, ]
+tiles[10] = [ 22, 21, 14, ]
+tiles[11] = [ 26, 35, 27, ]
+tiles[12] = [ 3, 4, 12, ]
+tiles[13] = [ 41, 34, 42, ]
+tiles[14] = [ 5, 13, 6, ]
+tiles[15] = [ 36, 44, 45, ]
+
+2018-12-31 06:36:58 [I] Dumping janestreet.puzzles.Puzzle2018_12_DPFixedPB$1.p = janestreet.puzzles.Puzzle2018_12_DPFixedPB$Board@a6e579d7 [Board]
+.xbitmasks = [ 5244, 1310844, 37180, 1048956, 36988, 1052796, 36924, ]
+.ybitmasks = [ 1081468, 4476, 262524, 1085500, 4220, 1053756, 36988, ]
+.score = 215 [Integer]
+.hashCode = -1494910505 [Integer]
+.getClass() = null
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DPFixedPB {
