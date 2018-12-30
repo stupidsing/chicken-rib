@@ -20,14 +20,6 @@ use DP to build up each tiles one-by-one (and generate a list of boards with min
 assume greedy approach would work (that every smallest feasible new tile would lead to a final global minimum),
 and find it
 
-   , * ,   ,   , * ,   , * ,
- * ,   ,   ,   ,   ,   ,   ,
-   ,   , * ,   ,   ,   , * ,
-   , * ,   ,   ,   , * ,   ,
- * ,   ,   , * ,   ,   , * ,
-   ,   , * ,   , * ,   ,   ,
-   , * ,   , * ,   , * ,   ,
-
  8,  3,  5, 12,  2,  6,  4,
  4,  2, 15,  3,  6, 24,  5,
  5, 20,  2,  6,  4,  3, 15,
@@ -36,7 +28,6 @@ and find it
 15,  6, 18,  2,  5,  4,  3,
  3,  5,  4,  8,  1,  2,  6,
 .score = 221 [Integer]
-
  */
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12_DPFixedP {
@@ -58,9 +49,9 @@ public class Puzzle2018_12_DPFixedP {
 			{ 4, 5, 20, }, //
 			{ 4, 6, 24, }, //
 			{ 4, 7, 28, }, //
-			{ 5, 6, 30, }, //
-			{ 5, 7, 35, }, //
-			{ 6, 7, 42, }, //
+			// { 5, 6, 30, }, //
+			// { 5, 7, 35, }, //
+			// { 6, 7, 42, }, //
 	};
 
 	private class Board {
@@ -86,13 +77,6 @@ public class Puzzle2018_12_DPFixedP {
 	public void test() {
 		byte[][] tiles = { //
 				{ c(2, 6), c(2, 5), c(1, 6), }, //
-				{ c(6, 5), c(6, 6), c(5, 6), }, //
-				{ c(0, 4), c(0, 3), c(1, 4), }, //
-				{ c(5, 2), c(4, 2), c(5, 1), }, //
-				{ c(6, 1), c(6, 0), c(5, 0), }, //
-				{ c(6, 3), c(6, 4), c(5, 3), c(6, 2), }, //
-				{ c(0, 6), c(1, 5), c(0, 5), }, //
-				{ c(0, 1), c(0, 2), c(1, 2), }, //
 				{ c(3, 1), c(2, 0), c(2, 1), }, //
 				{ c(3, 5), c(2, 4), c(3, 4), }, //
 				{ c(4, 6), c(4, 5), c(3, 6), }, //
@@ -101,6 +85,13 @@ public class Puzzle2018_12_DPFixedP {
 				{ c(1, 0), c(0, 0), c(1, 1), }, //
 				{ c(4, 0), c(3, 0), c(4, 1), }, //
 				{ c(5, 4), c(4, 4), c(5, 5), }, //
+				{ c(6, 5), c(6, 6), c(5, 6), }, //
+				{ c(0, 4), c(0, 3), c(1, 4), }, //
+				{ c(5, 2), c(4, 2), c(5, 1), }, //
+				{ c(6, 1), c(6, 0), c(5, 0), }, //
+				{ c(6, 3), c(6, 4), c(5, 3), c(6, 2), }, //
+				{ c(0, 6), c(1, 5), c(0, 5), }, //
+				{ c(0, 1), c(0, 2), c(1, 2), }, //
 		};
 
 		var set = new IntSet();
@@ -109,13 +100,15 @@ public class Puzzle2018_12_DPFixedP {
 			private Board minBoard;
 
 			private void p(int i) {
-				if (i < 6) {
+				if (i < tiles.length) {
 					var tile = tiles[i];
 					for (var j = 0; j < tile.length; j++) {
 						swap(tile, j);
-						if (set.add(tile[0])) {
+						var xy = tile[0];
+						if (!set.contains(xy - 1) && !set.contains(xy + 1) && !set.contains(xy - 8) && !set.contains(xy + 8)) {
+							set.add(xy);
 							p(i + 1);
-							set.remove(tile[0]);
+							set.remove(xy);
 						}
 						swap(tile, j);
 					}
@@ -125,8 +118,8 @@ public class Puzzle2018_12_DPFixedP {
 						if (minBoard == null || board.score < minBoard.score) {
 							minBoard = board;
 							hallmark = minBoard.score;
-							Dump.details(minBoard);
 						}
+					Dump.details(minBoard);
 				}
 			}
 
@@ -143,7 +136,7 @@ public class Puzzle2018_12_DPFixedP {
 	}
 
 	private Board find(byte[][] tiles) {
-		var pr = 50;
+		var pr = 30;
 
 		var board0 = new Board(new byte[size2], 0);
 
