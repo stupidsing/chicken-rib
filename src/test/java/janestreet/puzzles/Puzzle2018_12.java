@@ -19,6 +19,9 @@ SCORE = 225
 // https://www.janestreet.com/puzzles/block-party-2/
 public class Puzzle2018_12 {
 
+	private int size = 7;
+	private int size2 = c(size, size);
+
 	private byte[][] combos = { //
 			{ 2, 3, 6, }, //
 			{ 2, 4, 8, }, //
@@ -44,26 +47,26 @@ public class Puzzle2018_12 {
 		var hallmark = 240;
 
 		var tiles = new byte[][] { //
-				{ 2, 5, 2, 6, 1, 6, }, //
-				{ 5, 6, 6, 5, 6, 6, }, //
-				{ 0, 4, 0, 3, 1, 4, }, //
-				{ 6, 1, 5, 0, 6, 0, }, //
-				{ 4, 2, 5, 2, 5, 1, }, //
-				{ 0, 6, 1, 5, 0, 5, }, //
-				{ 1, 3, 2, 2, 2, 3, }, //
-				{ 4, 4, 5, 5, 5, 4, }, //
-				{ 3, 4, 2, 4, 3, 5, }, //
-				{ 4, 5, 3, 6, 4, 6, }, //
-				{ 6, 4, 5, 3, 6, 2, 6, 3, }, //
-				{ 3, 3, 4, 3, 3, 2, }, //
-				{ 2, 0, 3, 1, 2, 1, }, //
-				{ 1, 0, 1, 1, 0, 0, }, //
-				{ 3, 0, 4, 1, 4, 0, }, //
-				{ 0, 2, 0, 1, 1, 2, }, //
+				{ c(2, 5), c(2, 6), c(1, 6), }, //
+				{ c(5, 6), c(6, 5), c(6, 6), }, //
+				{ c(0, 4), c(0, 3), c(1, 4), }, //
+				{ c(6, 1), c(5, 0), c(6, 0), }, //
+				{ c(4, 2), c(5, 2), c(5, 1), }, //
+				{ c(0, 6), c(1, 5), c(0, 5), }, //
+				{ c(1, 3), c(2, 2), c(2, 3), }, //
+				{ c(4, 4), c(5, 5), c(5, 4), }, //
+				{ c(3, 4), c(2, 4), c(3, 5), }, //
+				{ c(4, 5), c(3, 6), c(4, 6), }, //
+				{ c(6, 4), c(5, 3), c(6, 2), c(6, 3), }, //
+				{ c(3, 3), c(4, 3), c(3, 2), }, //
+				{ c(2, 0), c(3, 1), c(2, 1), }, //
+				{ c(1, 0), c(1, 1), c(0, 0), }, //
+				{ c(3, 0), c(4, 1), c(4, 0), }, //
+				{ c(0, 2), c(0, 1), c(1, 2), }, //
 		};
 
-		var g = new byte[size][size];
-		var p = new byte[size + 2][size + 2];
+		var g = new byte[size2];
+		var p = new byte[c(size + 1, size + 1)];
 		var xbitmasks = new long[size];
 		var ybitmasks = new long[size];
 
@@ -71,16 +74,16 @@ public class Puzzle2018_12 {
 			private int score;
 
 			private void fill(byte[] tile, Runnable r) {
-				if (tile.length == 6)
-					fill3(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], r);
+				if (tile.length == 3)
+					fill3(tile[0], tile[1], tile[2], r);
 				else
-					fill4(tile[0], tile[1], tile[2], tile[3], tile[4], tile[5], tile[6], tile[7], r);
+					fill4(tile[0], tile[1], tile[2], tile[3], r);
 			}
 
-			private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, Runnable r) {
-				var bmka = xbitmasks[x0] | ybitmasks[y0];
-				var bmkb = xbitmasks[x1] | ybitmasks[y1];
-				var bmkc = xbitmasks[x2] | ybitmasks[y2];
+			private void fill3(byte xy0, byte xy1, byte xy2, Runnable r) {
+				var bmka = xbitmasks[xy0 / 8] | ybitmasks[xy0 % 8];
+				var bmkb = xbitmasks[xy1 / 8] | ybitmasks[xy1 % 8];
+				var bmkc = xbitmasks[xy2 / 8] | ybitmasks[xy2 % 8];
 				var score0 = score;
 				var inc = Math.min(pr, hallmark - score);
 				byte a = 0, b = 0, c = 0;
@@ -91,9 +94,9 @@ public class Puzzle2018_12 {
 							&& (bmkb & 1l << (b = combo[1])) == 0 //
 							&& (bmkc & 1l << (c = combo[2])) == 0 //
 							&& c < inc) {
-						g[x0][y0] = a;
-						g[x1][y1] = b;
-						g[x2][y2] = c;
+						g[xy0] = a;
+						g[xy1] = b;
+						g[xy2] = c;
 						inc = c;
 					}
 
@@ -103,42 +106,42 @@ public class Puzzle2018_12 {
 							&& (bmkb & 1l << (b = combo[0])) == 0 //
 							&& (bmkc & 1l << (c = combo[2])) == 0 //
 							&& c < inc) {
-						g[x0][y0] = a;
-						g[x1][y1] = b;
-						g[x2][y2] = c;
+						g[xy0] = a;
+						g[xy1] = b;
+						g[xy2] = c;
 						inc = c;
 					}
 
-				if (g[x0][y0] != 0) {
-					var b0 = 1l << g[x0][y0];
-					var b1 = 1l << g[x1][y1];
-					var b2 = 1l << g[x2][y2];
-					xbitmasks[x0] |= b0;
-					xbitmasks[x1] |= b1;
-					xbitmasks[x2] |= b2;
-					ybitmasks[y0] |= b0;
-					ybitmasks[y1] |= b1;
-					ybitmasks[y2] |= b2;
-					p[x2 + 1][y2 + 1] = 1;
+				if (g[xy0] != 0) {
+					var b0 = 1l << g[xy0];
+					var b1 = 1l << g[xy1];
+					var b2 = 1l << g[xy2];
+					xbitmasks[xy0 / 8] |= b0;
+					xbitmasks[xy1 / 8] |= b1;
+					xbitmasks[xy2 / 8] |= b2;
+					ybitmasks[xy0 % 8] |= b0;
+					ybitmasks[xy1 % 8] |= b1;
+					ybitmasks[xy2 % 8] |= b2;
+					p[cm(xy2 / 8 + 1, xy2 % 8 + 1)] = 1;
 					score = score0 + inc;
 					r.run();
 					score = score0;
-					p[x2 + 1][y2 + 1] = 0;
-					ybitmasks[y2] &= ~b2;
-					ybitmasks[y1] &= ~b1;
-					ybitmasks[y0] &= ~b0;
-					xbitmasks[x2] &= ~b2;
-					xbitmasks[x1] &= ~b1;
-					xbitmasks[x0] &= ~b0;
-					g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
+					p[cm(xy2 / 8 + 1, xy2 % 8 + 1)] = 0;
+					ybitmasks[xy2 % 8] &= ~b2;
+					ybitmasks[xy1 % 8] &= ~b1;
+					ybitmasks[xy0 % 8] &= ~b0;
+					xbitmasks[xy2 / 8] &= ~b2;
+					xbitmasks[xy1 / 8] &= ~b1;
+					xbitmasks[xy0 / 8] &= ~b0;
+					g[xy0] = g[xy1] = g[xy2] = 0;
 				}
 			}
 
-			private void fill4(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2, byte x3, byte y3, Runnable r) {
-				var bmka = xbitmasks[x0] | ybitmasks[y0];
-				var bmkb = xbitmasks[x1] | ybitmasks[y1];
-				var bmkc = xbitmasks[x2] | ybitmasks[y2];
-				var bmkd = xbitmasks[x3] | ybitmasks[y3];
+			private void fill4(byte xy0, byte xy1, byte xy2, byte xy3, Runnable r) {
+				var bmka = xbitmasks[xy0 / 8] | ybitmasks[xy0 % 8];
+				var bmkb = xbitmasks[xy1 / 8] | ybitmasks[xy1 % 8];
+				var bmkc = xbitmasks[xy2 / 8] | ybitmasks[xy2 % 8];
+				var bmkd = xbitmasks[xy3 / 8] | ybitmasks[xy3 % 8];
 				var score0 = score;
 				var inc = Math.min(pr, hallmark - score);
 				var ab = Integer.MAX_VALUE;
@@ -153,10 +156,10 @@ public class Puzzle2018_12 {
 							if (d < inc) {
 								var e = (bmkd & 1l << d) == 0 && a != d && b != d && c != d;
 								if (e) {
-									g[x0][y0] = a;
-									g[x1][y1] = b;
-									g[x2][y2] = c;
-									g[x3][y3] = d;
+									g[xy0] = a;
+									g[xy1] = b;
+									g[xy2] = c;
+									g[xy3] = d;
 									inc = d;
 								}
 							}
@@ -164,33 +167,33 @@ public class Puzzle2018_12 {
 					}
 				}
 
-				if (g[x0][y0] != 0) {
-					var b0 = 1l << g[x0][y0];
-					var b1 = 1l << g[x1][y1];
-					var b2 = 1l << g[x2][y2];
-					var b3 = 1l << g[x3][y3];
-					xbitmasks[x0] |= b0;
-					xbitmasks[x1] |= b1;
-					xbitmasks[x2] |= b2;
-					xbitmasks[x3] |= b3;
-					ybitmasks[y0] |= b0;
-					ybitmasks[y1] |= b1;
-					ybitmasks[y2] |= b2;
-					ybitmasks[y3] |= b3;
-					p[x3 + 1][y3 + 1] = 1;
+				if (g[xy0] != 0) {
+					var b0 = 1l << g[xy0];
+					var b1 = 1l << g[xy1];
+					var b2 = 1l << g[xy2];
+					var b3 = 1l << g[xy3];
+					xbitmasks[xy0 / 8] |= b0;
+					xbitmasks[xy1 / 8] |= b1;
+					xbitmasks[xy2 / 8] |= b2;
+					xbitmasks[xy3 / 8] |= b3;
+					ybitmasks[xy0 % 8] |= b0;
+					ybitmasks[xy1 % 8] |= b1;
+					ybitmasks[xy2 % 8] |= b2;
+					ybitmasks[xy3 % 8] |= b3;
+					p[cm(xy3 / 8 + 1, xy3 % 8 + 1)] = 1;
 					score = score0 + inc;
 					r.run();
 					score = score0;
-					p[x3 + 1][y3 + 1] = 0;
-					ybitmasks[y3] &= ~b3;
-					ybitmasks[y2] &= ~b2;
-					ybitmasks[y1] &= ~b1;
-					ybitmasks[y0] &= ~b0;
-					xbitmasks[x2] &= ~b3;
-					xbitmasks[x2] &= ~b2;
-					xbitmasks[x1] &= ~b1;
-					xbitmasks[x0] &= ~b0;
-					g[x0][y0] = g[x1][y1] = g[x2][y2] = g[x3][y3] = 0;
+					p[cm(xy3 / 8 + 1, xy3 % 8 + 1)] = 0;
+					ybitmasks[xy3 % 8] &= ~b3;
+					ybitmasks[xy2 % 8] &= ~b2;
+					ybitmasks[xy1 % 8] &= ~b1;
+					ybitmasks[xy0 % 8] &= ~b0;
+					xbitmasks[xy3 / 8] &= ~b3;
+					xbitmasks[xy2 / 8] &= ~b2;
+					xbitmasks[xy1 / 8] &= ~b1;
+					xbitmasks[xy0 / 8] &= ~b0;
+					g[xy0] = g[xy1] = g[xy2] = g[xy3] = 0;
 				}
 			}
 		};
@@ -212,7 +215,7 @@ public class Puzzle2018_12 {
 
 				for (byte x = 0; x < size; x++) {
 					for (byte y = 0; y < size; y++) {
-						var s = "   " + g[x][y] + ",";
+						var s = "   " + g[c(x, y)] + ",";
 						var length = s.length();
 						System.out.print(s.substring(length - 4, length));
 					}
@@ -225,26 +228,24 @@ public class Puzzle2018_12 {
 
 		var permuteTile = new Object() {
 			private void p(byte[] tile, Sink<byte[]> sink) {
-				for (var i = tile.length - 2; 0 <= i; i -= 2) {
-					var xp = (byte) (1 + tile[i + 0]);
-					var yp = (byte) (1 + tile[i + 1]);
-					if (p[xp - 1][yp] == 0 && p[xp + 1][yp] == 0 && p[xp][yp - 1] == 0 && p[xp][yp + 1] == 0) {
-						swap(tile, i, tile.length - 2);
-						p[xp][yp] = 1;
+				for (var i = tile.length - 1; 0 <= i; i--) {
+					var xyp = tile[i];
+					var xp = xyp / 8 + 1;
+					var yp = xyp % 8 + 11;
+					if (p[cm(xp - 1, yp)] == 0 && p[cm(xp + 1, yp)] == 0 && p[cm(xp, yp - 1)] == 0 && p[cm(xp, yp + 1)] == 0) {
+						swap(tile, i, tile.length - 1);
+						p[cm(xp, yp)] = 1;
 						sink.f(tile);
-						p[xp][yp] = 0;
-						swap(tile, i, tile.length - 2);
+						p[cm(xp, yp)] = 0;
+						swap(tile, i, tile.length - 1);
 					}
 				}
 			}
 
 			private void swap(byte[] tile, int i, int j) {
-				var old0 = tile[i + 0];
-				var old1 = tile[i + 1];
-				tile[i + 0] = tile[j + 0];
-				tile[i + 1] = tile[j + 1];
-				tile[j + 0] = old0;
-				tile[j + 1] = old1;
+				var old = tile[i];
+				tile[i] = tile[j];
+				tile[j] = old;
 			}
 		};
 
@@ -268,6 +269,14 @@ public class Puzzle2018_12 {
 		};
 
 		permuteTiles.p(0);
+	}
+
+	private byte cm(int x, int y) {
+		return c(x & 7, y & 7);
+	}
+
+	private byte c(int x, int y) {
+		return (byte) (x * 8 + y);
 	}
 
 }

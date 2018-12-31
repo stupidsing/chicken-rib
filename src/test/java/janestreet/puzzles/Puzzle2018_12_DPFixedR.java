@@ -3,6 +3,7 @@ package janestreet.puzzles;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import org.junit.Test;
@@ -11,8 +12,9 @@ import suite.inspect.Dump;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.set.IntSet;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
-import suite.util.To;
 
 /*
 fixes the product cells,
@@ -28,44 +30,39 @@ and find it
    ,   , * ,   , * ,   ,   ,
    , * ,   , * ,   , * ,   ,
 
-.g[0] = [  3, 24,  4,  2, 10,  5, 15, ]
-.g[1] = [ 21,  7,  6,  4,  5,  3,  2, ]
-.g[2] = [  4,  3, 20,  5,  2,  6, 12, ]
-.g[3] = [  6, 12,  2,  3,  4,  8,  5, ]
-.g[4] = [ 24,  4,  5,  6,  3,  2, 10, ]
-.g[5] = [  5,  2, 10,  1, 12,  4,  3, ]
-.g[6] = [  2, 10,  3, 18,  6, 12,  4, ]
-.score = 224 [Integer]
+ 8,  3,  5, 12,  2,  6,  4,
+ 4,  2, 15,  3,  6, 24,  5,
+ 5, 20,  2,  6,  4,  3, 15,
+ 6,  4, 20,  5,  3, 12,  2,
+ 2, 12,  3,  4, 20,  5, 10,
+15,  6, 18,  2,  5,  4,  3,
+ 3,  5,  4,  8,  1,  2,  6,
+.score = 221 [Integer]
 
-.g[0] = [  2, 20,  4,  3, 18,  5, 15, ]
-.g[1] = [ 14,  7,  5,  4,  6,  3,  2, ]
-.g[2] = [  4,  3, 20,  5,  2,  6, 12, ]
-.g[3] = [  6, 12,  3,  2,  4,  8,  5, ]
-.g[4] = [ 24,  4,  7,  6,  3,  2, 10, ]
-.g[5] = [  5,  2, 14,  1, 12,  4,  3, ]
-.g[6] = [  3, 15,  2, 10,  5, 12,  4, ]
-SCORE = 222 [Integer]
  */
 // https://www.janestreet.com/puzzles/block-party-2/
-public class Puzzle2018_12_DPFixed {
+public class Puzzle2018_12_DPFixedR {
+
+	private int size = 7;
+	private int size2 = c(size, size);
 
 	private byte[][] tiles = { //
-			{ 2, 6, 2, 5, 1, 6, }, //
-			{ 6, 5, 6, 6, 5, 6, }, //
-			{ 0, 4, 0, 3, 1, 4, }, //
-			{ 5, 2, 4, 2, 5, 1, }, //
-			{ 6, 1, 6, 0, 5, 0, }, //
-			{ 6, 3, 6, 4, 5, 3, 6, 2, }, //
-			{ 0, 6, 1, 5, 0, 5, }, //
-			{ 0, 1, 0, 2, 1, 2, }, //
-			{ 3, 1, 2, 0, 2, 1, }, //
-			{ 3, 5, 2, 4, 3, 4, }, //
-			{ 4, 6, 4, 5, 3, 6, }, //
-			{ 2, 2, 1, 3, 2, 3, }, //
-			{ 4, 3, 3, 3, 3, 2, }, //
-			{ 1, 0, 0, 0, 1, 1, }, //
-			{ 4, 0, 3, 0, 4, 1, }, //
-			{ 5, 4, 4, 4, 5, 5, }, //
+			{ c(2, 6), c(2, 5), c(1, 6), }, //
+			{ c(6, 5), c(6, 6), c(5, 6), }, //
+			{ c(0, 4), c(0, 3), c(1, 4), }, //
+			{ c(5, 2), c(4, 2), c(5, 1), }, //
+			{ c(6, 1), c(6, 0), c(5, 0), }, //
+			{ c(6, 3), c(6, 4), c(5, 3), c(6, 2), }, //
+			{ c(0, 6), c(1, 5), c(0, 5), }, //
+			{ c(0, 1), c(0, 2), c(1, 2), }, //
+			{ c(3, 1), c(2, 0), c(2, 1), }, //
+			{ c(3, 5), c(2, 4), c(3, 4), }, //
+			{ c(4, 6), c(4, 5), c(3, 6), }, //
+			{ c(2, 2), c(1, 3), c(2, 3), }, //
+			{ c(4, 3), c(3, 3), c(3, 2), }, //
+			{ c(1, 0), c(0, 0), c(1, 1), }, //
+			{ c(4, 0), c(3, 0), c(4, 1), }, //
+			{ c(5, 4), c(4, 4), c(5, 5), }, //
 	};
 
 	private byte[][] combos = { //
@@ -82,24 +79,18 @@ public class Puzzle2018_12_DPFixed {
 			{ 4, 6, 24, }, //
 			{ 4, 7, 28, }, //
 			{ 5, 6, 30, }, //
-			// { 5, 7, 35, }, //
-			// { 6, 7, 42, }, //
+			{ 5, 7, 35, }, //
+			{ 6, 7, 42, }, //
 	};
 
 	private class Board {
-		private final byte[][] g;
+		private final byte[] g;
 		private final int score, hashCode;
 
-		private Board(byte[][] g, int score) {
+		private Board(byte[] g, int score) {
 			this.g = g;
 			this.score = score;
-
-			int h = 7;
-			for (var r : g)
-				for (var b : r)
-					h = h * 31 + b;
-
-			hashCode = h;
+			hashCode = Arrays.hashCode(g);
 		}
 
 		public int hashCode() {
@@ -107,29 +98,41 @@ public class Puzzle2018_12_DPFixed {
 		}
 
 		public boolean equals(Object object) {
-			if (object.getClass() == Board.class) {
-				var board = (Board) object;
-				var b = true;
-
-				for (var x = 0; x < g.length; x++)
-					for (var y = 0; y < g[x].length; y++)
-						b &= g[x][y] == board.g[x][y];
-
-				return b;
-			} else
-				return false;
+			return object.getClass() == Board.class ? Arrays.equals(g, ((Board) object).g) : false;
 		}
 	}
 
 	@Test
 	public void test() {
-		var pr = 35;
-		var size = 7;
-		var hallmark = 225;
+		var pr = 50;
+		var hallmark = 240;
 
-		var board0 = new Board(new byte[size][size], 0);
+		var board0 = new Board(new byte[size2], 0);
 		var map = new IntObjMap<Set<Board>>();
 		map.put(0, Set.of(board0));
+
+		var random = new Random();
+
+		Source<Boolean> check = () -> {
+			var set = new IntSet();
+			var b = true;
+			for (var tile : tiles) {
+				var xy = tile[0];
+				set.add(xy);
+				b &= !set.contains(xy - 1) && !set.contains(xy + 1) && !set.contains(xy - 8) && !set.contains(xy + 8);
+			}
+			return b;
+		};
+
+		do {
+			for (var i = 0; i < 19; i++) {
+				var tile = tiles[random.nextInt(tiles.length)];
+				var j = random.nextInt(3);
+				var t = tile[j];
+				tile[j] = tile[0];
+				tile[0] = t;
+			}
+		} while (!check.g());
 
 		for (var n = 0; n < tiles.length; n++) {
 			var map1 = new IntObjMap<Set<Board>>();
@@ -150,7 +153,7 @@ public class Puzzle2018_12_DPFixed {
 
 							for (var x = 0; x < size; x++)
 								for (var y = 0; y < size; y++) {
-									var m = 1l << g[x][y];
+									var m = 1l << g[c(x, y)];
 									xbitmasks[x] |= m;
 									ybitmasks[y] |= m;
 								}
@@ -161,43 +164,41 @@ public class Puzzle2018_12_DPFixed {
 									set.clear();
 								}
 
-								if (score <= minScore.value()) {
-									var g1 = To.array(g.length, byte[].class, j -> Arrays.copyOf(g[j], g[j].length));
-									set.add(new Board(g1, score));
-								}
+								if (score <= minScore.value())
+									set.add(new Board(Arrays.copyOf(g, size2), score));
 							};
 
 							var score = board.score;
 
 							new Object() {
 								private void fill(byte[] tile) {
-									if (tile.length == 6)
-										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
-									else if (tile.length == 8) {
-										g[tile[2]][tile[3]] = 1;
-										fill3(tile[4], tile[5], tile[6], tile[7], tile[0], tile[1]);
-										g[tile[4]][tile[5]] = 1;
-										fill3(tile[2], tile[3], tile[6], tile[7], tile[0], tile[1]);
-										g[tile[6]][tile[7]] = 1;
-										fill3(tile[2], tile[3], tile[4], tile[5], tile[0], tile[1]);
+									if (tile.length == 3)
+										fill3(tile[1], tile[2], tile[0]);
+									else if (tile.length == 4) {
+										g[tile[1]] = 1;
+										fill3(tile[2], tile[3], tile[0]);
+										g[tile[2]] = 1;
+										fill3(tile[1], tile[3], tile[0]);
+										g[tile[3]] = 1;
+										fill3(tile[1], tile[2], tile[0]);
 									}
 								}
 
-								private void fill3(byte x0, byte y0, byte x1, byte y1, byte x2, byte y2) {
-									var bmka = xbitmasks[x0] | ybitmasks[y0];
-									var bmkb = xbitmasks[x1] | ybitmasks[y1];
-									var bmkc = xbitmasks[x2] | ybitmasks[y2];
+								private void fill3(byte xy0, byte xy1, byte xy2) {
+									var bmka = xbitmasks[xy0 / 8] | ybitmasks[xy0 % 8];
+									var bmkb = xbitmasks[xy1 / 8] | ybitmasks[xy1 % 8];
+									var bmkc = xbitmasks[xy2 / 8] | ybitmasks[xy2 % 8];
 									var inc = Math.min(pr, hallmark - score);
 									byte c;
 
 									var go = new Object() {
 										private void g(byte a, byte b, byte c) {
 											if ((bmka & 1l << a) == 0 && (bmkb & 1l << b) == 0) {
-												g[x0][y0] = a;
-												g[x1][y1] = b;
-												g[x2][y2] = c;
+												g[xy0] = a;
+												g[xy1] = b;
+												g[xy2] = c;
 												updateMin.f(score + c);
-												g[x0][y0] = g[x1][y1] = g[x2][y2] = 0;
+												g[xy0] = g[xy1] = g[xy2] = 0;
 											}
 										}
 									};
@@ -220,6 +221,10 @@ public class Puzzle2018_12_DPFixed {
 		var min = map.streamlet().values().concatMap(Read::from).min(Comparator.comparingInt(board -> board.score));
 
 		Dump.details(min);
+	}
+
+	private byte c(int x, int y) {
+		return (byte) (x * 8 + y);
 	}
 
 }
