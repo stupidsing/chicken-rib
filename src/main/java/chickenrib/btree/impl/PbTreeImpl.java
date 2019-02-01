@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import chickenrib.btree.IbTree;
+import chickenrib.btree.PbTree;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
@@ -46,7 +46,7 @@ import suite.util.List_;
  *
  * @author ywsing
  */
-public class IbTreeImpl<Key> implements IbTree<Key> {
+public class PbTreeImpl<Key> implements PbTree<Key> {
 
 	private static Serialize serialize = Singleton.me.serialize;
 
@@ -61,7 +61,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	private PageFile pageFile0;
 	private SerializedPageFile<Page> pageFile;
 	private SerializedPageFile<Bytes> payloadFile;
-	private IbTreeImpl<Integer> allocationIbTree;
+	private PbTreeImpl<Integer> allocationIbTree;
 
 	private int maxBranchFactor; // Exclusive
 	private int minBranchFactor; // Inclusive
@@ -189,9 +189,9 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	}
 
 	private class SubIbTreeAllocator implements Allocator {
-		private IbTreeImpl<Integer>.Store store;
+		private PbTreeImpl<Integer>.Store store;
 
-		private SubIbTreeAllocator(IbTreeImpl<Integer>.Store mutator) {
+		private SubIbTreeAllocator(PbTreeImpl<Integer>.Store mutator) {
 			this.store = mutator;
 		}
 
@@ -238,7 +238,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		public KeyValueMutator<Key, Integer> mutate() {
 			return new KeyValueMutator<Key, Integer>() {
 				public Streamlet<Key> keys(Key start, Key end) {
-					return IbTreeImpl.this.keys0(root, start, end);
+					return PbTreeImpl.this.keys0(root, start, end);
 				}
 
 				public Integer get(Key key) {
@@ -444,7 +444,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 	 * Constructor for larger trees that require another tree for page
 	 * allocation management.
 	 */
-	public IbTreeImpl(Path path, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
+	public PbTreeImpl(Path path, PbTreeConfiguration<Key> config, PbTreeImpl<Integer> allocationIbTree) {
 		this.path = path;
 		pageSize = config.getPageSize();
 		comparator = Object_.nullsFirst(config.getComparator());
@@ -488,7 +488,7 @@ public class IbTreeImpl<Key> implements IbTree<Key> {
 		List<Integer> stamp0;
 
 		if (allocationIbTree != null) {
-			IbTreeImpl<Integer>.Store store = allocationIbTree.create();
+			PbTreeImpl<Integer>.Store store = allocationIbTree.create();
 			KeyDataMutator<Integer> mutator = store.mutateData();
 			int nPages = allocationIbTree.guaranteedCapacity();
 			for (int p = 0; p < nPages; p++)

@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 import suite.serialize.Serialize.Serializer;
 
-public class IbTreeConfiguration<Key> {
+public class PbTreeConfiguration<Key> {
 
 	private Path pathPrefix;
 	private int pageSize;

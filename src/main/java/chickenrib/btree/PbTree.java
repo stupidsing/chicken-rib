@@ -4,7 +4,7 @@ import java.io.Closeable;
 
 import suite.fs.KeyDataStore;
 
-public interface IbTree<Key> extends Closeable {
+public interface PbTree<Key> extends Closeable {
 
 	/**
 	 * @return A new mutator object.

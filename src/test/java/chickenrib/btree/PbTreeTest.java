@@ -10,10 +10,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import chickenrib.btree.impl.IbTreeBuilder;
-import chickenrib.btree.impl.IbTreeConfiguration;
-import chickenrib.btree.impl.IbTreeImpl;
-import chickenrib.btree.impl.IbTreeStack;
+import chickenrib.btree.impl.PbTreeBuilder;
+import chickenrib.btree.impl.PbTreeConfiguration;
+import chickenrib.btree.impl.PbTreeImpl;
+import chickenrib.btree.impl.PbTreeStack;
 import suite.cfg.Defaults;
 import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
@@ -27,20 +27,20 @@ import suite.streamlet.Outlet;
 import suite.util.List_;
 import suite.util.To;
 
-public class IbTreeTest {
+public class PbTreeTest {
 
 	private Serialize serialize = Singleton.me.serialize;
 	private int pageSize = 4096;
 
 	@Test
 	public void testSimple() throws IOException {
-		IbTreeConfiguration<Integer> config = newIbTreeConfiguration("ibTree-stack", serialize.int_);
+		PbTreeConfiguration<Integer> config = newIbTreeConfiguration("pbTree-stack", serialize.int_);
 		config.setCapacity(65536);
 
-		try (IbTreeStack<Integer> ibTreeStack = new IbTreeStack<>(config)) {
-			IbTree<Integer> ibTree = ibTreeStack.getIbTree();
-			ibTree.create().end(true);
-			KeyDataStore<Integer> store = ibTree.begin();
+		try (PbTreeStack<Integer> pbTreeStack = new PbTreeStack<>(config)) {
+			PbTree<Integer> pbTree = pbTreeStack.getIbTree();
+			pbTree.create().end(true);
+			KeyDataStore<Integer> store = pbTree.begin();
 			KeyValueMutator<Integer, Integer> mutator = store.mutate();
 
 			for (int i = 0; i < 32; i++)
@@ -54,16 +54,16 @@ public class IbTreeTest {
 
 	@Test
 	public void testSingleLevel() throws IOException {
-		IbTreeConfiguration<Integer> config = newIbTreeConfiguration("ibTree-single", serialize.int_);
-		IbTreeBuilder builder = new IbTreeBuilder(config);
+		PbTreeConfiguration<Integer> config = newIbTreeConfiguration("pbTree-single", serialize.int_);
+		PbTreeBuilder builder = new PbTreeBuilder(config);
 
-		try (IbTree<Integer> ibTree = builder.buildTree(Defaults.tmp.resolve("ibTree-single"), config, null)) {
-			ibTree.create().end(true);
+		try (PbTree<Integer> pbTree = builder.buildTree(Defaults.tmp.resolve("pbTree-single"), config, null)) {
+			pbTree.create().end(true);
 
-			KeyDataStore<Integer> store = ibTree.begin();
+			KeyDataStore<Integer> store = pbTree.begin();
 			KeyValueMutator<Integer, Integer> kvm = store.mutate();
 			KeyDataMutator<Integer> kdm = store.mutateData();
-			int size = ibTree.guaranteedCapacity();
+			int size = pbTree.guaranteedCapacity();
 
 			for (int i = 0; i < size; i++)
 				kdm.putTerminal(i);
@@ -78,34 +78,34 @@ public class IbTreeTest {
 
 	@Test
 	public void testMultipleLevels() throws IOException {
-		IbTreeConfiguration<String> config = newIbTreeConfiguration("ibTree-multi", serialize.string(16));
-		IbTreeBuilder builder = new IbTreeBuilder(config);
+		PbTreeConfiguration<String> config = newIbTreeConfiguration("pbTree-multi", serialize.string(16));
+		PbTreeBuilder builder = new PbTreeBuilder(config);
 
 		int i = 0;
-		Path p0 = Defaults.tmp.resolve("ibTreeMulti" + i++);
-		Path p1 = Defaults.tmp.resolve("ibTreeMulti" + i++);
-		Path p2 = Defaults.tmp.resolve("ibTreeMulti" + i++);
+		Path p0 = Defaults.tmp.resolve("pbTreeMulti" + i++);
+		Path p1 = Defaults.tmp.resolve("pbTreeMulti" + i++);
+		Path p2 = Defaults.tmp.resolve("pbTreeMulti" + i++);
 
-		try (IbTreeImpl<Integer> ibTree0 = builder.buildAllocationIbTree(p0);
-				IbTreeImpl<Integer> ibTree1 = builder.buildAllocationIbTree(p1, ibTree0);
-				IbTree<String> ibTree2 = builder.buildTree(p2, config, ibTree1)) {
-			test(ibTree2);
+		try (PbTreeImpl<Integer> pbTree0 = builder.buildAllocationIbTree(p0);
+				PbTreeImpl<Integer> pbTree1 = builder.buildAllocationIbTree(p1, pbTree0);
+				PbTree<String> pbTree2 = builder.buildTree(p2, config, pbTree1)) {
+			test(pbTree2);
 		}
 	}
 
 	@Test
 	public void testStack() throws IOException {
-		IbTreeConfiguration<String> config = newIbTreeConfiguration("ibTree-stack", serialize.string(16));
+		PbTreeConfiguration<String> config = newIbTreeConfiguration("pbTree-stack", serialize.string(16));
 		config.setCapacity(65536);
 
-		try (IbTreeStack<String> ibTreeStack = new IbTreeStack<>(config)) {
-			test(ibTreeStack.getIbTree());
+		try (PbTreeStack<String> pbTreeStack = new PbTreeStack<>(config)) {
+			test(pbTreeStack.getIbTree());
 		}
 	}
 
-	private <Key extends Comparable<? super Key>> IbTreeConfiguration<Key> newIbTreeConfiguration( //
+	private <Key extends Comparable<? super Key>> PbTreeConfiguration<Key> newIbTreeConfiguration( //
 			String name, Serializer<Key> serializer) {
-		IbTreeConfiguration<Key> config = new IbTreeConfiguration<>();
+		PbTreeConfiguration<Key> config = new PbTreeConfiguration<>();
 		config.setComparator(Object_::compare);
 		config.setPathPrefix(Defaults.tmp.resolve(name));
 		config.setPageSize(pageSize);
@@ -114,10 +114,10 @@ public class IbTreeTest {
 		return config;
 	}
 
-	private void test(IbTree<String> ibTree) {
-		ibTree.create().end(true);
+	private void test(PbTree<String> pbTree) {
+		pbTree.create().end(true);
 
-		int size = ibTree.guaranteedCapacity();
+		int size = pbTree.guaranteedCapacity();
 
 		List<String> list = new ArrayList<>();
 		for (int k = 0; k < size; k++)
@@ -131,26 +131,26 @@ public class IbTreeTest {
 		// updating 25 keys each.
 
 		for (Outlet<String> subset : Outlet.of(list).chunk(25)) {
-			KeyDataStore<String> store = ibTree.begin();
+			KeyDataStore<String> store = pbTree.begin();
 			KeyDataMutator<String> mutator = store.mutateData();
 			for (String s : subset)
 				mutator.putTerminal(s);
 			store.end(true);
 		}
 
-		assertEquals(size, dumpAndCount(ibTree.begin()));
+		assertEquals(size, dumpAndCount(pbTree.begin()));
 
 		Collections.shuffle(list);
 
 		for (List<String> subset : List_.chunk(list, 25)) {
-			KeyDataStore<String> store = ibTree.begin();
+			KeyDataStore<String> store = pbTree.begin();
 			KeyValueMutator<String, Integer> mutator = store.mutate();
 			for (String s : subset)
 				mutator.remove(s);
 			store.end(true);
 		}
 
-		assertEquals(0, dumpAndCount(ibTree.begin()));
+		assertEquals(0, dumpAndCount(pbTree.begin()));
 	}
 
 	private int dumpAndCount(KeyDataStore<?> store) {

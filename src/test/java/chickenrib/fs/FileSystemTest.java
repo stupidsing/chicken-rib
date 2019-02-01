@@ -10,8 +10,8 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import chickenrib.btree.impl.IbTreeConfiguration;
-import chickenrib.fs.impl.IbTreeFileSystemImpl;
+import chickenrib.btree.impl.PbTreeConfiguration;
+import chickenrib.fs.impl.PbTreeFileSystemImpl;
 import suite.cfg.Defaults;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
@@ -32,25 +32,25 @@ public class FileSystemTest {
 
 	@Test
 	public void testIbTreeFileSystem0() throws IOException {
-		testIbTree(Defaults.tmp.resolve("ibTree-fs0"), true, this::testWriteOneFile);
+		testIbTree(Defaults.tmp.resolve("pbTree-fs0"), true, this::testWriteOneFile);
 	}
 
 	// Writing too many files (testWriteFiles1) would fail this test case. Do
 	// not know why.
 	@Test
 	public void testIbTreeFileSystem1() throws IOException {
-		testIbTree(Defaults.tmp.resolve("ibTree-fs1"), true, this::testWriteFiles);
-		testIbTree(Defaults.tmp.resolve("ibTree-fs1"), false, this::testReadFile);
+		testIbTree(Defaults.tmp.resolve("pbTree-fs1"), true, this::testWriteFiles);
+		testIbTree(Defaults.tmp.resolve("pbTree-fs1"), false, this::testReadFile);
 	}
 
 	private void testIbTree(Path path, boolean isNew, TestCase testCase) throws IOException {
-		IbTreeConfiguration<Bytes> config = new IbTreeConfiguration<>();
+		PbTreeConfiguration<Bytes> config = new PbTreeConfiguration<>();
 		config.setPathPrefix(path);
 		config.setPageSize(pageSize);
 		config.setMaxBranchFactor(pageSize / 64);
 		config.setCapacity(64 * 1024);
 
-		try (FileSystem fs = new IbTreeFileSystemImpl(config, isNew)) {
+		try (FileSystem fs = new PbTreeFileSystemImpl(config, isNew)) {
 			testCase.test(fs);
 		}
 	}

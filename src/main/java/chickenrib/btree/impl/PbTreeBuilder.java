@@ -4,23 +4,23 @@ import java.nio.file.Path;
 
 import suite.object.Object_;
 
-public class IbTreeBuilder {
+public class PbTreeBuilder {
 
-	private IbTreeConfiguration<Integer> allocationIbTreeConfig;
+	private PbTreeConfiguration<Integer> allocationIbTreeConfig;
 
-	public IbTreeBuilder(IbTreeConfiguration<?> config) {
-		allocationIbTreeConfig = new IbTreeConfiguration<Integer>();
+	public PbTreeBuilder(PbTreeConfiguration<?> config) {
+		allocationIbTreeConfig = new PbTreeConfiguration<Integer>();
 		allocationIbTreeConfig.setPageSize(config.getPageSize());
 		allocationIbTreeConfig.setMaxBranchFactor(config.getMaxBranchFactor());
 		allocationIbTreeConfig.setComparator(Object_::compare);
-		allocationIbTreeConfig.setSerializer(IbTreeImpl.pointerSerializer);
+		allocationIbTreeConfig.setSerializer(PbTreeImpl.pointerSerializer);
 	}
 
 	/**
 	 * Builds a small tree that would not span more than 1 page, i.e. no extra
 	 * "page allocation tree" is required.
 	 */
-	public IbTreeImpl<Integer> buildAllocationIbTree(Path path) {
+	public PbTreeImpl<Integer> buildAllocationIbTree(Path path) {
 		return buildAllocationIbTree(path, null);
 	}
 
@@ -28,12 +28,12 @@ public class IbTreeBuilder {
 	 * Builds an intermediate tree that is supported by a separate page
 	 * allocation tree.
 	 */
-	public IbTreeImpl<Integer> buildAllocationIbTree(Path path, IbTreeImpl<Integer> allocationIbTree) {
+	public PbTreeImpl<Integer> buildAllocationIbTree(Path path, PbTreeImpl<Integer> allocationIbTree) {
 		return buildTree(path, allocationIbTreeConfig, allocationIbTree);
 	}
 
-	public <Key> IbTreeImpl<Key> buildTree(Path path, IbTreeConfiguration<Key> config, IbTreeImpl<Integer> allocationIbTree) {
-		return new IbTreeImpl<Key>(path, config, allocationIbTree);
+	public <Key> PbTreeImpl<Key> buildTree(Path path, PbTreeConfiguration<Key> config, PbTreeImpl<Integer> allocationIbTree) {
+		return new PbTreeImpl<Key>(path, config, allocationIbTree);
 	}
 
 }
