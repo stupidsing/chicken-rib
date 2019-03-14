@@ -421,7 +421,7 @@ public class PbTreeImpl<Key> implements PbTree<Key> {
 		private SerializedPageFile<List<Integer>> stampFile;
 
 		private Mutate() {
-			PageFile stampPageFile = FileFactory.pageFile(path.resolveSibling(path.getFileName() + ".stamp"), pageSize);
+			PageFile stampPageFile = FileFactory.pageFile(path.resolveSibling(path.getFileName() + ".stamp"), false, pageSize);
 			stampFile = SerializedFileFactory.serialized(stampPageFile, serialize.list(serialize.int_));
 		}
 
@@ -456,7 +456,7 @@ public class PbTreeImpl<Key> implements PbTree<Key> {
 
 		mutate = new Mutate();
 		minBranchFactor = maxBranchFactor / 2;
-		pageFile0 = FileFactory.pageFile(path, pageSize);
+		pageFile0 = FileFactory.pageFile(path, false, pageSize);
 		pageFile = SerializedFileFactory.serialized(pageFile0, newPageSerializer());
 		payloadFile = SerializedFileFactory.serialized(pageFile0, serialize.bytes(pageSize));
 	}
