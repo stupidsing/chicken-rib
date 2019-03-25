@@ -21,7 +21,6 @@ import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.node.util.Singleton;
-import suite.object.Object_;
 import suite.primitive.Bytes;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
@@ -447,7 +446,7 @@ public class PbTreeImpl<Key> implements PbTree<Key> {
 	public PbTreeImpl(Path path, PbTreeConfiguration<Key> config, PbTreeImpl<Integer> allocationIbTree) {
 		this.path = path;
 		pageSize = config.getPageSize();
-		comparator = Object_.nullsFirst(config.getComparator());
+		comparator = Comparator.nullsFirst(config.getComparator());
 		serializer = serialize.nullable(config.getSerializer());
 		maxBranchFactor = config.getMaxBranchFactor();
 		this.allocationIbTree = allocationIbTree;
