@@ -134,7 +134,7 @@ public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 			var sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
 			sc.register(selector, SelectionKey.OP_READ, channel);
-			channel.onConnected.fire(newSender(sc));
+			channel.onConnected.push(newSender(sc));
 		}
 
 		if (attachment != null)
@@ -146,21 +146,21 @@ public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 				if ((ops & SelectionKey.OP_CONNECT) != 0) {
 					sc1.finishConnect();
 					key.interestOps(SelectionKey.OP_READ);
-					channel.onConnected.fire(newSender(sc1));
+					channel.onConnected.push(newSender(sc1));
 				}
 
 				if ((ops & SelectionKey.OP_READ) != 0) {
 					var n = sc1.read(ByteBuffer.wrap(buffer));
 					if (0 <= n)
-						channel.onReceive.fire(Bytes.of(buffer, 0, n));
+						channel.onReceive.push(Bytes.of(buffer, 0, n));
 					else {
-						channel.onConnected.fire(null);
+						channel.onConnected.push(null);
 						sc1.close();
 					}
 				}
 
 				if ((ops & SelectionKey.OP_WRITE) != 0)
-					channel.onTrySend.fire(Boolean.TRUE);
+					channel.onTrySend.push(Boolean.TRUE);
 			}
 	}
 

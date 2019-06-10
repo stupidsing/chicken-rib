@@ -18,7 +18,7 @@ import suite.node.util.Singleton;
 import suite.object.Object_;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.streamlet.Outlet;
+import suite.streamlet.Puller;
 import suite.util.List_;
 import suite.util.To;
 
@@ -125,7 +125,7 @@ public class PbTreeTest {
 		// we would run out of allocatable pages. Here we limit ourself to
 		// updating 25 keys each.
 
-		for (var subset : Outlet.of(list).chunk(25)) {
+		for (var subset : Puller.of(list).chunk(25)) {
 			var store = pbTree.begin();
 			var mutator = store.mutateData();
 			for (var s : subset)

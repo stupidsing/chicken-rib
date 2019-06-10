@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Signal;
+import suite.streamlet.Pusher;
 
 public interface Cluster {
 
@@ -18,9 +18,9 @@ public interface Cluster {
 
 	public Set<String> getActivePeers();
 
-	public Signal<String> getOnJoined();
+	public Pusher<String> getOnJoined();
 
-	public Signal<String> getOnLeft();
+	public Pusher<String> getOnLeft();
 
 	public String getMe();
 

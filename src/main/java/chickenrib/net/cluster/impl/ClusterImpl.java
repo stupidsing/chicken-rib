@@ -22,7 +22,7 @@ import suite.net.cluster.impl.ClusterProbeImpl;
 import suite.object.Object_;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Signal;
+import suite.streamlet.Pusher;
 import suite.util.Thread_;
 
 public class ClusterImpl implements Cluster {
@@ -42,8 +42,8 @@ public class ClusterImpl implements Cluster {
 	 */
 	private Map<String, PersistentNioplex> nioplexs = new HashMap<>();
 
-	private Signal<String> onJoined;
-	private Signal<String> onLeft;
+	private Pusher<String> onJoined;
+	private Pusher<String> onLeft;
 	private Map<Class<?>, Fun<Object, Object>> onReceive = new HashMap<>();
 
 	public ClusterImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
@@ -132,12 +132,12 @@ public class ClusterImpl implements Cluster {
 	}
 
 	@Override
-	public Signal<String> getOnJoined() {
+	public Pusher<String> getOnJoined() {
 		return onJoined;
 	}
 
 	@Override
-	public Signal<String> getOnLeft() {
+	public Pusher<String> getOnLeft() {
 		return onLeft;
 	}
 

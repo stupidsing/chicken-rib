@@ -11,7 +11,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.Signal;
+import suite.streamlet.Pusher;
 
 public interface NioplexFactory {
 
@@ -75,7 +75,7 @@ public interface NioplexFactory {
 	}
 
 	public class PacketedNioplex extends BufferedNioplex {
-		public final Signal<Bytes> onReceivePacket = Signal.of();
+		public final Pusher<Bytes> onReceivePacket = Pusher.of();
 
 		public void sendPacket(Bytes packet) {
 			send(new BytesBuilder() //
@@ -106,9 +106,9 @@ public interface NioplexFactory {
 	}
 
 	public class Nioplex {
-		public final Signal<Iterate<Bytes>> onConnected = Signal.of();
-		public final Signal<Bytes> onReceive = Signal.of();
-		public final Signal<Boolean> onTrySend = Signal.of();
+		public final Pusher<Iterate<Bytes>> onConnected = Pusher.of();
+		public final Pusher<Bytes> onReceive = Pusher.of();
+		public final Pusher<Boolean> onTrySend = Pusher.of();
 	}
 
 	public static <NP extends PersistentNioplex> NP persistent( //
@@ -156,7 +156,7 @@ public interface NioplexFactory {
 					if (end <= size) {
 						var in = received.range(4, end);
 						received = received.range(end);
-						np.onReceivePacket.fire(in);
+						np.onReceivePacket.push(in);
 					}
 				}
 			}
