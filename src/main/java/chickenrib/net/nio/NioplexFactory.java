@@ -125,8 +125,8 @@ public interface NioplexFactory {
 			ExecutorService executor, //
 			Iterate<Bytes> handler) {
 		var np = packeted(np0);
-		np.onConnected.wire(sender -> np.setConnected(sender != null));
-		np.onReceivePacket.wire(packet -> {
+		np.onConnected.wire(np, sender -> np.setConnected(sender != null));
+		np.onReceivePacket.wire(np, packet -> {
 			if (5 <= packet.size()) {
 				var type = (char) packet.get(0);
 				var token = NetUtil.bytesToInt(packet.range(1, 5));
@@ -143,7 +143,7 @@ public interface NioplexFactory {
 
 	public static <NP extends PacketedNioplex> NP packeted(NP np0) {
 		var np = buffered(np0);
-		np.onReceive.wire(new Sink<>() {
+		np.onReceive.wire(np, new Sink<>() {
 			private Bytes received = Bytes.empty;
 
 			public void f(Bytes message) {
@@ -165,8 +165,8 @@ public interface NioplexFactory {
 	}
 
 	public static <NP extends BufferedNioplex> NP buffered(NP np) {
-		np.onConnected.wire(np::setSender);
-		np.onTrySend.wire(np::trySend);
+		np.onConnected.wire(np, np::setSender);
+		np.onTrySend.wire(np, np::trySend);
 		return np;
 	}
 
