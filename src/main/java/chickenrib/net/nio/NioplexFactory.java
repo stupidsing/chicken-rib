@@ -75,7 +75,7 @@ public interface NioplexFactory {
 	}
 
 	public class PacketedNioplex extends BufferedNioplex {
-		public final Pusher<Bytes> onReceivePacket = Pusher.of();
+		public final Pusher<Bytes> onReceivePacket = new Pusher<>();
 
 		public void sendPacket(Bytes packet) {
 			send(new BytesBuilder() //
@@ -106,9 +106,9 @@ public interface NioplexFactory {
 	}
 
 	public class Nioplex {
-		public final Pusher<Iterate<Bytes>> onConnected = Pusher.of();
-		public final Pusher<Bytes> onReceive = Pusher.of();
-		public final Pusher<Boolean> onTrySend = Pusher.of();
+		public final Pusher<Iterate<Bytes>> onConnected = new Pusher<>();
+		public final Pusher<Bytes> onReceive = new Pusher<>();
+		public final Pusher<Boolean> onTrySend = new Pusher<>();
 	}
 
 	public static <NP extends PersistentNioplex> NP persistent( //
