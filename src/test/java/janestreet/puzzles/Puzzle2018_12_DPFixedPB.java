@@ -201,7 +201,7 @@ public class Puzzle2018_12_DPFixedPB {
 				int v;
 
 				for (var i = 0; i < tiles.length; i++)
-					if (Integer.bitCount(v = e.t0 | 1 << i) == n + 1) {
+					if (Integer.bitCount(v = e.k | 1 << i) == n + 1) {
 						var tile = tiles[i];
 						var set = map1.computeIfAbsent(v, v_ -> new HashSet<>());
 						var minScore = IntMutable.of(!set.isEmpty() ? set.iterator().next().score : Integer.MAX_VALUE);
@@ -219,7 +219,7 @@ public class Puzzle2018_12_DPFixedPB {
 										score));
 						};
 
-						for (var board : e.t1) {
+						for (var board : e.v) {
 							var score = board.score;
 							var xbitmasks = board.xbitmasks;
 							var ybitmasks = board.ybitmasks;
