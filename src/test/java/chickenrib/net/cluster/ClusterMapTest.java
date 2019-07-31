@@ -1,8 +1,8 @@
 package chickenrib.net.cluster;
 
 import static org.junit.Assert.assertEquals;
-import static suite.util.Friends.forInt;
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
+import static suite.util.Streamlet_.forInt;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -34,7 +34,7 @@ public class ClusterMapTest {
 		var clusters = Read //
 				.from2(peers) //
 				.keys() //
-				.<String, Cluster> map2(name -> name, name -> rethrow(() -> new ClusterImpl(name, peers))) //
+				.<String, Cluster> map2(name -> name, name -> ex(() -> new ClusterImpl(name, peers))) //
 				.toMap();
 
 		for (var cluster : clusters.values())

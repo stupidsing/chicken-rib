@@ -1,6 +1,6 @@
 package chickenrib.net.nio;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Rethrow.ex;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
@@ -39,7 +39,7 @@ public interface NioplexFactory {
 
 		private void reconnect() {
 			if (isStarted && !isConnected())
-				rethrow(() -> {
+				ex(() -> {
 					nio.reconnect(this, address);
 					return nio;
 				});
