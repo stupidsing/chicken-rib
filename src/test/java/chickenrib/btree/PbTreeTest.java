@@ -14,12 +14,12 @@ import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.btree.impl.PbTreeStack;
 import primal.Verbs.Compare;
 import primal.Verbs.Split;
+import primal.puller.Puller;
 import suite.cfg.Defaults;
 import suite.fs.KeyDataStore;
 import suite.node.util.Singleton;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.streamlet.Puller;
 import suite.util.To;
 
 public class PbTreeTest {
