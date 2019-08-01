@@ -13,13 +13,13 @@ import chickenrib.btree.impl.PbTreeBuilder;
 import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.btree.impl.PbTreeStack;
 import primal.Verbs.Compare;
+import primal.Verbs.Split;
 import suite.cfg.Defaults;
 import suite.fs.KeyDataStore;
 import suite.node.util.Singleton;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.Puller;
-import suite.util.List_;
 import suite.util.To;
 
 public class PbTreeTest {
@@ -137,7 +137,7 @@ public class PbTreeTest {
 
 		Collections.shuffle(list);
 
-		for (var subset : List_.chunk(list, 25)) {
+		for (var subset : Split.chunk(list, 25)) {
 			var store = pbTree.begin();
 			var mutator = store.mutate();
 			for (var s : subset)

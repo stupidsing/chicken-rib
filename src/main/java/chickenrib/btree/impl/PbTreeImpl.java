@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.Set;
 
 import chickenrib.btree.PbTree;
+import primal.Verbs.Concat;
+import primal.Verbs.First;
+import primal.Verbs.Last;
+import primal.Verbs.Left;
+import primal.Verbs.Right;
 import primal.fp.Funs.Fun;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
@@ -29,7 +34,6 @@ import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.List_;
 
 /**
  * Immutable, on-disk B-tree implementation.
@@ -313,15 +317,15 @@ public class PbTreeImpl<Key> implements PbTree<Key> {
 			else
 				replaceSlots = Arrays.asList(fun.apply(discard(fs.slot)));
 
-			List<Slot> slots1 = List_.concat(List_.left(slots0, s0), replaceSlots, List_.right(slots0, s1));
+			List<Slot> slots1 = Concat.lists(Left.of(slots0, s0), replaceSlots, Right.of(slots0, s1));
 			List<Slot> slots2;
 
 			// Checks if need to split
 			if (slots1.size() < maxBranchFactor)
 				slots2 = Arrays.asList(slot(slots1));
 			else { // Splits into two if reached maximum number of nodes
-				List<Slot> leftSlots = List_.left(slots1, minBranchFactor);
-				List<Slot> rightSlots = List_.right(slots1, minBranchFactor);
+				List<Slot> leftSlots = Left.of(slots1, minBranchFactor);
+				List<Slot> rightSlots = Right.of(slots1, minBranchFactor);
 				slots2 = Arrays.asList(slot(leftSlots), slot(rightSlots));
 			}
 
@@ -358,7 +362,7 @@ public class PbTreeImpl<Key> implements PbTree<Key> {
 			else
 				throw new RuntimeException("Node not found " + key);
 
-			return List_.concat(List_.left(slots0, s0), replaceSlots, List_.right(slots0, s1));
+			return Concat.lists(Left.of(slots0, s0), replaceSlots, Right.of(slots0, s1));
 		}
 
 		private List<Slot> merge(List<Slot> slots0, List<Slot> slots1) {
@@ -368,11 +372,11 @@ public class PbTreeImpl<Key> implements PbTree<Key> {
 				List<Slot> leftSlots, rightSlots;
 
 				if (minBranchFactor < slots0.size()) {
-					leftSlots = List_.left(slots0, -1);
-					rightSlots = List_.concat(Arrays.asList(List_.last(slots0)), slots1);
+					leftSlots = Left.of(slots0, -1);
+					rightSlots = Concat.lists(Arrays.asList(Last.of(slots0)), slots1);
 				} else if (minBranchFactor < slots1.size()) {
-					leftSlots = List_.concat(slots0, Arrays.asList(List_.first(slots1)));
-					rightSlots = List_.right(slots1, 1);
+					leftSlots = Concat.lists(slots0, Arrays.asList(First.of(slots1)));
+					rightSlots = Right.of(slots1, 1);
 				} else {
 					leftSlots = slots0;
 					rightSlots = slots1;
@@ -380,13 +384,13 @@ public class PbTreeImpl<Key> implements PbTree<Key> {
 
 				merged = Arrays.asList(slot(leftSlots), slot(rightSlots));
 			} else
-				merged = Arrays.asList(slot(List_.concat(slots0, slots1)));
+				merged = Arrays.asList(slot(Concat.lists(slots0, slots1)));
 
 			return merged;
 		}
 
 		private List<Integer> flush() {
-			return List_.concat(Arrays.asList(root), allocator.flush());
+			return Concat.lists(Arrays.asList(root), allocator.flush());
 		}
 
 		private Integer newRootPage(List<Slot> slots) {
@@ -400,7 +404,7 @@ public class PbTreeImpl<Key> implements PbTree<Key> {
 		}
 
 		private Slot slot(List<Slot> slots) {
-			return new Slot(SlotType.BRANCH, List_.first(slots).pivot, persist(slots));
+			return new Slot(SlotType.BRANCH, First.of(slots).pivot, persist(slots));
 		}
 
 		private Slot discard(Slot slot) {
@@ -532,7 +536,7 @@ public class PbTreeImpl<Key> implements PbTree<Key> {
 	}
 
 	private Store store(List<Integer> stamp) {
-		return new Store(allocator(List_.right(stamp, 1)), stamp.get(0));
+		return new Store(allocator(Right.of(stamp, 1)), stamp.get(0));
 	}
 
 	private Allocator allocator(List<Integer> stamp0) {

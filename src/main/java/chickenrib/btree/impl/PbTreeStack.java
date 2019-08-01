@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.ListIterator;
 
 import chickenrib.btree.PbTree;
+import primal.Verbs.Last;
 import primal.fp.Funs.Source;
 import suite.os.FileUtil;
-import suite.util.List_;
 
 public class PbTreeStack<Key> implements Closeable {
 
@@ -31,7 +31,7 @@ public class PbTreeStack<Key> implements Closeable {
 		PbTreeImpl<Integer> allocationIbTree;
 		allocationIbTrees.add(builder.buildAllocationIbTree(nextPath.g()));
 
-		while ((allocationIbTree = List_.last(allocationIbTrees)).guaranteedCapacity() < nPages)
+		while ((allocationIbTree = Last.of(allocationIbTrees)).guaranteedCapacity() < nPages)
 			allocationIbTrees.add(builder.buildAllocationIbTree(nextPath.g(), allocationIbTree));
 
 		pbTree = builder.buildTree(nextPath.g(), config, allocationIbTree);
