@@ -1,16 +1,16 @@
 package chickenrib.net.nio;
 
-import static suite.util.Friends.rethrow;
+import static primal.statics.Rethrow.ex;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Sink;
 import suite.concurrent.Condition;
 import suite.net.NetUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Pusher;
 
 public interface NioplexFactory {
@@ -39,7 +39,7 @@ public interface NioplexFactory {
 
 		private void reconnect() {
 			if (isStarted && !isConnected())
-				rethrow(() -> {
+				ex(() -> {
 					nio.reconnect(this, address);
 					return nio;
 				});

@@ -8,12 +8,12 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import primal.fp.Funs.Source;
+import primal.primitive.IntPrim.IntSink;
 import suite.inspect.Dump;
 import suite.primitive.IntMutable;
-import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.set.IntSet;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 
 /*

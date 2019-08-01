@@ -1,6 +1,6 @@
 package chickenrib.net.nio;
 
-import static suite.util.Friends.rethrow;
+import static primal.statics.Rethrow.ex;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -12,13 +12,13 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 import chickenrib.net.nio.NioplexFactory.Nioplex;
+import primal.Verbs.Close;
+import primal.fp.Funs.Iterate;
+import primal.fp.Funs.Source;
+import primal.os.Log_;
 import suite.cfg.Defaults;
 import suite.net.ThreadService;
-import suite.object.Object_;
-import suite.os.Log_;
 import suite.primitive.Bytes;
-import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
 
 public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 
@@ -86,7 +86,7 @@ public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 		ssc.register(selector, SelectionKey.OP_ACCEPT);
 
 		wakeUpSelector();
-		return () -> Object_.closeQuietly(ssc);
+		return () -> Close.quietly(ssc);
 	}
 
 	private void serve() throws IOException {
@@ -170,7 +170,7 @@ public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 			// try to send immediately. If cannot sent all, wait for the
 			// writable event (and send again at that moment).
 			var bytes = in.toArray();
-			var sent = rethrow(() -> sc.write(ByteBuffer.wrap(bytes)));
+			var sent = ex(() -> sc.write(ByteBuffer.wrap(bytes)));
 			var out = in.range(sent);
 			var ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);
 			var key = sc.keyFor(selector);

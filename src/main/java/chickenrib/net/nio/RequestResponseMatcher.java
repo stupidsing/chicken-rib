@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import chickenrib.net.nio.NioplexFactory.RequestResponseNioplex;
-import suite.adt.Mutable;
-import suite.adt.pair.Pair;
+import primal.Verbs.Get;
+import primal.adt.Mutable;
+import primal.adt.Pair;
+import primal.primitive.IntPrim.IntSink;
 import suite.concurrent.Condition;
 import suite.primitive.Bytes;
-import suite.primitive.IntPrimitives.IntSink;
-import suite.util.Util;
 
 public class RequestResponseMatcher {
 
@@ -25,7 +25,7 @@ public class RequestResponseMatcher {
 	}
 
 	public Bytes requestForResponse(IntSink sink, long timeout) {
-		var token = Util.temp();
+		var token = Get.temp();
 		var holder = Mutable.<Bytes> nil();
 		var condition = new Condition();
 

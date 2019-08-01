@@ -12,10 +12,10 @@ import org.junit.Test;
 import chickenrib.btree.impl.PbTreeBuilder;
 import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.btree.impl.PbTreeStack;
+import primal.Verbs.Compare;
 import suite.cfg.Defaults;
 import suite.fs.KeyDataStore;
 import suite.node.util.Singleton;
-import suite.object.Object_;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.Puller;
@@ -101,7 +101,7 @@ public class PbTreeTest {
 	private <Key extends Comparable<? super Key>> PbTreeConfiguration<Key> newIbTreeConfiguration( //
 			String name, Serializer<Key> serializer) {
 		var config = new PbTreeConfiguration<Key>();
-		config.setComparator(Object_::compare);
+		config.setComparator(Compare::objects);
 		config.setPathPrefix(Defaults.tmp.resolve(name));
 		config.setPageSize(pageSize);
 		config.setSerializer(serializer);

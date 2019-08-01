@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import chickenrib.btree.PbTree;
+import primal.fp.Funs.Fun;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
@@ -26,7 +27,6 @@ import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.List_;

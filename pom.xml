@@ -8,6 +8,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>primal</groupId>
+			<artifactId>primal</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
 			<groupId>suite</groupId>
 			<artifactId>suite</artifactId>
 			<version>LATEST</version>

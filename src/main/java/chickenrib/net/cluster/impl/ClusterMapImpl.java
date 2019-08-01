@@ -10,10 +10,10 @@ import java.util.Objects;
 
 import chickenrib.net.cluster.Cluster;
 import chickenrib.net.cluster.ClusterMap;
+import primal.fp.Funs.Fun;
+import primal.fp.Funs.Sink;
 import suite.net.cluster.impl.ClusterMapUtil.GetQuery;
 import suite.net.cluster.impl.ClusterMapUtil.PutQuery;
-import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Sink;
 
 public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 

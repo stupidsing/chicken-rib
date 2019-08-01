@@ -1,6 +1,6 @@
 package chickenrib.net.cluster.impl;
 
-import static suite.util.Friends.fail;
+import static primal.statics.Fail.fail;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -16,12 +16,12 @@ import chickenrib.net.nio.NioDispatcherImpl;
 import chickenrib.net.nio.NioplexFactory;
 import chickenrib.net.nio.NioplexFactory.PersistentNioplex;
 import chickenrib.net.nio.RequestResponseMatcher;
+import primal.Verbs.Close;
+import primal.fp.Funs.Fun;
 import suite.net.NetUtil;
 import suite.net.cluster.ClusterProbe;
 import suite.net.cluster.impl.ClusterProbeImpl;
-import suite.object.Object_;
 import suite.primitive.Bytes;
-import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Pusher;
 import suite.util.Thread_;
 
@@ -84,7 +84,7 @@ public class ClusterImpl implements Cluster {
 
 		probe.stop();
 		nio.stop();
-		Object_.closeQuietly(unlisten);
+		Close.quietly(unlisten);
 		executor.shutdown();
 	}
 

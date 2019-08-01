@@ -3,7 +3,7 @@ package chickenrib.net.cluster;
 import java.io.IOException;
 import java.util.Set;
 
-import suite.streamlet.FunUtil.Fun;
+import primal.fp.Funs.Fun;
 import suite.streamlet.Pusher;
 
 public interface Cluster {

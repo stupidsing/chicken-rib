@@ -8,11 +8,12 @@ import java.util.function.IntPredicate;
 
 import org.junit.Test;
 
+import primal.primitive.IntPrim.IntSink;
 import suite.inspect.Dump;
 import suite.primitive.IntMutable;
-import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Read;
+import suite.weiqi.Board;
 
 /*
 for all tile order, find the first score
