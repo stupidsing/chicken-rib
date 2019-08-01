@@ -2,6 +2,7 @@ package chickenrib.net.cluster;
 
 import static java.util.Map.entry;
 import static org.junit.Assert.assertEquals;
+import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -13,11 +14,10 @@ import org.junit.Test;
 
 import chickenrib.net.cluster.impl.ClusterImpl;
 import primal.Verbs.Sleep;
-import suite.util.Rethrow;
 
 public class ClusterTest {
 
-	private InetAddress localHost = Rethrow.ex(() -> InetAddress.getLocalHost());
+	private InetAddress localHost = ex(() -> InetAddress.getLocalHost());
 
 	@Test
 	public void testCluster() throws IOException {

@@ -17,13 +17,12 @@ import chickenrib.net.cluster.impl.ClusterImpl;
 import chickenrib.net.cluster.impl.ClusterMapImpl;
 import primal.Verbs.Sleep;
 import suite.streamlet.Read;
-import suite.util.Rethrow;
 
 public class ClusterMapTest {
 
 	private static Random random = new Random();
 
-	private InetAddress localHost = Rethrow.ex(() -> InetAddress.getLocalHost());
+	private InetAddress localHost = ex(() -> InetAddress.getLocalHost());
 
 	@Test
 	public void testClusterMap() throws IOException {
