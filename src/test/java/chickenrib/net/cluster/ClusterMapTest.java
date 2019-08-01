@@ -15,9 +15,9 @@ import org.junit.Test;
 
 import chickenrib.net.cluster.impl.ClusterImpl;
 import chickenrib.net.cluster.impl.ClusterMapImpl;
+import primal.Verbs.Sleep;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
-import suite.util.Thread_;
 
 public class ClusterMapTest {
 
@@ -43,7 +43,7 @@ public class ClusterMapTest {
 		var peerNames = new ArrayList<>(peers.keySet());
 		var clMap = Read.from2(peers).keys().map2(name -> name, name -> new ClusterMapImpl<>(clusters.get(name))).toMap();
 
-		Thread_.sleepQuietly(5 * 1000);
+		Sleep.quietly(5 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 

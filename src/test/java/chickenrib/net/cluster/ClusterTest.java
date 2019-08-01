@@ -12,8 +12,8 @@ import java.util.Map;
 import org.junit.Test;
 
 import chickenrib.net.cluster.impl.ClusterImpl;
+import primal.Verbs.Sleep;
 import suite.util.Rethrow;
-import suite.util.Thread_;
 
 public class ClusterTest {
 
@@ -33,7 +33,7 @@ public class ClusterTest {
 		cluster0.start();
 		cluster1.start();
 
-		Thread_.sleepQuietly(2 * 1000);
+		Sleep.quietly(2 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 
