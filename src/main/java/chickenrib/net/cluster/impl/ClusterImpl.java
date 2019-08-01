@@ -17,13 +17,13 @@ import chickenrib.net.nio.NioplexFactory;
 import chickenrib.net.nio.NioplexFactory.PersistentNioplex;
 import chickenrib.net.nio.RequestResponseMatcher;
 import primal.Verbs.Close;
+import primal.Verbs.New;
 import primal.fp.Funs.Fun;
 import suite.net.NetUtil;
 import suite.net.cluster.ClusterProbe;
 import suite.net.cluster.impl.ClusterProbeImpl;
 import suite.primitive.Bytes;
 import suite.streamlet.Pusher;
-import suite.util.Thread_;
 
 public class ClusterImpl implements Cluster {
 
@@ -61,7 +61,7 @@ public class ClusterImpl implements Cluster {
 
 	@Override
 	public void start() throws IOException {
-		executor = Thread_.newExecutor();
+		executor = New.executor();
 		unlisten = nio.listen(peers.get(me).getPort());
 		nio.start();
 
