@@ -13,6 +13,7 @@ import chickenrib.btree.impl.PbTreeBuilder;
 import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.btree.impl.PbTreeStack;
 import primal.Verbs.Compare;
+import primal.Verbs.Format;
 import primal.Verbs.Split;
 import primal.puller.Puller;
 import suite.cfg.Defaults;
@@ -20,7 +21,6 @@ import suite.fs.KeyDataStore;
 import suite.node.util.Singleton;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.util.To;
 
 public class PbTreeTest {
 
@@ -116,7 +116,7 @@ public class PbTreeTest {
 
 		List<String> list = new ArrayList<>();
 		for (int k = 0; k < size; k++)
-			list.add("KEY-" + To.hex4(k));
+			list.add("KEY-" + Format.hex4(k));
 
 		Collections.shuffle(list);
 

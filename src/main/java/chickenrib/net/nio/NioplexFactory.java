@@ -7,10 +7,10 @@ import java.util.concurrent.ExecutorService;
 
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Sink;
+import primal.primitive.adt.Bytes;
+import primal.primitive.adt.Bytes.BytesBuilder;
 import suite.concurrent.Condition;
 import suite.net.NetUtil;
-import suite.primitive.Bytes;
-import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Pusher;
 
 public interface NioplexFactory {

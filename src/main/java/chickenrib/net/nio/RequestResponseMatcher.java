@@ -8,8 +8,8 @@ import primal.Verbs.Get;
 import primal.adt.Mutable;
 import primal.adt.Pair;
 import primal.primitive.IntPrim.IntSink;
+import primal.primitive.adt.Bytes;
 import suite.concurrent.Condition;
-import suite.primitive.Bytes;
 
 public class RequestResponseMatcher {
 

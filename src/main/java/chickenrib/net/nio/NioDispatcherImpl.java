@@ -16,9 +16,9 @@ import primal.Verbs.Close;
 import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
+import primal.primitive.adt.Bytes;
 import suite.cfg.Defaults;
 import suite.net.ThreadService;
-import suite.primitive.Bytes;
 
 public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 

@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.btree.impl.PbTreeStack;
+import primal.primitive.adt.Bytes;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
 import suite.fs.impl.FileSystemKeyUtil;
 import suite.fs.impl.FileSystemMutatorImpl;
-import suite.primitive.Bytes;
 
 public class PbTreeFileSystemImpl implements FileSystem {
 
