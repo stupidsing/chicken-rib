@@ -22,7 +22,7 @@ public class ClusterMapTest {
 
 	private static Random random = new Random();
 
-	private InetAddress localHost = ex(() -> InetAddress.getLocalHost());
+	private InetAddress localHost = ex(InetAddress::getLocalHost);
 
 	@Test
 	public void testClusterMap() throws IOException {

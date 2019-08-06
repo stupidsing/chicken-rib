@@ -43,7 +43,7 @@ public class PbTreeTest {
 
 			// mutator.dump(System.out);
 
-			System.out.println(To.list(mutator.keys(3, 10)));
+			System.out.println(mutator.keys(3, 10).toList());
 		}
 	}
 

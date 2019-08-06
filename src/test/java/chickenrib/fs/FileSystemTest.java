@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.fs.impl.PbTreeFileSystemImpl;
+import primal.Nouns.Utf8;
 import suite.cfg.Defaults;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
@@ -74,7 +75,7 @@ public class FileSystemTest {
 
 		for (Path path : paths) {
 			String filename = path.toString().replace(File.separatorChar, '/');
-			Bytes name = Bytes.of(filename.getBytes(Defaults.charset));
+			Bytes name = Bytes.of(filename.getBytes(Utf8.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));
 		}
 	}
@@ -82,7 +83,7 @@ public class FileSystemTest {
 	private void testReadFile(FileSystem fs) throws IOException {
 		String filename = "src/test/java/chickenrib/fs/FileSystemTest.java";
 		FileSystemMutator fsm = fs.mutate();
-		Bytes name = Bytes.of(filename.getBytes(Defaults.charset));
+		Bytes name = Bytes.of(filename.getBytes(Utf8.charset));
 		Copy.stream(fsm.read(name).collect(As::inputStream), System.out);
 	}
 
