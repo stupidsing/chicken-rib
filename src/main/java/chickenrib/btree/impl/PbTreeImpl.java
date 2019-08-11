@@ -20,6 +20,7 @@ import primal.Verbs.Left;
 import primal.Verbs.Right;
 import primal.fp.Funs.Fun;
 import primal.primitive.adt.Bytes;
+import primal.streamlet.Streamlet;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
@@ -33,7 +34,6 @@ import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 /**
  * Immutable, on-disk B-tree implementation.
