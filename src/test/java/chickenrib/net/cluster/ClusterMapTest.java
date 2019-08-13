@@ -15,8 +15,8 @@ import org.junit.Test;
 
 import chickenrib.net.cluster.impl.ClusterImpl;
 import chickenrib.net.cluster.impl.ClusterMapImpl;
+import primal.MoreVerbs.Read;
 import primal.Verbs.Sleep;
-import suite.streamlet.Read;
 
 public class ClusterMapTest {
 

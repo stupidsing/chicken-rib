@@ -12,10 +12,10 @@ import org.junit.Test;
 
 import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.fs.impl.PbTreeFileSystemImpl;
+import primal.Nouns.Tmp;
 import primal.Nouns.Utf8;
 import primal.primitive.adt.Bytes;
 import primal.streamlet.Streamlet;
-import suite.cfg.Defaults;
 import suite.fs.FileSystem;
 import suite.fs.FileSystemMutator;
 import suite.os.FileUtil;
@@ -33,15 +33,15 @@ public class FileSystemTest {
 
 	@Test
 	public void testIbTreeFileSystem0() throws IOException {
-		testIbTree(Defaults.tmp.resolve("pbTree-fs0"), true, this::testWriteOneFile);
+		testIbTree(Tmp.path("pbTree-fs0"), true, this::testWriteOneFile);
 	}
 
 	// Writing too many files (testWriteFiles1) would fail this test case. Do
 	// not know why.
 	@Test
 	public void testIbTreeFileSystem1() throws IOException {
-		testIbTree(Defaults.tmp.resolve("pbTree-fs1"), true, this::testWriteFiles);
-		testIbTree(Defaults.tmp.resolve("pbTree-fs1"), false, this::testReadFile);
+		testIbTree(Tmp.path("pbTree-fs1"), true, this::testWriteFiles);
+		testIbTree(Tmp.path("pbTree-fs1"), false, this::testReadFile);
 	}
 
 	private void testIbTree(Path path, boolean isNew, TestCase testCase) throws IOException {

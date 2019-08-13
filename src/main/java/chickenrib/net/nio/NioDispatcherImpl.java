@@ -17,7 +17,6 @@ import primal.fp.Funs.Iterate;
 import primal.fp.Funs.Source;
 import primal.os.Log_;
 import primal.primitive.adt.Bytes;
-import suite.cfg.Defaults;
 import suite.net.ThreadService;
 
 public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
@@ -124,7 +123,7 @@ public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 	private void processSelectedKey(SelectionKey key) throws IOException {
 		// logUtil.info("KEY", dumpKey(key));
 
-		var buffer = new byte[Defaults.bufferSize];
+		var buffer = new byte[4096];
 		var attachment = key.attachment();
 		var sc0 = key.channel();
 		var ops = key.readyOps();

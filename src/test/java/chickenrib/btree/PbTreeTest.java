@@ -13,10 +13,10 @@ import chickenrib.btree.impl.PbTreeBuilder;
 import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.btree.impl.PbTreeStack;
 import primal.MoreVerbs.Split;
+import primal.Nouns.Tmp;
 import primal.Verbs.Compare;
 import primal.Verbs.Format;
 import primal.puller.Puller;
-import suite.cfg.Defaults;
 import suite.fs.KeyDataStore;
 import suite.node.util.Singleton;
 import suite.serialize.Serialize;
@@ -52,7 +52,7 @@ public class PbTreeTest {
 		var config = newIbTreeConfiguration("pbTree-single", serialize.int_);
 		var builder = new PbTreeBuilder(config);
 
-		try (var pbTree = builder.buildTree(Defaults.tmp.resolve("pbTree-single"), config, null)) {
+		try (var pbTree = builder.buildTree(Tmp.path("pbTree-single"), config, null)) {
 			pbTree.create().end(true);
 
 			var store = pbTree.begin();
@@ -77,9 +77,9 @@ public class PbTreeTest {
 		var builder = new PbTreeBuilder(config);
 
 		int i = 0;
-		var p0 = Defaults.tmp.resolve("pbTreeMulti" + i++);
-		var p1 = Defaults.tmp.resolve("pbTreeMulti" + i++);
-		var p2 = Defaults.tmp.resolve("pbTreeMulti" + i++);
+		var p0 = Tmp.path("pbTreeMulti" + i++);
+		var p1 = Tmp.path("pbTreeMulti" + i++);
+		var p2 = Tmp.path("pbTreeMulti" + i++);
 
 		try (var pbTree0 = builder.buildAllocationIbTree(p0);
 				var pbTree1 = builder.buildAllocationIbTree(p1, pbTree0);
@@ -102,7 +102,7 @@ public class PbTreeTest {
 			String name, Serializer<Key> serializer) {
 		var config = new PbTreeConfiguration<Key>();
 		config.setComparator(Compare::objects);
-		config.setPathPrefix(Defaults.tmp.resolve(name));
+		config.setPathPrefix(Tmp.path(name));
 		config.setPageSize(pageSize);
 		config.setSerializer(serializer);
 		config.setMaxBranchFactor(16);

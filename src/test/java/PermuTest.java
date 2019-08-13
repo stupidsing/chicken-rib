@@ -3,7 +3,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.streamlet.Read;
+import primal.MoreVerbs.Read;
 
 public class PermuTest {
 
