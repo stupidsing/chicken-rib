@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -58,7 +57,7 @@ public class PbTreeTest {
 			var store = pbTree.begin();
 			var kvm = store.mutate();
 			var kdm = store.mutateData();
-			int size = pbTree.guaranteedCapacity();
+			var size = pbTree.guaranteedCapacity();
 
 			for (var i = 0; i < size; i++)
 				kdm.putTerminal(i);
@@ -76,7 +75,7 @@ public class PbTreeTest {
 		var config = newIbTreeConfiguration("pbTree-multi", serialize.string(16));
 		var builder = new PbTreeBuilder(config);
 
-		int i = 0;
+		var i = 0;
 		var p0 = Tmp.path("pbTreeMulti" + i++);
 		var p1 = Tmp.path("pbTreeMulti" + i++);
 		var p2 = Tmp.path("pbTreeMulti" + i++);
@@ -112,9 +111,9 @@ public class PbTreeTest {
 	private void test(PbTree<String> pbTree) {
 		pbTree.create().end(true);
 
-		int size = pbTree.guaranteedCapacity();
+		var size = pbTree.guaranteedCapacity();
+		var list = new ArrayList<String>();
 
-		List<String> list = new ArrayList<>();
 		for (int k = 0; k < size; k++)
 			list.add("KEY-" + Format.hex4(k));
 
