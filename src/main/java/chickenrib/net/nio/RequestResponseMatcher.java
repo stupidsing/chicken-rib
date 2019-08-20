@@ -42,7 +42,7 @@ public class RequestResponseMatcher {
 
 	public void onResponseReceived(int token, Bytes response) {
 		requests.get(token).map((holder, condition) -> {
-			condition.satisfyOne(() -> holder.set(response));
+			condition.satisfy(() -> holder.set(response));
 			return null;
 		});
 	}
