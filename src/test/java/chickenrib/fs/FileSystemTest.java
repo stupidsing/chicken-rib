@@ -1,6 +1,6 @@
 package chickenrib.fs;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.fs.impl.PbTreeFileSystemImpl;

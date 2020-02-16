@@ -1,12 +1,12 @@
 package chickenrib.btree;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import chickenrib.btree.impl.PbTreeBuilder;
 import chickenrib.btree.impl.PbTreeConfiguration;

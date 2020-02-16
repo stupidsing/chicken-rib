@@ -1,7 +1,7 @@
 package chickenrib.net.cluster;
 
 import static java.util.Map.entry;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static primal.statics.Rethrow.ex;
 
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import chickenrib.net.cluster.impl.ClusterImpl;
 import primal.Verbs.Sleep;
