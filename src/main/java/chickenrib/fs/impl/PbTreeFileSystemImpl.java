@@ -2,6 +2,7 @@ package chickenrib.fs.impl;
 
 import java.io.IOException;
 
+import chickenrib.btree.PbTree;
 import chickenrib.btree.impl.PbTreeConfiguration;
 import chickenrib.btree.impl.PbTreeStack;
 import primal.primitive.adt.Bytes;
@@ -15,13 +16,15 @@ public class PbTreeFileSystemImpl implements FileSystem {
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 
 	private PbTreeStack<Bytes> pbTreeStack;
+	private PbTree<Bytes> pbTree;
 	private FileSystemMutator mutator;
 
 	public PbTreeFileSystemImpl(PbTreeConfiguration<Bytes> config, boolean isNew) {
 		config.setComparator(Bytes.comparator);
 		config.setSerializer(keyUtil.serializer());
 		pbTreeStack = new PbTreeStack<>(config);
-		mutator = new FileSystemMutatorImpl(keyUtil, pbTreeStack.getIbTree()::begin);
+		pbTree = pbTreeStack.getIbTree();
+		mutator = new FileSystemMutatorImpl(keyUtil, pbTree::begin);
 
 		if (isNew)
 			pbTreeStack.getIbTree().create().end(true);
@@ -29,6 +32,7 @@ public class PbTreeFileSystemImpl implements FileSystem {
 
 	@Override
 	public void close() throws IOException {
+		pbTree.close();
 		pbTreeStack.close();
 	}
 
