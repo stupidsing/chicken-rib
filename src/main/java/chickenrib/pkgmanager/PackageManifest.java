@@ -3,8 +3,6 @@ package chickenrib.pkgmanager;
 import java.util.List;
 import java.util.Map;
 
-import suite.pkgmanager.Command;
-
 public class PackageManifest {
 
 	private String name;

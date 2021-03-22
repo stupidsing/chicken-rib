@@ -11,7 +11,6 @@ import primal.Verbs.ReadFile;
 import primal.Verbs.WriteFile;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
-import suite.pkgmanager.PackageMemento;
 
 /**
  * Keeps track of the package installed in local machine.

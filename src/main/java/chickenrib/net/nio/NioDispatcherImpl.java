@@ -96,7 +96,7 @@ public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 				// machines. Thus we specify a time out to allow the selector
 				// freed out temporarily; otherwise the register() methods in
 				// other threads might block forever.
-				selector.select(500);
+				//selector.select(500);
 
 				// this seems to allow other threads to gain access. Not exactly
 				// the behavior as documented in NIO, but anyway.

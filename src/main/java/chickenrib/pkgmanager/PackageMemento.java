@@ -3,7 +3,6 @@ package chickenrib.pkgmanager;
 import java.util.List;
 
 import chickenrib.pkgmanager.action.InstallAction;
-import suite.pkgmanager.PackageManifest;
 
 public class PackageMemento {
 

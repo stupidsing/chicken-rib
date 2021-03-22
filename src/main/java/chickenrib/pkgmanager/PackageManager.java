@@ -18,9 +18,6 @@ import chickenrib.pkgmanager.action.InstallAction;
 import primal.MoreVerbs.Read;
 import primal.parser.Wildcard;
 import suite.os.FileUtil;
-import suite.pkgmanager.Keeper;
-import suite.pkgmanager.PackageManifest;
-import suite.pkgmanager.PackageMemento;
 
 public class PackageManager {
 

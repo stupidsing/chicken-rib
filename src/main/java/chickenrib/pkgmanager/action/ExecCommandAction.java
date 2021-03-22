@@ -3,7 +3,6 @@ package chickenrib.pkgmanager.action;
 import static primal.statics.Fail.fail;
 
 import suite.os.Execute;
-import suite.pkgmanager.action.InstallAction;
 
 public class ExecCommandAction implements InstallAction {
 

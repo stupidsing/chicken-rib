@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 
-import suite.pkgmanager.action.InstallAction;
 import suite.util.Copy;
 
 public class ExtractFileAction implements InstallAction {
